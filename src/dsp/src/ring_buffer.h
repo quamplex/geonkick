@@ -65,6 +65,7 @@ ring_buffer_add_value(struct ring_buffer *ring,
 void
 ring_buffer_get_data(struct ring_buffer *ring,
                      gkick_real *data,
+                     float gain,
                      size_t data_size);
 
 gkick_real

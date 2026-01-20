@@ -326,15 +326,16 @@ void gkick_audio_output_get_data(struct gkick_audio_output *audio_output,
 {
         if (gkick_audio_output_note_off(audio_output))
                 gkick_audio_add_playing_buffer_to_ring(audio_output, size);
+
         *leveler = ring_buffer_get_cur_data(audio_output->ring_buffer);
+        float limiter = (float)audio_output->limiter / 1000000;
+
         ring_buffer_get_data(audio_output->ring_buffer,
                              data[0],
+                             limiter,
                              size);
-        gkick_real limiter = (gkick_real)audio_output->limiter / 1000000;
-        for (size_t i = 0; i < size; i++) {
-                data[0][i] *= limiter;
+        for (size_t i = 0; i < size; i++)
                 data[1][i] = data[0][i];
-        }
         ring_buffer_next(audio_output->ring_buffer, size);
 }
 
