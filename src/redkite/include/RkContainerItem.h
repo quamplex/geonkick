@@ -48,6 +48,7 @@ class RkContainerItem: public RkObject {
         virtual int x() const { return itemPosition.x(); }
         virtual void setY(int val) { itemPosition.setY(val); }
         virtual int y() const { return itemPosition.y(); }
+        virtual void setSize(int w, int h) { setSize({w, h}); }
         virtual void setSize(const RkSize &size) { itemSize = size; }
         virtual RkSize size() const { return itemSize; }
         virtual void setWidth(int val) { itemSize.setWidth(val); }

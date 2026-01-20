@@ -1,6 +1,6 @@
 /**
  * @file qx_randomizer.h
- * @brief A small C library for audio DSP: basic pseudo-random number generator.
+ * @brief Basic pseudo-random number generator using lightweight PRNG.
  *
  * Project: Quamplex DSP Tools (A small C library of tools for audio DSP processing)
  * Website: https://quamplex.com
@@ -60,6 +60,30 @@ struct qx_randomizer {
 };
 
 /**
+ * @brief Global atomic seed used for generating unique seeds via SplitMix32.
+ *
+ * Atomic ensures thread-safe updates without locking,
+ * suitable for real-time audio.
+ */
+static atomic_uint qx_global_seed = 1u;
+
+/**
+ * @brief SplitMix32 generator for producing high-quality 32-bit seeds.
+ *
+ * Each call advances the internal global seed and returns a new pseudo-random value.
+ * This is used only to initialize qx_randomizer instances with unique seeds.
+ *
+ * @return A 32-bit pseudo-random seed value.
+ */
+static inline uint32_t qx_splitmix32()
+{
+        uint32_t z = atomic_fetch_add(&qx_global_seed, 0x9e3779b9u);
+        z = (z ^ (z >> 16)) * 0x85ebca6bu;
+        z = (z ^ (z >> 13)) * 0xc2b2ae35u;
+        return z ^ (z >> 16);
+}
+
+/**
  * @brief Initializes a `qx_randomizer` instance.
  *
  * @param rand Pointer to the randomizer structure to initialize.
@@ -75,7 +99,7 @@ static inline void qx_randomizer_init(struct qx_randomizer* rand,
                                       float max,
                                       float resolution)
 {
-        rand->seed = 856382025u;
+        rand->seed = 856382025u + qx_splitmix32();
         rand->min = min;
         rand->max = max;
         rand->resolution = resolution;

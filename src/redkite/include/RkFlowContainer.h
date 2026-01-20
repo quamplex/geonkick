@@ -30,7 +30,7 @@
 class RkFlowContainer : public RkContainer {
  public:
         explicit RkFlowContainer(RkWidget *parent);
-        virtual ~RkFlowContainer() = default;
+        ~RkFlowContainer() = default;
 
  protected:
         void layout() override;

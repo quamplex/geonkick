@@ -44,6 +44,7 @@ class RkPainter {
                       const std::string &text,
                       Rk::Alignment alignment = Rk::Alignment::AlignCenter);
         void drawImage(const RkImage &image, int x, int y);
+        void drawImage(const RkImage &image, const RkPoint &p);
         void drawCircle(int x, int y, int radius);
         void drawCircle(const RkPoint &p, int radius);
         void drawLine(int x1, int y1, int x2, int y2);

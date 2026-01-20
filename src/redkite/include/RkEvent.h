@@ -26,6 +26,7 @@
 
 #include "Rk.h"
 #include "RkPoint.h"
+#include "RkSize.h"
 
 class RkCloseEvent;
 class RkKeyEvent;
@@ -67,23 +68,26 @@ class RkEvent {
 
         explicit RkEvent(Type type = Type::NoEvent)
               : eventType{type}
-              , eventTime{std::chrono::system_clock::now()} {}
+              , eventTime{std::chrono::system_clock::now()}
+              , eventAccepted {true} {}
         virtual ~RkEvent() = default;
 
         void setType(Type type) { eventType = type; }
         Type type() const { return eventType; }
         std::chrono::system_clock::time_point time() const { return eventTime; }
         void setTime(const std::chrono::system_clock::time_point &time) {  eventTime = time; }
+        void setAccepted(bool b = true) { eventAccepted = b; }
+        bool isAccepted() const { return eventAccepted; }
 
   private:
         Type eventType;
         std::chrono::system_clock::time_point eventTime;
+        bool eventAccepted;
 };
 
 class RkCloseEvent: public RkEvent {
  public:
-        RkCloseEvent() : RkEvent(Type::Close) {
-	}
+        RkCloseEvent() : RkEvent(Type::Close) {}
 };
 
 class RkKeyEvent: public RkEvent {
@@ -184,8 +188,24 @@ class RkMoveEvent: public RkEvent {
 
 class RkResizeEvent: public RkEvent {
 public:
-      RkResizeEvent() : RkEvent(Type::Resize) {
-      }
+        RkResizeEvent(const RkSize &size = {}) :
+                RkEvent(Type::Resize)
+                , sizeValue {size}
+        {
+        }
+
+        void setSize(const RkSize &s)
+        {
+                sizeValue = s;
+        }
+
+        const RkSize& size() const
+        {
+                return sizeValue;
+        }
+
+private:
+        RkSize sizeValue;
 };
 
 class RkPaintEvent: public RkEvent {

@@ -71,6 +71,11 @@ void RkPainter::drawImage(const RkImage &image, int x, int y)
                 o_ptr->drawImage(image, x, y);
 }
 
+void RkPainter::drawImage(const RkImage &image, const RkPoint &p)
+{
+        drawImage(image, p.x(), p.y());
+}
+
 void RkPainter::drawCircle(int x, int y, int radius)
 {
         if (radius > 0)

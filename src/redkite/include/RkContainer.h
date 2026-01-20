@@ -43,6 +43,7 @@ class RkContainer: public RkContainerItem {
 	Rk::Orientation orientation() const;
 	Rk::Alignment alignment(RkWidget *widget) const;
 	Rk::Alignment alignment(size_t index) const;
+        void setSize(int w, int h) override;
 	void setSize(const RkSize &s) override;
 	void setWidth(int w) override;
 	void setHeight(int h) override;

@@ -139,10 +139,10 @@ void RkObject::RkObjectImpl::removeBoundObject(RkObject *obj)
 
 void RkObject::RkObjectImpl::addChild(RkObject* child)
 {
-        RK_LOG_DEBUG("add child: " << child);
+        RK_LOG_DEBUG("add child[" << name() << "]: " << child);
         objectChildren.insert(child);
         if (eventQueue) {
-                RK_LOG_DEBUG("add child to queue: " << child);
+                RK_LOG_DEBUG("add child to queue[" << name() << "]: " << child);
                 RK_IMPL_PTR(eventQueue)->addObject(child);
         }
 }

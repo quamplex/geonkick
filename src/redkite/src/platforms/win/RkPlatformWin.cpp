@@ -227,6 +227,7 @@ static LRESULT CALLBACK RkWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
 	{
+                SetCapture(hWnd);
                 SetFocus(hWnd);
                 auto event = std::make_unique<RkMouseEvent>();
                 auto x = static_cast<short int>(LOWORD(lParam));
@@ -250,6 +251,7 @@ static LRESULT CALLBACK RkWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         case WM_RBUTTONUP:
         case WM_MBUTTONUP:
 	{
+                ReleaseCapture();
                 auto event = std::make_unique<RkMouseEvent>();
                 event->setType(RkEvent::Type::MouseButtonRelease);
                 auto x = static_cast<short int>(LOWORD(lParam));

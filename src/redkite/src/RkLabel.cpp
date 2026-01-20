@@ -53,6 +53,7 @@ std::string RkLabel::text() const
 
 void RkLabel::setImage(const RkImage &image)
 {
+        setSize(image.size());
         impl_ptr->setImage(image);
 }
 

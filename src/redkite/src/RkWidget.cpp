@@ -617,6 +617,19 @@ bool RkWidget::isChild(RkWidget *widget)
         return false;
 }
 
+RkPoint RkWidget::mapToParent(const RkPoint& p) const
+{
+        return impl_ptr->isTopWidget() ? p
+                : p + parentWidget()->position();
+}
+
+RkPoint RkWidget::mapFromParent(const RkPoint& p) const
+{
+        return impl_ptr->isTopWidget() ? p
+                : p - parentWidget()->position();
+}
+
+
 RkPoint RkWidget::mapToGlobal(const RkPoint& p) const
 {
         return impl_ptr->isTopWidget() ? p + position()
@@ -675,3 +688,4 @@ double RkWidget::scaleFactor() const
 {
         return RK_IMPL_PTR(this)->scaleFactor();
 }
+

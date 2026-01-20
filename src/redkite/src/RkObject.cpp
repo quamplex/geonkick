@@ -55,6 +55,12 @@ Rk::ObjectType RkObject::type() const
         return o_ptr->getObjectType();
 }
 
+void RkObject::setParent(RkObject *parentObj)
+{
+        parentObj->addChild(this);
+        setEventQueue(parentObj->eventQueue());
+}
+
 RkObject* RkObject::parent() const
 {
         return o_ptr->parent();

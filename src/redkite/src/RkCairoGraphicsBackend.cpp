@@ -28,6 +28,8 @@
 #include "RkPoint.h"
 #include "RkRealPoint.h"
 
+#include <numbers>
+
 #ifdef RK_OS_WIN
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -97,7 +99,7 @@ void RkCairoGraphicsBackend::drawEllipse(const RkPoint& p, int width, int height
 {
         if (width == height) {
                 cairo_move_to(context(), p.x() + width / 2, p.y());
-                cairo_arc(context(), p.x(), p.y(), width / 2, 0, 2 * M_PI);
+                cairo_arc(context(), p.x(), p.y(), width / 2, 0, 2 * std::numbers::pi);
                 cairo_stroke(context());
         } else {
                 RK_LOG_ERROR("ellipse is not implemented yet");

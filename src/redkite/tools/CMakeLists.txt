@@ -15,6 +15,6 @@ else()
   target_link_libraries(rkpng2c ${RK_GRAPHICS_BACKEND_LINK_LIBS})
 endif()
 
-if (REDKITE_ENABLE_INSTALL)
+if (REDKITE_INSTALL)
 install(TARGETS rkpng2c DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-endif(REDKITE_ENABLE_INSTALL)
+endif(REDKITE_INSTALL)

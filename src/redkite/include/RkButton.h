@@ -51,7 +51,7 @@ class RkButton: public RkWidget {
         void setPressed(bool pressed);
         bool isPressed() const;
         ButtonType type() const;
-        void setCheckable(bool b);
+        void setCheckable(bool b = true);
         bool isCheckable() const;
         void setType(ButtonType type);
         void setEnabled(bool b = true);

@@ -129,6 +129,8 @@ class RkWidget: public RkObject, public RkCanvas {
         void setPointerShape(Rk::PointerShape shape);
         Rk::PointerShape pointerShape() const;
         bool isChild(RkWidget *widget);
+        RkPoint mapToParent(const RkPoint& p) const;
+        RkPoint mapFromParent(const RkPoint& p) const;
         RkPoint mapToGlobal(const RkPoint& p) const;
         RkPoint mapToLocal(const RkPoint& p) const;
         void setVisible(bool b = true);

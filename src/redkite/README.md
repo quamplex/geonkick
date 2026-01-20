@@ -4,25 +4,29 @@ A lightweight graphics widget toolkit.
 
 Author: Iurie Nistor
 
-Version: 2.1.0
+Version: 2.2.0
 
 License: GNU General Public License v3.0
 
 ## Overview
 
-Redkite is a small [free software](https://gnu.org/philosophy/free-sw.en.html) GUI toolkit. It offers graphics widget in a single system window. It is developed in C++ and inspired from other well known GUI toolkits. Currently supports GNU/Linux and Windows.
+Redkite is a small [free software](https://gnu.org/philosophy/free-sw.en.html) GUI toolkit.
+It offers graphics widget in a single system window.
+It is developed in C++ and inspired from other well known GUI toolkits.
+Currently supports GNU/Linux and Windows.
 
 ## Goals
 
 * Small and lightweight
 * Many instances of the same or different versions of the toolkit must be able to run without problems in the same process address space.
-* Can be easily linked statically. Shared libraries that are developed using the toolkit and loaded dynamically must not cause conflicts due to the toolkit.   
-* Not to add dependencies that breaks the above points. Maximum to relay on dependencies for runtime that are provided by default by the system.  
+* Can be easily linked statically. Shared libraries that are developed using the toolkit and loaded dynamically must not cause conflicts due to the toolkit.
+* Not to add dependencies that breaks the above points. Maximum to relay on dependencies for runtime that are provided by default by the system.
 * A simple interface
 
 ## Use Cases
 
-The toolkit can be used for embeddable UIs, such as audio plugins. It can also be used to develop standalone applications.
+The toolkit can be used for embeddable UIs, such as audio plugins.
+It can also be used to develop standalone applications.
 
 ## Main features
 
@@ -73,7 +77,9 @@ The toolkit can be used for embeddable UIs, such as audio plugins. It can also b
 * RkTransition
 * RkVariant
 * RkWidget
+* RkScroolbar.h
 
 ## Used by
 
-* Geonkick Synthesizer - https://geonkick.org
+* Geonkick Synthesizer - https://quamplex.com/geonkick
+* Entropicton - https://quamplex.com/entropictron

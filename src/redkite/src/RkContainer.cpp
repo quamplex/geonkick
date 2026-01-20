@@ -50,6 +50,9 @@ void RkContainer::addWidget(RkWidget *widget, Rk::Alignment align)
 
 void RkContainer::removeWidget(RkWidget *widget)
 {
+        if (!widget)
+                return;
+
         std::erase_if(containerItems, [widget](const auto *i) {
                 return i->type() == RkContainerItem::ItemType::ItemWidget
                         && dynamic_cast<const RkContainerWidgetItem*>(i)->widget() == widget; });
@@ -141,6 +144,11 @@ void RkContainer::clear()
 Rk::Orientation RkContainer::orientation() const
 {
 	return containerOrientation;
+}
+
+void RkContainer::setSize(int w, int h)
+{
+        setSize({w, h});
 }
 
 void RkContainer::setSize(const RkSize &s)

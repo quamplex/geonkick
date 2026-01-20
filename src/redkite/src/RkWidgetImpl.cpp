@@ -261,6 +261,9 @@ void RkWidget::RkWidgetImpl::event(RkEvent *event)
                 break;
                 RK_LOG_DEBUG("RkEvent::Type::Unknown:" << title());
         }
+
+        if (!event->isAccepted())
+                parent()->event(event);
 }
 
 void RkWidget::RkWidgetImpl::processPaintEvent(RkPaintEvent* event)
@@ -298,7 +301,8 @@ void RkWidget::RkWidgetImpl::setSize(const RkSize &size)
         widgetSize = size;
         if (isTopWidget())
                 systemWindow->setSize(widgetSize);
-        RK_IMPL_PTR(getEventQueue())->postEvent(inf_ptr, std::make_unique<RkResizeEvent>());
+        RK_IMPL_PTR(getEventQueue())->postEvent(inf_ptr,
+                                                std::make_unique<RkResizeEvent>(size));
 }
 
 const RkSize& RkWidget::RkWidgetImpl::size() const
