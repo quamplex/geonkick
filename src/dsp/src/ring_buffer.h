@@ -2,7 +2,7 @@
  * File name: ring_buffer.h
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2023 Iurie Nistor 
+ * Copyright (C) 2023 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
@@ -26,7 +26,12 @@
 
 #include "geonkick_internal.h"
 
+#include "qx_fader.h"
+
 struct ring_buffer {
+
+        int sample_rate;
+
         gkick_real *buff;
 
         /**
@@ -45,17 +50,29 @@ struct ring_buffer {
          * Current position in the buffer.
          */
         size_t index;
+
+        struct qx_fader decay;
+
+        /* The ring buffer was flashed */
+        bool flashed;
 };
 
 enum geonkick_error
 ring_buffer_new(struct ring_buffer **ring,
-                int size);
+                int size,
+                int sample_rate);
 
 void
 ring_buffer_free(struct ring_buffer **ring);
 
 void
 ring_buffer_reset(struct ring_buffer *ring);
+
+void
+ring_buffer_start_decay(struct ring_buffer *ring);
+
+void
+ring_buffer_turnoff_decay(struct ring_buffer *ring);
 
 void
 ring_buffer_add_value(struct ring_buffer *ring,

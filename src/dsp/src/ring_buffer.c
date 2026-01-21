@@ -25,7 +25,8 @@
 
 enum geonkick_error
 ring_buffer_new(struct ring_buffer **ring,
-                int size)
+                int size,
+                int sample_rate)
 {
         if (ring == NULL) {
                 gkick_log_error("wrong arguments");
@@ -38,6 +39,7 @@ ring_buffer_new(struct ring_buffer **ring,
                 return GEONKICK_ERROR;
         }
         (*ring)->max_size = size;
+        (*ring)->sample_rate = sample_rate;
         (*ring)->size     = (*ring)->max_size;
         (*ring)->index    = 0;
         (*ring)->buff     = (gkick_real*)calloc(1, sizeof(gkick_real) * (*ring)->max_size);
@@ -46,6 +48,13 @@ ring_buffer_new(struct ring_buffer **ring,
                 ring_buffer_free(ring);
                 return GEONKICK_ERROR;
         }
+        (*ring)->flashed = true;
+
+        qx_fader_init(&(*ring)->decay,
+                      0.0f, // Fade in time, 0ms
+                      50.0f, // Fadeout time, 0.8ms
+                      (*ring)->sample_rate);
+
         return GEONKICK_OK;
 }
 
@@ -65,6 +74,20 @@ ring_buffer_reset(struct ring_buffer *ring)
 {
         ring->index = 0;
         memset(ring->buff, 0, ring->size * sizeof(gkick_real));
+        qx_fader_enable(&ring->decay, true);
+        ring->flashed = true;
+}
+
+void
+ring_buffer_start_decay(struct ring_buffer *ring)
+{
+        qx_fader_enable(&ring->decay, false);
+}
+
+void
+ring_buffer_turnoff_decay(struct ring_buffer *ring)
+{
+        qx_fader_enable(&ring->decay, true);
 }
 
 void
@@ -72,6 +95,7 @@ ring_buffer_add_value(struct ring_buffer *ring,
                            size_t index,
                            gkick_real val)
 {
+        ring->flashed = false;
         ring->buff[(ring->index + index) % ring->size] += val;
 }
 
@@ -83,8 +107,18 @@ ring_buffer_get_data(struct ring_buffer *ring,
 {
         if (data == NULL)
                 return;
-        for (size_t i = 0; i < data_size; i++)
-                data[i] += ring->buff[(ring->index + i) % ring->size] * gain;
+
+        float fade = ring->decay.fade;
+        for (size_t i = 0; i < data_size; i++) {
+                float val = ring->buff[(ring->index + i) % ring->size];
+                data[i] += qx_fader_fade(&ring->decay, val) * gain;
+        }
+
+        // Check whether to flash all the rest of the ring buffer.
+        if (fade > 0.0f && ring->decay.fade <= 0.0f && !ring->flashed) {
+                memset(ring->buff, 0, sizeof(float) * ring->size);
+                ring->flashed = true;
+        }
 }
 
 gkick_real

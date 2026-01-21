@@ -45,7 +45,8 @@ extern "C" {
 */
 typedef struct qx_fader {
         float fade;      /**< Current fade value [0..1] */
-        float step;      /**< Fade increment per sample */
+        float stepIn;      /**< Fade in (increment per sample) */
+        float stepOut;      /**< Fade out (increment per sample) */
         bool enabled;    /**< Target state: true = fade in, false = fade out */
 } qx_fader;
 
@@ -59,15 +60,23 @@ typedef struct qx_fader {
  * Sets the initial fade value to 0 and computes per-sample
  * step based on fade time and sample rate.
  */
-static inline void qx_fader_init(struct qx_fader* fader, float fadeTime, float sample_rate)
+        static inline void qx_fader_init(struct qx_fader* fader,
+                                         float fadeInTime,
+                                         float fadeOutTime,
+                                         float sample_rate)
 {
         fader->fade = 0.0f;
         fader->enabled = false;
 
-        if (fadeTime <= 0.0f)
-                fader->step = 1.0f; // instant fade
+        if (fadeInTime <= 0.0f)
+                fader->stepIn = 1.0f; // instant fade
         else
-                fader->step = 1.0f / ((fadeTime / 1000.0f) * sample_rate);
+                fader->stepIn = 1.0f / ((fadeInTime / 1000.0f) * sample_rate);
+
+        if (fadeOutTime <= 0.0f)
+                fader->stepOut = 1.0f; // instant fade
+        else
+                fader->stepOut = 1.0f / ((fadeOutTime / 1000.0f) * sample_rate);
 }
 
 /**
@@ -97,9 +106,14 @@ static inline void qx_fader_enable(struct qx_fader* fader, bool enabled)
  */
 static inline float qx_fader_fade(struct qx_fader* fader, float val)
 {
-        fader->fade += fader->enabled ? fader->step : -fader->step;
+        fader->fade += fader->enabled ? fader->stepIn : -fader->stepOut;
         fader->fade = qx_clamp_float(fader->fade, 0.0f, 1.0f);
         return val * fader->fade;
+}
+
+static inline float qx_fader_get_fade(struct qx_fader* fader)
+{
+        return fader->fade;
 }
 
 #ifdef __cplusplus

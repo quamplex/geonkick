@@ -33,7 +33,6 @@ gkick_mixer_create(struct gkick_mixer **mixer)
 		gkick_log_error("can't allocate memory");
 		return GEONKICK_ERROR_MEM_ALLOC;
 	}
-
 	return GEONKICK_OK;
 }
 
@@ -44,29 +43,49 @@ gkick_mixer_key_pressed(struct gkick_mixer *mixer,
 	if (note->note_number < 0 || note->note_number > 127)
 		return GEONKICK_ERROR;
 
+        // Find the group of the note being trigered.
+        unsigned char triggered_group = 0;
         for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS; i++) {
-                struct gkick_audio_output *output = mixer->audio_outputs[i];
-                if (!output->enabled)
+                struct gkick_audio_output *instr = mixer->audio_outputs[i];
+                if (instr->enabled
+                    && (instr->playing_key == note->note_number
+                        || instr->playing_key == GEONKICK_ANY_KEY)) {
+                        triggered_group = atomic_load_explicit(&instr->choke_group, memory_order_relaxed);
+                        break;
+                }
+        }
+
+        for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS; i++) {
+                struct gkick_audio_output *instr = mixer->audio_outputs[i];
+                if (!instr->enabled)
                         continue;
+
+                if (triggered_group > 0) {
+                        int cur_instr_group = atomic_load_explicit(&instr->choke_group,
+                                                                   memory_order_relaxed);
+                        /**
+                        /* Tun off the instruments in the same group
+                        /* but not the one being pressed.
+                         */
+                        if (cur_instr_group == triggered_group
+                            && instr->playing_key != note->note_number) {
+                                atomic_store_explicit(&instr->play, false, memory_order_relaxed);
+                        }
+                }
 
                 short forced_midi_channel = mixer->forced_midi_channel;
                 signed char midi_channel;
                 if (forced_midi_channel & 0x0100)
                         midi_channel = forced_midi_channel & 0x00ff;
                 else
-                        midi_channel = output->midi_channel;
+                        midi_channel = instr->midi_channel;
 
-                gkick_log_debug("output: index[%d], forced[%d], midi ch[%d], note_ch[%d]",
-                                i,
-                                (forced_midi_channel & 0x0100) != 0,
-                                midi_channel,
-                                note->channel);
                 if ((midi_channel == GEONKICK_ANY_MIDI_CHANNEL
                      || midi_channel == note->channel)
-                    && (output->playing_key == GEONKICK_ANY_KEY
-                        || output->playing_key == note->note_number
-                        || output->tune || note->state == GKICK_KEY_STATE_RELEASED)) {
-                        gkick_audio_output_key_pressed(output, note);
+                    && (instr->playing_key == GEONKICK_ANY_KEY
+                        || instr->playing_key == note->note_number
+                        || instr->tune || note->state == GKICK_KEY_STATE_RELEASED)) {
+                        gkick_audio_output_key_pressed(instr, note);
                 }
         }
 	return GEONKICK_OK;
@@ -103,26 +122,31 @@ gkick_mixer_process(struct gkick_mixer *mixer,
                 return GEONKICK_OK;
 
         for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS + 1; i++) {
-                struct gkick_audio_output *output = mixer->audio_outputs[i];
+                struct gkick_audio_output *instr = mixer->audio_outputs[i];
 
-                if (output->start_play) {
-                        gkick_audio_set_play(output);
-                        output->start_play = false;
+                if (instr->start_play) {
+                        gkick_audio_set_play(instr);
+                        instr->start_play = false;
                 }
 
-                if (!output->enabled || output->muted
-                    || mixer->solo != output->solo || !output->play) {
-                        ring_buffer_next(output->ring_buffer, size);
+                bool play = atomic_load_explicit(&instr->play,
+                                                 memory_order_relaxed);
+                if (!play && instr->ring_buffer->decay.enabled)
+                        ring_buffer_start_decay(instr->ring_buffer);
+
+                if (!instr->enabled || instr->muted
+                    || mixer->solo != instr->solo) {
+                        ring_buffer_next(instr->ring_buffer, size);
                         gkick_mixer_set_leveler(mixer, i, 0);
                         continue;
                 }
 
-                size_t left_index  = 2 * output->channel;
+                size_t left_index  = 2 * instr->channel;
                 size_t right_index = left_index + 1;
                 gkick_real *data[2] = {out[left_index] + offset,
                                        out[right_index] + offset};
                 gkick_real leveler = 0.0f;
-                gkick_audio_output_get_data(output, data, &leveler, size);
+                gkick_audio_output_get_data(instr, data, &leveler, size);
                 gkick_mixer_set_leveler(mixer, i, fabsf(leveler));
         }
 

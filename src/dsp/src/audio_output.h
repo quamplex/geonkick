@@ -87,14 +87,6 @@ struct gkick_audio_output
         _Atomic bool start_play;
 
         /**
-         * decay - note release time measured in number of audio frames.
-         * Relaxation curve for audio is liniear:
-         *   - 1.0 * (GEKICK_NOTE_RELEASE_TIME - decay) / GEKICK_NOTE_RELEASE_TIME + 1.0,
-         *    decay from GEKICK_NOTE_RELEASE_TIME to 0;
-         */
-        _Atomic int decay;
-
-        /**
          * Specifies if to tune the output in accordance with
          * the note (central note is A4).
          */
@@ -114,6 +106,9 @@ struct gkick_audio_output
 
         /* Enable/disable note off */
         _Atomic bool note_off;
+
+        /* Current instrument choke group. 0 value is none (off) */
+        _Atomic signed char choke_group;
 
         /* Contains the paramteres for humanizer. */
         struct gkick_humanizer_params humanizer_params;
@@ -152,9 +147,6 @@ gkick_audio_output_play(struct gkick_audio_output *audio_output);
 /* This funciton is called from the audio thread. */
 void
 gkick_audio_set_play(struct gkick_audio_output *audio_output);
-
-gkick_real
-gkick_audio_get_decay_val(struct gkick_audio_output *audio_output);
 
 gkick_real
 gkick_audio_output_tune_factor(int note_number);
