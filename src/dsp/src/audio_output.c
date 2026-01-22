@@ -46,7 +46,7 @@ gkick_audio_output_create(struct gkick_audio_output **audio_output, int sample_r
         (*audio_output)->midi_channel = GEONKICK_ANY_MIDI_CHANNEL;
         (*audio_output)->sample_rate  = sample_rate;
         (*audio_output)->note_off     = false;
-        (*audio_output)->choke_group  = GKICK_INSTRUMENT_CHOKE_GROUP_OFF;
+        (*audio_output)->choke_group  = GKICK_CHOKE_GROUP_OFF;
 
         gkick_humanizer_init(&(*audio_output)->velocity_humanizer);
         gkick_humanizer_init(&(*audio_output)->timing_humanizer);
@@ -339,22 +339,25 @@ void gkick_instrument_set_param(struct gkick_audio_output *audio_output,
                                 enum gkick_instrument_param param,
                                 const void *value)
 {
-        struct gkick_humanizer_params *p = &audio_output->humanizer_params;
-
         switch (param) {
         case GKICK_INSTR_PARAM_HUM_ENABLE:
-                atomic_store_explicit(&p->enabled,
+                atomic_store_explicit(&audio_output->humanizer_params.enabled,
                                       *(const bool *)value,
                                       memory_order_relaxed);
                 break;
         case GKICK_INSTR_PARAM_HUM_VEL:
-                atomic_store_explicit(&p->velocity,
+                atomic_store_explicit(&audio_output->humanizer_params.velocity,
                                       *(const float *)value,
                                       memory_order_relaxed);
                 break;
         case GKICK_INSTR_PARAM_HUM_TIME:
-                atomic_store_explicit(&p->timing,
+                atomic_store_explicit(&audio_output->humanizer_params.timing,
                                       *(const float *)value,
+                                      memory_order_relaxed);
+                break;
+        case GKICK_INSTR_PARAM_CHOKE_GROUP:
+                atomic_store_explicit(&audio_output->choke_group,
+                                      *(const unsigned char *)value,
                                       memory_order_relaxed);
                 break;
         default:
@@ -366,25 +369,33 @@ void gkick_instrument_get_param(const struct gkick_audio_output *audio_output,
                                 enum gkick_instrument_param param,
                                 void *value)
 {
-        const struct gkick_humanizer_params *p = &audio_output->humanizer_params;
-
         switch (param) {
         case GKICK_INSTR_PARAM_HUM_ENABLE:
         {
-                bool v = atomic_load_explicit(&p->enabled, memory_order_relaxed);
+                bool v = atomic_load_explicit(&audio_output->humanizer_params.enabled,
+                                              memory_order_relaxed);
                 *(bool*)value = v;
                 break;
         }
         case GKICK_INSTR_PARAM_HUM_VEL:
         {
-                float v = atomic_load_explicit(&p->velocity, memory_order_relaxed);
+                float v = atomic_load_explicit(&audio_output->humanizer_params.velocity,
+                                               memory_order_relaxed);
                 *(float *)value = v;
                 break;
         }
         case GKICK_INSTR_PARAM_HUM_TIME:
         {
-                float v = atomic_load_explicit(&p->timing, memory_order_relaxed);
+                float v = atomic_load_explicit(&audio_output->humanizer_params.timing,
+                                               memory_order_relaxed);
                 *(float *)value = v;
+                break;
+        }
+        case GKICK_INSTR_PARAM_CHOKE_GROUP:
+        {
+                float v = atomic_load_explicit(&audio_output->choke_group,
+                                               memory_order_relaxed);
+                *(unsigned char *)value = v;
                 break;
         }
         default:

@@ -44,6 +44,8 @@ class KitModel : public RkObject {
 
         using PercussionIndex = int;
         using KeyIndex = int;
+        using ChokeGroup = GeonkickTypes::ChokeGroup;
+
         explicit KitModel(GeonkickModel* parent);
         bool enableInstrument(PercussionIndex index, bool b = true);
         bool isInstrumentEnabled(PercussionIndex index) const;
@@ -95,6 +97,8 @@ class KitModel : public RkObject {
         bool doExport(const std::string &file, const ExportInfo &info) const;
         bool enableNoteOff(PercussionIndex index, bool b);
         bool isNoteOffEnabled(PercussionIndex index) const;
+        bool setChokeGroup(PercussionIndex index, ChokeGroup group);
+        ChokeGroup getChokeGroup(PercussionIndex index) const;
         OscillatorModel* getCurrentLayerOscillator(OscillatorModel::Type type) const;
         bool loadPreset(const Preset &preset, PercussionIndex index);
         bool loadPreset(const Preset &preset);

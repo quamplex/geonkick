@@ -478,6 +478,16 @@ bool KitModel::isNoteOffEnabled(PercussionIndex index) const
         return dspProxy->isNoteOffEnabled(instrumentId(index));
 }
 
+bool KitModel::setChokeGroup(PercussionIndex index, KitModel::ChokeGroup group)
+{
+        return dspProxy->setChokeGroup(instrumentId(index), group);
+}
+
+KitModel::ChokeGroup KitModel::getChokeGroup(PercussionIndex index) const
+{
+        return dspProxy->getChokeGroup(instrumentId(index));
+}
+
 OscillatorModel* KitModel::getCurrentLayerOscillator(OscillatorModel::Type type) const
 {
         return geonkickModel->getOscillatorModels()[static_cast<int>(type)];

@@ -61,7 +61,6 @@ gkick_audio_create(struct gkick_audio** audio, int sample_rate)
                         return GEONKICK_ERROR;
                 }
 		(*audio)->audio_outputs[i]->enabled = true;
-                (*audio)->audio_outputs[i]->choke_group = GKICK_INSTRUMENT_CHOKE_GROUP_A;
                 if (i == GEONKICK_AUDITION_CHANNEL_INDEX)
                         (*audio)->audio_outputs[i]->channel = GEONKICK_AUDITION_CHANNEL_INDEX;
         }

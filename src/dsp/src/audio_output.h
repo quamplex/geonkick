@@ -52,7 +52,8 @@ struct gkick_humanizer_params
 enum gkick_instrument_param {
         GKICK_INSTR_PARAM_HUM_ENABLE,
         GKICK_INSTR_PARAM_HUM_VEL,
-        GKICK_INSTR_PARAM_HUM_TIME
+        GKICK_INSTR_PARAM_HUM_TIME,
+        GKICK_INSTR_PARAM_CHOKE_GROUP,
 };
 
 struct gkick_audio_output
@@ -108,7 +109,7 @@ struct gkick_audio_output
         _Atomic bool note_off;
 
         /* Current instrument choke group. 0 value is none (off) */
-        _Atomic signed char choke_group;
+        _Atomic unsigned char choke_group;
 
         /* Contains the paramteres for humanizer. */
         struct gkick_humanizer_params humanizer_params;

@@ -291,6 +291,18 @@ bool PercussionModel::isNoteOffEnabled() const
         return kitModel->isNoteOffEnabled(index());
 }
 
+void PercussionModel::setChokeGroup(PercussionModel::ChokeGroup group)
+{
+        if (kitModel->setChokeGroup(index(), group))
+                action chokeGroupUpdated(group);
+}
+
+PercussionModel::ChokeGroup
+PercussionModel::getChokeGroup() const
+{
+        return kitModel->getChokeGroup(index());
+}
+
 OscillatorModel* PercussionModel::getCurrentLayerOscillator(OscillatorModel::Type type) const
 {
         return kitModel->getCurrentLayerOscillator(type);

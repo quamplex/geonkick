@@ -259,6 +259,7 @@ void DspProxy::setPercussionState(const std::unique_ptr<PercussionState> &state)
         setPercussionChannel(state->getId(), state->getChannel());
         setPercussionMidiChannel(state->getId(), state->getMidiChannel());
         enableNoteOff(state->getId(), state->isNoteOffEnabled());
+        setChokeGroup(state->getId(), state->getChokeGroup());
         mutePercussion(state->getId(), state->isMuted());
         soloPercussion(state->getId(), state->isSolo());
         auto nLayers = numberOfLayers();
@@ -340,6 +341,7 @@ std::unique_ptr<PercussionState> DspProxy::getPercussionState() const
         state->setChannel(getPercussionChannel(state->getId()));
         state->setMidiChannel(getPercussionMidiChannel(state->getId()));
         state->setNoteOffEnabled(isNoteOffEnabled(state->getId()));
+        state->setChokeGroup(getChokeGroup(state->getId()));
         state->setMute(isPercussionMuted(state->getId()));
         state->setSolo(isPercussionSolo(state->getId()));
         auto nLayers = numberOfLayers();
@@ -1454,6 +1456,19 @@ bool DspProxy::isNoteOffEnabled(size_t id) const
         bool enabled = false;
         geonkick_instrument_note_off_enabled(geonkickDsp, id, &enabled);
         return enabled;
+}
+
+bool DspProxy::setChokeGroup(size_t id, DspProxy::ChokeGroup group)
+{
+        auto res = geonkick_set_choke_group(geonkickDsp,
+                                            id,
+                                            static_cast<enum gkick_choke_group>(group));
+        return res == GEONKICK_OK;
+}
+
+DspProxy::ChokeGroup DspProxy::getChokeGroup(size_t id) const
+{
+        return static_cast<ChokeGroup>(geonkick_get_choke_group(geonkickDsp, id));
 }
 
 int DspProxy::getUnusedPercussion() const

@@ -2006,6 +2006,38 @@ geonkick_instrument_note_off_enabled(struct geonkick *kick,
         return gkick_mixer_note_off_enabled(kick->audio->mixer, id, enabled);
 }
 
+enum geonkick_error
+geonkick_set_choke_group(struct geonkick *kick,
+                         size_t id,
+                         enum gkick_choke_group group)
+{
+        if (id >= GEONKICK_MAX_INSTRUMENTS) {
+                gkick_log_error("wrong instrument id %d", id);
+                return GEONKICK_ERROR_WRONG_ARGUMENTS;
+        }
+
+        gkick_instrument_set_param(kick->audio->mixer->audio_outputs[id],
+                                   GKICK_INSTR_PARAM_CHOKE_GROUP,
+                                   &group);
+        return GEONKICK_OK;
+}
+
+enum gkick_choke_group
+geonkick_get_choke_group(struct geonkick *kick, size_t id)
+{
+        if (id >= GEONKICK_MAX_INSTRUMENTS) {
+                gkick_log_error("wrong instrument id %d", id);
+                return GEONKICK_ERROR_WRONG_ARGUMENTS;
+        }
+
+        enum gkick_choke_group group = GKICK_CHOKE_GROUP_OFF;
+        gkick_instrument_get_param(kick->audio->mixer->audio_outputs[id],
+                                   GKICK_INSTR_PARAM_CHOKE_GROUP,
+                                   &group);
+
+        return group;
+}
+
 void
 geonkick_wakeup(struct geonkick *kick)
 {

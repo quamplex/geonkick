@@ -122,14 +122,15 @@ enum GEONKICK_MODULE {
         GEONKICK_MODULE_JACK    = 1
 };
 
-enum GKICK_INSTRUMENT_CHOKE_GROUP {
-        GKICK_INSTRUMENT_CHOKE_GROUP_OFF = 0,
-        GKICK_INSTRUMENT_CHOKE_GROUP_A   = 1,
-        GKICK_INSTRUMENT_CHOKE_GROUP_B   = 2,
-        GKICK_INSTRUMENT_CHOKE_GROUP_C   = 3,
-        GKICK_INSTRUMENT_CHOKE_GROUP_D   = 4,
-        GKICK_INSTRUMENT_CHOKE_GROUP_MAX = GKICK_INSTRUMENT_CHOKE_GROUP_D
+enum gkick_choke_group {
+        GKICK_CHOKE_GROUP_OFF = 0,
+        GKICK_CHOKE_GROUP_1   = 1,
+        GKICK_CHOKE_GROUP_2   = 2,
+        GKICK_CHOKE_GROUP_3   = 3,
+        GKICK_CHOKE_GROUP_4   = 4,
 };
+
+#define GKICK_CHOKE_GROUP_COUNT 5
 
 #ifdef GEONKICK_BASIC_VERSION
 #define GKICK_OSC_GROUPS_NUMBER 1
@@ -818,17 +819,31 @@ geonkick_note_off_enabled(struct geonkick *kick,
                           size_t id,
                           bool *enabled);
 
+enum geonkick_error
+geonkick_set_choke_group(struct geonkick *kick,
+                         size_t id,
+                         enum gkick_choke_group group);
+
+enum gkick_choke_group
+geonkick_get_choke_group(struct geonkick *kick, size_t id);
+
 size_t geonkick_layers_number(void);
 
 enum geonkick_error
 geonkick_humanizer_enable(struct geonkick *dsp, bool b);
+
 bool geonkick_humanizer_is_enabled(const struct geonkick *dsp);
+
 enum geonkick_error
 geonkick_humanizer_set_velocity(struct geonkick *dsp, float value);
+
 float geonkick_humanizer_get_velocity(const struct geonkick *dsp);
+
 enum geonkick_error
 geonkick_humanizer_set_timing(struct geonkick *dsp, float value);
+
 float geonkick_humanizer_get_timing(const struct geonkick *dsp);
+
 void geonkick_wait_playing_ready();
 
 bool
