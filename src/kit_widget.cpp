@@ -2,7 +2,7 @@
  * File name: kit_widget.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2020 Iurie Nistor 
+ * Copyright (C) 2020 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
@@ -29,6 +29,7 @@
 
 #include "RkEvent.h"
 #include "RkImage.h"
+#include "RkLabel.h"
 #include "RkLineEdit.h"
 #include "RkButton.h"
 #include "RkProgressBar.h"
@@ -81,10 +82,6 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
 
         instrumentsContainer->setHeight(kitContainer->height() - topContainer->height());
 
-        auto kitChannelsView = new KitChannelsView(this, kitModel);
-        kitChannelsView->show();
-        topContainer->addSpace(163 - 4 * 16 - 3 * 5 - 10);
-        topContainer->addWidget(kitChannelsView);
         auto label = new RkLabel(this, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
@@ -164,44 +161,6 @@ void KitWidget::keyPressEvent(RkKeyEvent *event)
         } else if (event->key() == Rk::Key::Key_Down) {
                 kitModel->selectPercussion(++index);
         }
-}
-
-KitChannelsView::KitChannelsView(KitWidget *parent, KitModel *model)
-                : GeonkickWidget(parent)
-                , kitModel{model}
-                , channelWidth{30}
-                , channelHeight{25}
-{
-        setSize(kitModel->numberOfChannels() * channelWidth, channelHeight);
-}
-
-void KitChannelsView::paintWidget(RkPaintEvent *event)
-{
-        RkImage img(size());
-        RkPainter paint(&img);
-        paint.fillRect(rect(), background());
-
-        auto pen = paint.pen();
-        pen.setColor({200, 200, 200});
-
-        auto font = paint.font();
-        font.setSize(12);
-        paint.setFont(font);
-
-        auto nChannels = kitModel->numberOfChannels();
-        for (decltype(nChannels) i = 0; i < nChannels; i++) {
-                auto rect = RkRect(i * channelWidth, 0, channelWidth, channelWidth);
-                if (i % 2)
-                        paint.fillRect(rect, {60, 60, 60});
-                else
-                        paint.fillRect(rect, {50, 50, 50});
-                RkRect txtRect(rect.left(), (rect.height() - paint.font().size()) / 2,
-                               rect.width(), paint.font().size());
-                paint.setPen(pen);
-                paint.drawText(txtRect, std::to_string(i + 1));
-        }
-        RkPainter painter(this);
-        painter.drawImage(img, 0, 0);
 }
 
 KitModel* KitWidget::getModel() const

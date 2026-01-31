@@ -31,6 +31,7 @@
 #include "RkEvent.h"
 #include "RkPainter.h"
 #include "RkLineEdit.h"
+#include "RkLabel.h"
 #include "RkButton.h"
 #include "RkContainer.h"
 #include "RkProgressBar.h"
@@ -102,8 +103,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         : GeonkickWidget(parent)
         , parentView{parent}
         , instrumentModel{model}
-        , nameWidth{100}
-        , channelWidth{30}
+        , nameLabel{nullptr}
         , editPercussion{nullptr}
         , midiChannelSpinBox{nullptr}
         , keyButton{nullptr}
@@ -114,8 +114,9 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , soloButton{nullptr}
         , noteOffButton{nullptr}
         , instrumentLimiter{nullptr}
+        , padding{8}
 {
-        setSize(parent->width(), 21);
+        setSize(parent->width(), 48);
         createView();
         setModel(model);
 }
@@ -130,9 +131,16 @@ KitPercussionView::PercussionIndex KitPercussionView::index() const
 void KitPercussionView::createView()
 {
         auto instrumentContainer = new RkContainer(this);
-        instrumentContainer->setSize(size());
+        instrumentContainer->setSize(width(), height() - 2 * padding);
+        instrumentContainer->setY(padding);
         instrumentContainer->setHiddenTakesPlace();
-        instrumentContainer->addSpace(nameWidth + instrumentModel->numberOfChannels() * channelWidth + 5);
+
+        // Insturment name
+        instrumentContainer->addSpace(padding);
+        nameLabel = new RkLabel(this, instrumentModel->name());
+        nameLabel->setSize(100, 20);
+        nameLabel->setBackgroundColor(background());
+        instrumentContainer->addWidget(nameLabel);
 
         // Midi channel spinbox.
         midiChannelSpinBox = new RkSpinBox(this);
@@ -280,7 +288,13 @@ void KitPercussionView::createView()
 
 void KitPercussionView::updateView()
 {
+        auto backgorundColor = (index() % 2) ? RkColor(100, 100, 100) : RkColor(50, 50, 50);
+        setBackgroundColor(backgorundColor);
+        nameLabel->setBackgroundColor(backgorundColor);
+
+        nameLabel->setText(instrumentModel->name());
         instrumentLimiter->onSetValue(instrumentModel->limiter(), 55.0 * 100.0 / 75);
+        instrumentLimiter->setBackgroundColor(backgorundColor);
         muteButton->setPressed(instrumentModel->isMuted());
         soloButton->setPressed(instrumentModel->isSolo());
         noteOffButton->setPressed(instrumentModel->isNoteOffEnabled());
@@ -291,7 +305,6 @@ void KitPercussionView::updateView()
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);
         keyButton->setText(MidiKeyWidget::midiKeyToNote(instrumentModel->key()));
-        keyButton->setBackgroundColor((index() % 2) ? RkColor(100, 100, 100) : RkColor(50, 50, 50));
         update();
 }
 
@@ -332,52 +345,6 @@ void KitPercussionView::remove()
                 getModel()->remove();
 }
 
-void KitPercussionView::paintWidget(RkPaintEvent *event)
-{
-        RkImage img(size());
-        RkPainter paint(&img);
-        paint.fillRect(rect(), background());
-        auto pen = paint.pen();
-        pen.setColor({200, 200, 200});
-        auto font = paint.font();
-        font.setSize(12);
-        paint.setFont(font);
-        RkColor backgroundColor = {160, 160, 160, 80};
-        if (index() % 2)
-                backgroundColor = {200, 200, 200, 80};
-        paint.fillRect(RkRect(0, 0, nameWidth, height()), backgroundColor);
-        paint.setPen(pen);
-        paint.drawText(RkRect(7, (height() - font.size()) / 2, nameWidth, font.size()),
-                       instrumentModel->name(), Rk::Alignment::AlignLeft);
-
-        auto n = instrumentModel->numberOfChannels();
-        int x = nameWidth;
-        while (n--) {
-                if (n % 2)
-                        paint.fillRect(RkRect(x, 0, channelWidth, height()),
-                                                {backgroundColor.red() + 20,
-                                                backgroundColor.green() + 20,
-                                                backgroundColor.blue() + 20, 80});
-                else
-                        paint.fillRect(RkRect(x, 0, channelWidth, height()),
-                                                {backgroundColor.red() - 20,
-                                                backgroundColor.green() - 20,
-                                                backgroundColor.blue() - 20, 80});
-                x += channelWidth;
-        }
-
-        if (instrumentModel->isSelected())
-                paint.fillRect(RkRect(0, 0, 4, height()), {255, 255, 255, 90});
-
-        pen = paint.pen();
-        pen.setColor({50, 160, 50});
-        pen.setWidth(8);
-        paint.setPen(pen);
-        paint.drawCircle({nameWidth + instrumentModel->channel() * channelWidth + channelWidth / 2 , height() / 2},  4);
-        RkPainter painter(this);
-        painter.drawImage(img, 0, 0);
-}
-
 void KitPercussionView::mouseButtonPressEvent(RkMouseEvent *event)
 {
         if (event->button() != RkMouseEvent::ButtonType::Left
@@ -387,19 +354,11 @@ void KitPercussionView::mouseButtonPressEvent(RkMouseEvent *event)
 
         updatePercussionName();
         setFocus(true);
-        if (event->button() == RkMouseEvent::ButtonType::Left) {
-                int leftLimit  = nameWidth;
-                int rightLimit = nameWidth + channelWidth * instrumentModel->numberOfChannels();
-                if (event->x() <= leftLimit)
-                        instrumentModel->select();
-                else if (event->x() > leftLimit && event->x() < rightLimit)
-                        instrumentModel->setChannel((event->x() - nameWidth) / channelWidth);
-        }
 }
 
 void KitPercussionView::mouseDoubleClickEvent(RkMouseEvent *event)
 {
-        if (event->button() == RkMouseEvent::ButtonType::WheelUp
+        /*        if (event->button() == RkMouseEvent::ButtonType::WheelUp
             || event->button() == RkMouseEvent::ButtonType::WheelDown) {
                 mouseButtonPressEvent(event);
                 return;
@@ -416,7 +375,7 @@ void KitPercussionView::mouseDoubleClickEvent(RkMouseEvent *event)
                 editPercussion->moveCursorToFront();
                 editPercussion->show();
                 editPercussion->setFocus();
-        }
+                }*/
 }
 
 void KitPercussionView::updatePercussionName()

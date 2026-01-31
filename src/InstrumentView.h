@@ -27,8 +27,6 @@
 #include "geonkick_widget.h"
 #include "geonkick_slider.h"
 
-#include "RkLabel.h"
-
 class PercussionLimiter : public GeonkickSlider {
   public:
         PercussionLimiter(GeonkickWidget *parent);
@@ -49,6 +47,7 @@ class PercussionModel;
 class RkProgressBar;
 class KitWidget;
 class GeonkickButton;
+class RkLabel;
 
 class KitPercussionView: public GeonkickWidget
 {
@@ -67,7 +66,6 @@ class KitPercussionView: public GeonkickWidget
         void updateView();
         void setNameWidth(int width);
         void setKeyWidth(int width);
-        void paintWidget(RkPaintEvent *event) override;
         void mouseButtonPressEvent(RkMouseEvent *event) override;
         void mouseDoubleClickEvent(RkMouseEvent *event) override;
         void updatePercussionName();
@@ -77,8 +75,7 @@ class KitPercussionView: public GeonkickWidget
  private:
         KitWidget *parentView;
         PercussionModel *instrumentModel;
-        int nameWidth;
-        int channelWidth;
+        RkLabel *nameLabel;
         RkLineEdit *editPercussion;
         RkSpinBox *midiChannelSpinBox;
         GeonkickButton *keyButton;
@@ -89,6 +86,7 @@ class KitPercussionView: public GeonkickWidget
         RkButton *soloButton;
         RkButton *noteOffButton;
         PercussionLimiter *instrumentLimiter;
+        int padding;
 };
 
 #endif // KIT_WIDGET_H
