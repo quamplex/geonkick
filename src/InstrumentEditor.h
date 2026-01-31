@@ -1,5 +1,5 @@
 /**
- * File name: control_area.h
+ * File name: InstrumentEditor.h
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2017 Iurie Nistor
@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef GKICK_CONTROL_AREA_H
-#define GKICK_CONTROL_AREA_H
+#ifndef GKICK_INSTRUMENT_EDITOR_H
+#define GKICK_INSTRUMENT_EDITOR_H
 
 #include "envelope.h"
 #include "geonkick_widget.h"
@@ -38,11 +38,11 @@ class EnvelopeWidget;
 class GeonkickModel;
 class OscillatorModel;
 
-class ControlArea: public GeonkickWidget
+class InstrumentEditor: public GeonkickWidget
 {
  public:
-        explicit ControlArea(GeonkickWidget *parent, GeonkickModel* model);
-        ~ControlArea() = default;
+        explicit InstrumentEditor(GeonkickWidget *parent, GeonkickModel* model);
+        ~InstrumentEditor() = default;
         RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
         void showControls();
 #ifndef GEONKICK_SINGLE
@@ -62,4 +62,4 @@ class ControlArea: public GeonkickWidget
 #endif // GEONKICK_SINGLE
 };
 
-#endif // GKICK_CONTROL_AREA_H
+#endif // GKICK_INSTRUMENT_EDITOR_H

@@ -32,7 +32,7 @@ class Oscillator;
 class DspProxy;
 class TopBar;
 class EnvelopeWidget;
-class ControlArea;
+class InstrumentEditor;
 class Limiter;
 class GeonkickModel;
 
@@ -58,7 +58,6 @@ class MainWindow : public GeonkickWidget
       void setPreset(const std::string &fileName);
       void openPreset();
       void resetToDefault();
-      void updateLimiter(KitModel::PercussionIndex index);
       RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
       void setSample(const std::string &file);
 
@@ -67,11 +66,9 @@ class MainWindow : public GeonkickWidget
       void createShortcuts();
       DspProxy *dspProxy;
       TopBar *topBar;
-      EnvelopeWidget* envelopeWidget;
-      ControlArea* controlAreaWidget;
+      InstrumentEditor* instrumentEditor;
       std::string presetName;
       std::string currentWorkingPath;
-      Limiter *limiterWidget;
       GeonkickModel *geonkickModel;
 };
 

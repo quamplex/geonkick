@@ -1,5 +1,5 @@
 /**
- * File name: control_area.cpp
+ * File name: InstrumentEditor.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2017 Iurie Nistor
@@ -21,12 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "control_area.h"
+#include "InstrumentEditor.h"
 #include "controls_widget.h"
 #include "GeonkickModel.h"
 #include "kit_widget.h"
 
-ControlArea::ControlArea(GeonkickWidget *parent, GeonkickModel* model)
+InstrumentEditor::InstrumentEditor(GeonkickWidget *parent, GeonkickModel* model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
         , oscillators{model->getOscillatorModels()}
@@ -41,7 +41,7 @@ ControlArea::ControlArea(GeonkickWidget *parent, GeonkickModel* model)
         showWidget(viewState()->getMainView());
 }
 
-void ControlArea::showWidget(ViewState::View view)
+void InstrumentEditor::showWidget(ViewState::View view)
 {
         switch (view) {
         case ViewState::View::Controls:
@@ -57,7 +57,7 @@ void ControlArea::showWidget(ViewState::View view)
         }
 }
 
-void ControlArea::showControls()
+void InstrumentEditor::showControls()
 {
         if (!dynamic_cast<ControlsWidget*>(currentWidget)) {
                 if (currentWidget)
@@ -72,7 +72,7 @@ void ControlArea::showControls()
 }
 
 #ifndef GEONKICK_SINGLE
-void ControlArea::showKit()
+void InstrumentEditor::showKit()
 {
         if (!dynamic_cast<KitWidget*>(currentWidget)) {
                 if (currentWidget)

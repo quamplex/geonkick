@@ -142,7 +142,7 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/geonkick_groupbox.h
   ${GKICK_COMMON_DIR}/TopBar.h
   ${GKICK_COMMON_DIR}/Sidebar.h
-  ${GKICK_COMMON_DIR}/control_area.h
+  ${GKICK_COMMON_DIR}/InstrumentEditor.h
   ${GKICK_COMMON_DIR}/controls_widget.h
   ${GKICK_COMMON_DIR}/InstrumentModel.h
   ${GKICK_COMMON_DIR}/kit_model.h
@@ -185,7 +185,6 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/ExportAbstract.h
   ${GKICK_COMMON_DIR}/ExportSoundData.h
   ${GKICK_COMMON_DIR}/ExportToSfz.h
-  ${GKICK_COMMON_DIR}/export_widget.h
   ${GKICK_COMMON_DIR}/preset.h
   ${GKICK_COMMON_DIR}/preset_folder.h
   ${GKICK_COMMON_DIR}/preset_browser_model.h
@@ -221,7 +220,7 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/geonkick_groupbox.cpp
   ${GKICK_COMMON_DIR}/TopBar.cpp
   ${GKICK_COMMON_DIR}/Sidebar.cpp
-  ${GKICK_COMMON_DIR}/control_area.cpp
+  ${GKICK_COMMON_DIR}/InstrumentEditor.cpp
   ${GKICK_COMMON_DIR}/controls_widget.cpp
   ${GKICK_COMMON_DIR}/InstrumentModel.cpp
   ${GKICK_COMMON_DIR}/kit_model.cpp
@@ -261,7 +260,6 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/InstrumentGlobalEffects.cpp
   ${GKICK_COMMON_DIR}/OscillatorEffects.cpp
   ${GKICK_COMMON_DIR}/oscillator_group_box.cpp
-  ${GKICK_COMMON_DIR}/export_widget.cpp
   ${GKICK_COMMON_DIR}/ExportAbstract.cpp
   ${GKICK_COMMON_DIR}/ExportSoundData.cpp
   ${GKICK_COMMON_DIR}/ExportToSfz.cpp

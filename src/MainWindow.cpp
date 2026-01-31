@@ -23,21 +23,15 @@
  */
 
 #include "MainWindow.h"
-#include "GeonkickModel.h"
-#include "OscillatorModel.h"
-#include "envelope_widget.h"
-#include "oscillator_group_box.h"
-#include "general_group_box.h"
-#include "control_area.h"
-#include "TopBar.h"
-#include "Sidebar.h"
-#include "limiter.h"
-#include "export_widget.h"
-#include "DspProxy.h"
-#include "InstrumentState.h"
 #include "ViewState.h"
 #include "UiSettings.h"
 #include "GeonkickConfig.h"
+#include "InstrumentState.h"
+#include "DspProxy.h"
+#include "GeonkickModel.h"
+#include "TopBar.h"
+#include "Sidebar.h"
+#include "InstrumentEditor.h"
 
 #include "RkEvent.h"
 
@@ -52,9 +46,8 @@ MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const std::string &preset)
         : GeonkickWidget(app)
         , dspProxy{dsp}
         , topBar{nullptr}
-        , envelopeWidget{nullptr}
+        , instrumentEditor{nullptr}
         , presetName{preset}
-        , limiterWidget{nullptr}
         , geonkickModel{new GeonkickModel(this, dspProxy)}
 {
         setTitle(Geonkick::applicationName);
@@ -71,9 +64,8 @@ MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const RkNativeWindowInfo &inf
         : GeonkickWidget(app, info)
         , dspProxy{dsp}
         , topBar{nullptr}
-        , envelopeWidget{nullptr}
+        , instrumentEditor{nullptr}
         , presetName{std::string()}
-        , limiterWidget{nullptr}
         , geonkickModel{new GeonkickModel(this, dspProxy)}
 {
         setTitle(Geonkick::applicationName);
@@ -168,35 +160,12 @@ bool MainWindow::init(void)
                 sidebar->setPosition({MAIN_WINDOW_WIDTH, 4});
         }
 
-        // Create envelope widget.
-        envelopeWidget = new EnvelopeWidget(this, geonkickModel);
-        envelopeWidget->setX(10);
-        envelopeWidget->setY(topBar->y() + topBar->height());
-        envelopeWidget->setFixedSize(850, 305);
-        envelopeWidget->show();
+        instrumentEditor = new InstrumentEditor(this, geonkickModel);
+        instrumentEditor->setPosition(10, topBar->y() + topBar->height());
+        instrumentEditor->show();
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), instrumentEditor, updateGui());
 
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
-        RK_ACT_BIND(envelopeWidget, requestUpdateGui, RK_ACT_ARGS(), this, updateGui());
-        limiterWidget = new Limiter(dspProxy, this);
-        limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8,
-                                   envelopeWidget->y());
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
-        limiterWidget->show();
-        controlAreaWidget = new ControlArea(this, geonkickModel);
-        controlAreaWidget->setPosition(10, envelopeWidget->y() + envelopeWidget->height());
-        controlAreaWidget->show();
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), controlAreaWidget, updateGui());
-
-        RK_ACT_BIND(geonkickModel->getKitModel(),
-                    limiterUpdated,
-                    RK_ACT_ARGS(KitModel::PercussionIndex index),
-                    this,
-                    updateLimiter(index));
-        RK_ACT_BIND(limiterWidget, limiterUpdated, RK_ACT_ARGS(int val),
-                    geonkickModel->getKitModel(),
-                    updatePercussion(geonkickModel->getKitModel()->selectedPercussion()));
-
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), controlAreaWidget, updateGui());
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), instrumentEditor, updateGui());
         if (dspProxy->isStandalone() && !presetName.empty())
                 openPreset(presetName);
         topBar->setPresetName(dspProxy->getPercussionName(dspProxy->currentPercussion()));
@@ -271,20 +240,6 @@ void MainWindow::shortcutEvent(RkKeyEvent *event)
                         updateGui();
                         action onScaleFactor(dspProxy->getScaleFactor());
                 }
-
-                if (event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control_Left))
-                        envelopeWidget->setPointEditingMode(true);
-
-                if (event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control)
-                    && (event->key() == Rk::Key::Key_h || event->key() == Rk::Key::Key_H))
-                        envelopeWidget->hideEnvelope(true);
-        } else {
-                if (!(event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control_Left)))
-                        envelopeWidget->setPointEditingMode(false);
-
-                if (!(event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control))
-                    || (event->key() == Rk::Key::Key_h || event->key() == Rk::Key::Key_H))
-                        envelopeWidget->hideEnvelope(false);
         }
 }
 
@@ -326,19 +281,13 @@ void MainWindow::dropEvent(RkDropEvent *event)
 
 void MainWindow::setSample(const std::string &file)
 {
-        auto osc = envelopeWidget->getCurrentOscillator();
+        /*auto osc = envelopeWidget->getCurrentOscillator();
         if (osc) {
                 osc->setFunction(OscillatorModel::FunctionType::Sample);
                 dspProxy->setOscillatorSample(file, osc->index());
                 dspProxy->notifyPercussionUpdated(dspProxy->currentPercussion());
                 updateGui();
-        }
-}
-
-void MainWindow::updateLimiter(KitModel::PercussionIndex index)
-{
-        if (geonkickModel->getKitModel()->isPercussionSelected(index))
-                limiterWidget->onUpdateLimiter();
+                }*/
 }
 
 RkSize MainWindow::getWindowSize()
