@@ -87,21 +87,9 @@ ControlsWidget::ControlsWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
         layersWidget->show();
 
-#ifndef GEONKICK_BASIC_VERSION
-        auto humanizerView = new HumanizerView(this, kitModel->currentPercussion());
-        humanizerView->setPosition(layersWidget->x() + layersWidget->width(),
-                                   layersWidget->y());
-        RK_ACT_BIND(kitModel,
-                    modelUpdated,
-                    RK_ACT_ARGS(),
-                    humanizerView,
-                    setModel(kitModel->currentPercussion()));
-#else
         auto appInfoWidget = new AppInfoWidget(this, geonkickModel);
         appInfoWidget->setPosition(layersWidget->x() + layersWidget->width(),
                                    layersWidget->y());
-#endif // GEONKICK_BASIC_VERSION
-
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());
