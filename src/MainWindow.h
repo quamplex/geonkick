@@ -25,51 +25,45 @@
 #define GEONGKICK_MAINWINDOW_H
 
 #include "geonkick_widget.h"
-#include "FileBrowser.h"
-#include "kit_model.h"
 
-class Oscillator;
 class DspProxy;
 class TopBar;
-class EnvelopeWidget;
-class InstrumentEditor;
-class Limiter;
 class GeonkickModel;
 
 class MainWindow : public GeonkickWidget
 {
- public:
-      explicit MainWindow(RkMain& app,
-                          DspProxy *dsp,
-                          const std::string &preset = std::string());
-      explicit MainWindow(RkMain& app,
-                          DspProxy *dsp,
-                          const RkNativeWindowInfo &info);
-      ~MainWindow();
-      bool init(void);
-      static RkSize getWindowSize();
-      RK_DECL_ACT(onScaleFactor, onScaleFactor(double factor), RK_ARG_TYPE(double), RK_ARG_VAL(factor));
+public:
+        explicit MainWindow(RkMain& app,
+                            DspProxy *dsp,
+                            const std::string &preset = std::string());
+        explicit MainWindow(RkMain& app,
+                            DspProxy *dsp,
+                            const RkNativeWindowInfo &info);
+        ~MainWindow() = default;
+        static RkSize getWindowSize();
+        RK_DECL_ACT(onScaleFactor,
+                    onScaleFactor(double factor),
+                    RK_ARG_TYPE(double),
+                    RK_ARG_VAL(factor));
 
- protected:
-      void shortcutEvent(RkKeyEvent *event) override;
-      void dropEvent(RkDropEvent *event) override;
-      void showFileBrowser();
-      void openPreset(const std::string &fileName);
-      void setPreset(const std::string &fileName);
-      void openPreset();
-      void resetToDefault();
-      RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
-      void setSample(const std::string &file);
+protected:
+        void shortcutEvent(RkKeyEvent *event) override;
+        void dropEvent(RkDropEvent *event) override;
+        void openPreset(const std::string &fileName);
+        void setPreset(const std::string &fileName);
+        void openPreset();
+        void resetToDefault();
+        void setSample(const std::string &file);
 
- private:
-      void createViewState();
-      void createShortcuts();
-      DspProxy *dspProxy;
-      TopBar *topBar;
-      InstrumentEditor* instrumentEditor;
-      std::string presetName;
-      std::string currentWorkingPath;
-      GeonkickModel *geonkickModel;
+private:
+        void createViewState();
+        void createShortcuts();
+        void createUi();
+
+        DspProxy *dspProxy;
+        TopBar *topBar;
+        std::string presetName;
+        std::string currentWorkingPath;
+        GeonkickModel *geonkickModel;
 };
-
 #endif // GEONKICK_MAINWINDOW_H

@@ -1,5 +1,5 @@
 /**
- * File name: controls_widget.cpp
+ * File name: SynthesizerWidget.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2020 Iurie Nistor
@@ -21,50 +21,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "controls_widget.h"
+#include "SynthesizerWidget.h"
+#include "DspProxy.h"
 #include "OscillatorModel.h"
+#include "GeonkickModel.h"
+#include "InstrumentModel.h"
+#include "kit_model.h"
+#include "envelope_widget.h"
 #include "oscillator_group_box.h"
+#include "HumanizerView.h"
 #include "general_group_box.h"
 #include "layers_group_box.h"
-#include "DspProxy.h"
+#include "AppInfoWidget.h"
 #ifndef GEONKICK_SINGLE
 #include "KitTabs.h"
 #endif // GEONKICK_SINGLE
-#include "GeonkickModel.h"
-#include "kit_model.h"
-#include "InstrumentModel.h"
-#include "HumanizerView.h"
-#include "AppInfoWidget.h"
 
-ControlsWidget::ControlsWidget(GeonkickWidget *parent,
-                               GeonkickModel* model)
+SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
+                                     GeonkickModel* model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
 {
+        setSize(size());
+        auto envelopeWidget = new EnvelopeWidget(this, geonkickModel);
+        envelopeWidget->show();
+
+        auto controlsYPos = envelopeWidget->y() +  envelopeWidget->height();
         const auto& oscillators = geonkickModel->getOscillatorModels();
         setFixedSize({parent->width(), parent->height()});
         auto oscillator = oscillators[static_cast<int>(OscillatorModel::Type::Oscillator1)];
         auto widget = new OscillatorGroupBox(this, oscillator);
-        widget->setPosition(0, 0);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
+        widget->setPosition(0, controlsYPos);
+        //        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
         oscillator = oscillators[static_cast<int>(OscillatorModel::Type::Oscillator2)];
         widget = new OscillatorGroupBox(this, oscillator);
-        widget->setPosition(8 + 223, 0);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
+        widget->setPosition(8 + 223, controlsYPos);
+        //        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
         oscillator = oscillators[static_cast<int>(OscillatorModel::Type::Oscillator3)];
         widget = new OscillatorGroupBox(this, oscillator);
-        widget->setPosition(2 * (8 + 223), 0);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
+        widget->setPosition(2 * (8 + 223), controlsYPos);
+        //        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
-        globalWidget->setPosition(3 * (8 + 223), 0);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), globalWidget, updateView());
+        globalWidget->setPosition(3 * (8 + 223), controlsYPos);
+        //        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), globalWidget, updateView());
         RK_ACT_BIND(kitModel,
                     instrumentSelected,
                     RK_ACT_ARGS(PercussionModel *model),
@@ -83,17 +89,18 @@ ControlsWidget::ControlsWidget(GeonkickWidget *parent,
         globalWidget->show();
 
         auto layersWidget = new LayersGroupBox(geonkickModel->getDspProxy(), this);
-        layersWidget->setPosition(3 * (8 + 223), 270);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
+        layersWidget->setPosition(3 * (8 + 223), controlsYPos + 270);
+        //        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
         layersWidget->show();
 
         auto appInfoWidget = new AppInfoWidget(this, geonkickModel);
         appInfoWidget->setPosition(layersWidget->x() + layersWidget->width(),
-                                   layersWidget->y());
+                                   controlsYPos + layersWidget->y());
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());
         kitTabs->setPosition(0, height() - kitTabs->height() - 1);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), kitTabs, updateView());
+        //RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), kitTabs, updateView());
 #endif // GEONKICK_SINGLE
+        show();
 }

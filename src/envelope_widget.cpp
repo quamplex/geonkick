@@ -58,6 +58,8 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         , dspProxy{geonkickModel->getDspProxy()}
         , oscillators{geonkickModel->getOscillatorModels()}
 {
+        setSize(850, 305);
+
         // Create drawing area.
         drawArea = new EnvelopeWidgetDrawingArea(this, dspProxy);
         auto rect = drawArea->getDrawingArea();

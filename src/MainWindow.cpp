@@ -1,4 +1,3 @@
-
 /**
  * File name: MainWindow.cpp
  * Project: Geonkick (A percussive synthesizer)
@@ -29,9 +28,10 @@
 #include "InstrumentState.h"
 #include "DspProxy.h"
 #include "GeonkickModel.h"
+#include "kit_model.h"
 #include "TopBar.h"
 #include "Sidebar.h"
-#include "InstrumentEditor.h"
+#include "CentralWidget.h"
 
 #include "RkEvent.h"
 
@@ -46,7 +46,6 @@ MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const std::string &preset)
         : GeonkickWidget(app)
         , dspProxy{dsp}
         , topBar{nullptr}
-        , instrumentEditor{nullptr}
         , presetName{preset}
         , geonkickModel{new GeonkickModel(this, dspProxy)}
 {
@@ -55,16 +54,14 @@ MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const std::string &preset)
         createViewState();
         setFixedSize(MAIN_WINDOW_WIDTH + (GeonkickConfig().isShowSidebar() ? 313 : 0),
                      MAIN_WINDOW_HEIGHT);
-        dspProxy->registerCallbacks(true);
-        RK_ACT_BIND(dspProxy, stateChanged, RK_ACT_ARGS(), this, updateGui());
         createShortcuts();
+        createUi();
 }
 
 MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const RkNativeWindowInfo &info)
         : GeonkickWidget(app, info)
         , dspProxy{dsp}
         , topBar{nullptr}
-        , instrumentEditor{nullptr}
         , presetName{std::string()}
         , geonkickModel{new GeonkickModel(this, dspProxy)}
 {
@@ -73,19 +70,8 @@ MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const RkNativeWindowInfo &inf
         createViewState();
         setFixedSize(MAIN_WINDOW_WIDTH + (GeonkickConfig().isShowSidebar() ? 313 : 0),
                      MAIN_WINDOW_HEIGHT);
-        dspProxy->registerCallbacks(true);
-        RK_ACT_BIND(dspProxy, stateChanged, RK_ACT_ARGS(), this, updateGui());
         createShortcuts();
-}
-
-MainWindow::~MainWindow()
-{
-        if (dspProxy) {
-                dspProxy->registerCallbacks(false);
-                dspProxy->setEventQueue(nullptr);
-                if (dspProxy->isStandalone())
-                        delete dspProxy;
-        }
+        createUi();
 }
 
 void MainWindow::createViewState()
@@ -137,22 +123,17 @@ void MainWindow::createShortcuts()
         addShortcut(Rk::Key::Key_Control_Left, Rk::KeyModifiers::Control_Left);
 }
 
-bool MainWindow::init(void)
+void MainWindow::createUi(void)
 {
         if (dspProxy->isStandalone() && !dspProxy->isJackEnabled()) {
                 GEONKICK_LOG_INFO("Jack is not installed or not running. "
                                   << "There is a need for jack server running "
                                   << "in order to have audio output.");
         }
+
         topBar = new TopBar(this, geonkickModel);
         topBar->setX(10);
         topBar->show();
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), topBar, updateGui());
-        RK_ACT_BIND(topBar, resetToDefault, RK_ACT_ARGS(),
-                    this, resetToDefault());
-        RK_ACT_BIND(topBar, layerSelected,
-                    RK_ACT_ARGS(DspProxy::Layer layer, bool b),
-                    dspProxy, enbaleLayer(layer, b));
 
         // Create Sidebar
         if (GeonkickConfig().isShowSidebar()) {
@@ -160,18 +141,13 @@ bool MainWindow::init(void)
                 sidebar->setPosition({MAIN_WINDOW_WIDTH, 4});
         }
 
-        instrumentEditor = new InstrumentEditor(this, geonkickModel);
-        instrumentEditor->setPosition(10, topBar->y() + topBar->height());
-        instrumentEditor->show();
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), instrumentEditor, updateGui());
+        // Create central widget
+        auto centralWidget = new CentralWidget(this, geonkickModel);
+        centralWidget->setPosition(topBar->x(), topBar->y() + topBar->height());
+        centralWidget->show();
 
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), instrumentEditor, updateGui());
         if (dspProxy->isStandalone() && !presetName.empty())
                 openPreset(presetName);
-        topBar->setPresetName(dspProxy->getPercussionName(dspProxy->currentPercussion()));
-        updateGui();
-        show();
-        return true;
 }
 
 void MainWindow::openPreset(const std::string &fileName)
@@ -212,7 +188,6 @@ void MainWindow::openPreset(const std::string &fileName)
         file.close();
         dspProxy->setCurrentWorkingPath("OpenPreset",
                                            filePath.has_parent_path() ? filePath.parent_path().string() : filePath.string());
-        updateGui();
 }
 
 void MainWindow::shortcutEvent(RkKeyEvent *event)
@@ -231,13 +206,11 @@ void MainWindow::shortcutEvent(RkKeyEvent *event)
                            && (event->key() == Rk::Key::Key_v || event->key() == Rk::Key::Key_V)) {
                         dspProxy->pasteFromClipboard();
                         dspProxy->notifyPercussionUpdated(dspProxy->currentPercussion());
-                        updateGui();
                 } else if ((event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control))
                            && (event->key() == Rk::Key::Key_F || event->key() == Rk::Key::Key_f)) {
                         dspProxy->setScaleFactor((dspProxy->getScaleFactor() + 0.5 > 2.1) ? 1 : scaleFactor() + 0.5);
                         setScaleFactor(dspProxy->getScaleFactor());
                         setFixedSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT);
-                        updateGui();
                         action onScaleFactor(dspProxy->getScaleFactor());
                 }
         }
@@ -253,7 +226,6 @@ void MainWindow::resetToDefault()
         state->setChannel(dspProxy->getPercussionChannel(currId));
         dspProxy->setPercussionState(state);
         dspProxy->notifyPercussionUpdated(dspProxy->currentPercussion());
-        updateGui();
 }
 
 void MainWindow::dropEvent(RkDropEvent *event)

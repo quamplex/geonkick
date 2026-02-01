@@ -328,11 +328,6 @@ static LV2UI_Handle gkick_instantiate_ui(const LV2UI_Descriptor*   descriptor,
                              resize->ui_resize(resize->handle, mainWidget->width() * factor,
                                                mainWidget->height() * factor);
                      });
-        if (!mainWidget->init()) {
-                GEONKICK_LOG_ERROR("can't init main window");
-                delete guiApp;
-                return nullptr;
-        }
 
         auto winId = guiApp->nativeWindowInfo()->window;
 #ifdef GEONKICK_OS_WINDOWS

@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "kit_widget.h"
+#include "KitWidget.h"
 #include "InstrumentView.h"
 #include "InstrumentModel.h"
 #include "geonkick_slider.h"
@@ -116,7 +116,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , instrumentLimiter{nullptr}
         , padding{8}
 {
-        setSize(parent->width(), 48);
+        setSize(parent->width(), 40);
         createView();
         setModel(model);
 }

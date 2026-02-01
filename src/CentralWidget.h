@@ -1,8 +1,8 @@
 /**
- * File name: controls_widget.h
+ * File name: CentralWidget.h
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2020 Iurie Nistor
+ * Copyright (C) 2017 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
@@ -21,24 +21,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef CONTROLS_WIDGET_H
-#define CONTROLS_WIDGET_H
+#ifndef GKICK_INSTRUMENT_EDITOR_H
+#define GKICK_INSTRUMENT_EDITOR_H
 
+#include "envelope.h"
 #include "geonkick_widget.h"
+#include "ViewState.h"
 
-class DspProxy;
-class Oscillator;
-class EnvelopeWidget;
 class GeonkickModel;
 
-class ControlsWidget: public GeonkickWidget
+class CentralWidget: public GeonkickWidget
 {
  public:
-        ControlsWidget(GeonkickWidget *parent, GeonkickModel* model);
-        RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
+        explicit CentralWidget(GeonkickWidget *parent, GeonkickModel* model);
+        ~CentralWidget() = default;
+        void showSynthesizer();
+#ifndef GEONKICK_SINGLE
+        void showKit();
+#endif // GEONKICK_SINGLE
+
+ protected:
+        void showWidget(ViewState::View view);
 
  private:
         GeonkickModel *geonkickModel;
+        RkWidget* currentWidget;
 };
 
-#endif // CONTROLS_WIDGET_H
+#endif // GKICK_CENTRAL_WIDGET_H

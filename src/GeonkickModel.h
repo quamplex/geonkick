@@ -40,7 +40,9 @@ class GeonkickModel : public RkObject {
                 MultiInstrument,
         };
         using InstanceType = DspProxy::InstanceType;
+
         explicit GeonkickModel(RkObject* parent, DspProxy *dsp);
+        ~GeonkickModel();
         DspProxy* getDspProxy() const;
         KitModel* getKitModel() const;
         PresetBrowserModel* getPresetsModel() const;

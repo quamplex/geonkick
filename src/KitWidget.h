@@ -1,8 +1,8 @@
 /**
- * File name: kit_widget.h
+ * File name: KitWidget.h
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2020 Iurie Nistor 
+ * Copyright (C) 2020 Iurie Nistor
  *
  * This file is part of Geonkick.
  *

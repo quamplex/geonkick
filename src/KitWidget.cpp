@@ -1,5 +1,5 @@
 /**
- * File name: kit_widget.cpp
+ * File name: KitWidget.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2020 Iurie Nistor
@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "kit_widget.h"
+#include "KitWidget.h"
 #include "kit_model.h"
 #include "geonkick_slider.h"
 #include "InstrumentView.h"
@@ -45,9 +45,10 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         , instrumentsContainer{new RkContainer(this, Rk::Orientation::Vertical)}
         , levelersTimer{new RkTimer(this, 30)}
 {
+        setSize(parent->size());
+
         RK_ACT_BIND(levelersTimer, timeout, RK_ACT_ARGS(), this, onUpdateLevelers());
         instrumentsContainer->setHiddenTakesPlace();
-        setSize(parent->size());
 
         RK_ACT_BIND(kitModel, modelUpdated, RK_ACT_ARGS(), this, updateView());
         RK_ACT_BIND(kitModel, instrumentAdded, RK_ACT_ARGS(PercussionModel *model),
@@ -99,6 +100,8 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
 
         updateView();
         levelersTimer->start();
+
+        show();
 }
 
 void KitWidget::updateView()

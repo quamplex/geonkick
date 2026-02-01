@@ -33,10 +33,18 @@ GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
         , kitModel{new KitModel(this)}
         , presetModel{new PresetBrowserModel(this, dspProxy)}
 {
+        dspProxy->registerCallbacks(true);
         auto n = dspProxy->oscillatorsPerLayer();
         for (decltype(n) i = 0; i < n; i++)
                 oscillatorModels.emplace_back(new OscillatorModel(this, static_cast<OscillatorModel::Type>(i)));
 }
+
+GeonkickModel::~GeonkickModel()
+{
+        dspProxy->registerCallbacks(false);
+        dspProxy->setEventQueue(nullptr);
+}
+
 
 DspProxy* GeonkickModel::getDspProxy() const
 {

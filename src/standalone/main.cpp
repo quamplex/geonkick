@@ -57,29 +57,27 @@ int main(int argc, char *argv[])
         }
 #endif // GEONKICK_OS_GNU
 
-        RkMain app(argc, argv);
+        auto dspProxy = std::make_unique<DspProxy>(Geonkick::defaultSampleRate,
+                                                   DspProxy::InstanceType::Standalone,
+                                                   dsp);
+
+        RkMain mainApp(argc, argv);
         std::string preset;
         if (argc == 2)
                 preset = argv[1];
 
-        auto dspProxy = new DspProxy(Geonkick::defaultSampleRate,
-                                     DspProxy::InstanceType::Standalone,
-                                     dsp);
-        dspProxy->setEventQueue(app.eventQueue());
+        dspProxy->setEventQueue(mainApp.eventQueue());
         dspProxy->setStandalone(true);
         if (!dspProxy->init()) {
                 GEONKICK_LOG_ERROR("can't init DSP");
-                delete dspProxy;
                 exit(EXIT_FAILURE);
         }
 
-        auto window = new MainWindow(app, dspProxy, preset);
-        if (!window->init()) {
-                GEONKICK_LOG_ERROR("can't init main window");
-                exit(EXIT_FAILURE);
-        }
+        // The main app takes the ownership of the main window.
+        auto mainWindow = new MainWindow(mainApp, dspProxy.get(), preset);
+        mainWindow->show();
 
-        auto res = app.exec();
+        auto res = mainApp.exec();
 #ifdef GEONKICK_OS_GNU
         munlockall();
 #endif // GEONKICK_OS_GNU

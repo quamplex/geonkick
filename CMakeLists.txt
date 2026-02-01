@@ -142,12 +142,11 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/geonkick_groupbox.h
   ${GKICK_COMMON_DIR}/TopBar.h
   ${GKICK_COMMON_DIR}/Sidebar.h
-  ${GKICK_COMMON_DIR}/InstrumentEditor.h
-  ${GKICK_COMMON_DIR}/controls_widget.h
+  ${GKICK_COMMON_DIR}/SynthesizerWidget.h
   ${GKICK_COMMON_DIR}/InstrumentModel.h
   ${GKICK_COMMON_DIR}/kit_model.h
   ${GKICK_COMMON_DIR}/InstrumentView.h
-  ${GKICK_COMMON_DIR}/kit_widget.h
+  ${GKICK_COMMON_DIR}/KitWidget.h
   ${GKICK_COMMON_DIR}/KitTabs.h
   ${GKICK_COMMON_DIR}/envelope_draw_area.h
   ${GKICK_COMMON_DIR}/limiter.h
@@ -193,6 +192,7 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/SettingsWidget.h
   ${GKICK_COMMON_DIR}/MidiKeyWidget.h
   ${GKICK_COMMON_DIR}/EnvelopePointContextWidget.h
+  ${GKICK_COMMON_DIR}/CentralWidget.h
   ${GKICK_COMMON_DIR}/MainWindow.h
 )
 
@@ -220,12 +220,11 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/geonkick_groupbox.cpp
   ${GKICK_COMMON_DIR}/TopBar.cpp
   ${GKICK_COMMON_DIR}/Sidebar.cpp
-  ${GKICK_COMMON_DIR}/InstrumentEditor.cpp
-  ${GKICK_COMMON_DIR}/controls_widget.cpp
+  ${GKICK_COMMON_DIR}/SynthesizerWidget.cpp
   ${GKICK_COMMON_DIR}/InstrumentModel.cpp
   ${GKICK_COMMON_DIR}/kit_model.cpp
   ${GKICK_COMMON_DIR}/InstrumentView.cpp
-  ${GKICK_COMMON_DIR}/kit_widget.cpp
+  ${GKICK_COMMON_DIR}/KitWidget.cpp
   ${GKICK_COMMON_DIR}/KitTabs.cpp
   ${GKICK_COMMON_DIR}/envelope_draw_area.cpp
   ${GKICK_COMMON_DIR}/limiter.cpp
@@ -271,6 +270,7 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/MidiKeyWidget.cpp
   ${GKICK_COMMON_DIR}/EnvelopePointContextWidget.cpp
   ${GKICK_COMMON_DIR}/SettingsWidget.cpp
+  ${GKICK_COMMON_DIR}/CentralWidget.cpp
   ${GKICK_COMMON_DIR}/MainWindow.cpp
 )
 

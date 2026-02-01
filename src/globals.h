@@ -85,7 +85,6 @@ namespace fs = std::filesystem;
 #define GEONKICK_LOG_DEBUG(msg)   // disabled
 #endif // GKICK_LOG_DEBUG_LEVEL
 
-
 namespace Geonkick
 {
         constexpr int defaultSampleRate = GEONKICK_DEFAULT_SAMPLE_RATE;
