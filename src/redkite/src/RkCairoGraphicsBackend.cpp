@@ -38,7 +38,7 @@
 #endif
 
 RkCairoGraphicsBackend::RkCairoGraphicsBackend(RkCanvas *canvas)
-        : canvas {canvas}
+        : canvas{canvas}
 {
         auto canvasInfo = canvas->getCanvasInfo();
         if (!canvasInfo) {
@@ -321,4 +321,33 @@ int RkCairoGraphicsBackend::getTextWidth(const std::string &text) const
 void RkCairoGraphicsBackend::scale(double x, double y)
 {
         cairo_scale(context(), x, y);
+}
+
+void RkCairoGraphicsBackend::setAntialias(RkPainter::Antialias mode)
+{
+        switch (mode) {
+        case RkPainter::Antialias::AntialiasNone:
+                cairo_set_antialias(context(), CAIRO_ANTIALIAS_NONE);
+                break;
+        case RkPainter::Antialias::AntialiasGray:
+                cairo_set_antialias(context(), CAIRO_ANTIALIAS_GRAY);
+                break;
+        case RkPainter::Antialias::AntialiasSubpixel:
+                cairo_set_antialias(context(), CAIRO_ANTIALIAS_SUBPIXEL);
+                break;
+        case RkPainter::Antialias::AntialiasBest:
+                cairo_set_antialias(context(), CAIRO_ANTIALIAS_BEST);
+                break;
+        }
+}
+
+RkPainter::Antialias RkCairoGraphicsBackend::getAntialias() const
+{
+        switch (cairo_get_antialias(context())) {
+        case CAIRO_ANTIALIAS_GRAY:      return RkPainter::Antialias::AntialiasGray;
+        case CAIRO_ANTIALIAS_SUBPIXEL:  return RkPainter::Antialias::AntialiasSubpixel;
+        case CAIRO_ANTIALIAS_BEST:      return RkPainter::Antialias::AntialiasBest;
+        case CAIRO_ANTIALIAS_NONE:
+        default:                        return RkPainter::Antialias::AntialiasNone;
+        }
 }

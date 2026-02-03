@@ -36,6 +36,7 @@
 #include "RkContainer.h"
 #include "RkProgressBar.h"
 #include "RkSpinBox.h"
+#include "BufferView.h"
 
 RK_DECLARE_IMAGE_RC(mute);
 RK_DECLARE_IMAGE_RC(mute_hover);
@@ -104,6 +105,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , parentView{parent}
         , instrumentModel{model}
         , nameLabel{nullptr}
+        , waveformPreview{nullptr}
         , editPercussion{nullptr}
         , midiChannelSpinBox{nullptr}
         , keyButton{nullptr}
@@ -119,6 +121,8 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         setSize(parent->width(), 40);
         createView();
         setModel(model);
+        setBorderWidth(1);
+        setBorderColor(22, 22, 22);
 }
 
 KitPercussionView::PercussionIndex KitPercussionView::index() const
@@ -138,9 +142,20 @@ void KitPercussionView::createView()
         // Insturment name
         instrumentContainer->addSpace(padding);
         nameLabel = new RkLabel(this, instrumentModel->name());
-        nameLabel->setSize(100, 20);
+        auto font = nameLabel->font();
+        font.setWeight(RkFont::Weight::Bold);
+        nameLabel->setFont(font);
+        nameLabel->setTextColor({180, 180, 180});
+        nameLabel->setSize(140, 20);
         nameLabel->setBackgroundColor(background());
         instrumentContainer->addWidget(nameLabel);
+
+        // Waveform preview
+        instrumentContainer->addSpace(10);
+        waveformPreview = new BufferView(this, instrumentModel->data());
+        waveformPreview->setSize(140, height() - 10);
+        instrumentContainer->addWidget(waveformPreview);
+        instrumentContainer->addSpace(20);
 
         // Midi channel spinbox.
         midiChannelSpinBox = new RkSpinBox(this);
@@ -288,11 +303,14 @@ void KitPercussionView::createView()
 
 void KitPercussionView::updateView()
 {
-        auto backgorundColor = (index() % 2) ? RkColor(100, 100, 100) : RkColor(50, 50, 50);
+        auto backgorundColor = instrumentModel->isSelected() ? RkColor(60, 60, 60) : RkColor(50, 50, 50);
         setBackgroundColor(backgorundColor);
         nameLabel->setBackgroundColor(backgorundColor);
-
         nameLabel->setText(instrumentModel->name());
+
+        waveformPreview->setData(instrumentModel->data());
+        waveformPreview->setBackgroundColor(backgorundColor);
+
         instrumentLimiter->onSetValue(instrumentModel->limiter(), 55.0 * 100.0 / 75);
         instrumentLimiter->setBackgroundColor(backgorundColor);
         muteButton->setPressed(instrumentModel->isMuted());
@@ -314,6 +332,7 @@ void KitPercussionView::setModel(PercussionModel *model)
                 return;
 
         instrumentModel = model;
+
         RK_ACT_BIND(removeButton, released, RK_ACT_ARGS(), this, remove());
         RK_ACT_BIND(copyButton, released, RK_ACT_ARGS(), instrumentModel, copy());
         RK_ACT_BIND(playButton, pressed, RK_ACT_ARGS(), instrumentModel, play());
@@ -321,16 +340,20 @@ void KitPercussionView::setModel(PercussionModel *model)
         RK_ACT_BIND(muteButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, mute(toggled));
         RK_ACT_BIND(soloButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, solo(toggled));
         RK_ACT_BIND(instrumentLimiter, valueUpdated, RK_ACT_ARGS(int val), instrumentModel, setLimiter(val));
+
         RK_ACT_BIND(instrumentModel, nameUpdated, RK_ACT_ARGS(std::string name), this, update());
         RK_ACT_BIND(instrumentModel, keyUpdated, RK_ACT_ARGS(KeyIndex index), this, updateView());
         RK_ACT_BIND(instrumentModel, channelUpdated, RK_ACT_ARGS(int val), this, update());
-        RK_ACT_BIND(instrumentModel, limiterUpdated, RK_ACT_ARGS(int val), instrumentLimiter, onSetValue(val, 55.0 * 100.0 / 75));
+        RK_ACT_BIND(instrumentModel, limiterUpdated, RK_ACT_ARGS(int val),
+                    instrumentLimiter, onSetValue(val, 55.0 * 100.0 / 75));
         RK_ACT_BIND(instrumentModel, muteUpdated, RK_ACT_ARGS(bool b), muteButton, setPressed(b));
         RK_ACT_BIND(instrumentModel, soloUpdated, RK_ACT_ARGS(bool b), soloButton, setPressed(b));
-        RK_ACT_BIND(instrumentModel, selected, RK_ACT_ARGS(), this, update());
+        RK_ACT_BIND(instrumentModel, selected, RK_ACT_ARGS(), this, updateView());
         RK_ACT_BIND(instrumentModel, modelUpdated, RK_ACT_ARGS(), this, updateView());
         RK_ACT_BIND(instrumentModel, midiChannelUpdated, RK_ACT_ARGS(int val), this, update());
         RK_ACT_BIND(instrumentModel, noteOffUpdated, RK_ACT_ARGS(bool b), this, update());
+        RK_ACT_BIND(instrumentModel, waveformUpdated, RK_ACT_ARGS(), this, updateView());
+
         updateView();
 }
 
@@ -347,6 +370,11 @@ void KitPercussionView::remove()
 
 void KitPercussionView::mouseButtonPressEvent(RkMouseEvent *event)
 {
+        if (event->button() == RkMouseEvent::ButtonType::Left) {
+                instrumentModel->select();
+                updateView();
+        }
+
         if (event->button() != RkMouseEvent::ButtonType::Left
             && event->button() != RkMouseEvent::ButtonType::WheelUp
             && event->button() != RkMouseEvent::ButtonType::WheelDown)

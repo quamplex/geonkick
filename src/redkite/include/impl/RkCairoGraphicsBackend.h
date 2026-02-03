@@ -2,7 +2,7 @@
  * File name: RkCairoGraphicsBackend.h
  * Project: Redkite (A small GUI toolkit)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Redkite.
  *
@@ -29,6 +29,7 @@
 #include "RkPen.h"
 #include "RkRect.h"
 #include "RkFont.h"
+#include "RkPainter.h"
 
 #include <cairo/cairo.h>
 
@@ -58,6 +59,8 @@ class RkCairoGraphicsBackend {
         void translate(const RkPoint &offset);
         void rotate(rk_real angle);
         void scale(double x, double y);
+        void setAntialias(RkPainter::Antialias mode);
+        RkPainter::Antialias getAntialias() const;
 
  protected:
         cairo_t* context() const;

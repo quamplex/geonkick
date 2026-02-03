@@ -144,3 +144,14 @@ void RkPainter::RkPainterImpl::scale(double x, double y)
 {
         backendGraphics->scale(x, y);
 }
+
+void RkPainter::RkPainterImpl::setAntialias(RkPainter::Antialias mode)
+{
+        backendGraphics->setAntialias(mode);
+}
+
+RkPainter::Antialias RkPainter::RkPainterImpl::getAntialias() const
+{
+        return backendGraphics->getAntialias();
+}
+

@@ -147,9 +147,10 @@ class PercussionModel : public AbstractModel {
                     lengthUpdated(double val),
                     RK_ARG_TYPE(double),
                     RK_ARG_VAL(val));
-
- protected:
-        void onPercussionSelected();
+        RK_DECL_ACT(waveformUpdated,
+                    waveformUpdated(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
 
  private:
         KitModel* kitModel;

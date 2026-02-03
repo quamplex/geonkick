@@ -43,7 +43,7 @@ PercussionModel::PercussionModel(KitModel* parent, int id)
                     instrumentSelected,
                     RK_ACT_ARGS(PercussionModel* model),
                     this,
-                    onPercussionSelected());
+                    selected());
 }
 
 PercussionModel::~PercussionModel()
@@ -233,11 +233,6 @@ void PercussionModel::solo(bool b)
 bool PercussionModel::isSolo() const
 {
         return kitModel->isPercussionSolo(index());
-}
-
-void PercussionModel::onPercussionSelected()
-{
-        action selected();
 }
 
 void PercussionModel::remove()

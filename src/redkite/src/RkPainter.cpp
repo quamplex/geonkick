@@ -179,3 +179,13 @@ void RkPainter::scale(double x, double y)
 {
         return o_ptr->scale(x, y);
 }
+
+void RkPainter::setAntialias(RkPainter::Antialias mode)
+{
+        o_ptr->setAntialias(mode);
+}
+
+RkPainter::Antialias RkPainter::getAntialias() const
+{
+        return o_ptr->getAntialias();
+}

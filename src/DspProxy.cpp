@@ -1184,7 +1184,7 @@ double DspProxy::getLimiterLevelerValue(size_t index) const
 }
 
 void DspProxy::updateKickBuffer(const std::vector<gkick_real> &&buffer,
-                                   size_t id)
+                                size_t id)
 {
         GEONKICK_LOG_DEBUG("id: " << id);
         std::lock_guard<std::mutex> lock(dspMutex);

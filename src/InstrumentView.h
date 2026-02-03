@@ -48,6 +48,7 @@ class RkProgressBar;
 class KitWidget;
 class GeonkickButton;
 class RkLabel;
+class BufferView;
 
 class KitPercussionView: public GeonkickWidget
 {
@@ -76,6 +77,7 @@ class KitPercussionView: public GeonkickWidget
         KitWidget *parentView;
         PercussionModel *instrumentModel;
         RkLabel *nameLabel;
+        BufferView *waveformPreview;
         RkLineEdit *editPercussion;
         RkSpinBox *midiChannelSpinBox;
         GeonkickButton *keyButton;

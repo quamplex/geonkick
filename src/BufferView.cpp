@@ -1,8 +1,8 @@
 /**
  * File name: BufferView.cpp
  * Project: Geonkick (A percussive synthesizer)
-F *
- * Copyright (C) 2020 Iurie Nistor 
+ *
+ * Copyright (C) 2020 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
@@ -33,8 +33,6 @@ BufferView::BufferView(GeonkickWidget* parent, const std::vector<float> &data)
         , waveformImage{nullptr}
 {
         setBackgroundColor(50, 50, 50);
-        setBorderColor(40, 40, 40);
-        setBorderWidth(1);
 }
 
 void BufferView::setData(const std::vector<float> &data)
@@ -44,7 +42,7 @@ void BufferView::setData(const std::vector<float> &data)
         update();
 }
 
-std::vector<float> BufferView::getData() const
+const std::vector<float>& BufferView::getData() const
 {
         return bufferData;
 }
@@ -68,13 +66,9 @@ void BufferView::drawGraph()
         if (bufferData.empty())
                 return;
 
-        RkPen pen = painter.pen();
-        pen.setColor({59, 130, 4, 255});
-        painter.setPen(pen);
-
-        std::vector<RkPoint> graphPoints;
+        std::vector<RkRealPoint> graphPoints;
         int x = 0;
-        int kY = height() / 2;
+        double kY = height() / 2;
         float yScale = 1.0f;
         float max = fabs(*std::max_element(bufferData.begin(), bufferData.end(),
                                            [](float a, float b){ return fabs(a) < fabs(b); }));
@@ -82,11 +76,26 @@ void BufferView::drawGraph()
                 yScale = 1.0f / max;
         int graphWidth = width();
         for (const auto &val: bufferData) {
-                int y =  kY * (1.0f - yScale * val);
-                graphPoints.emplace_back(RkPoint(x / graphWidth, y));
+                double y =  kY * (1.0f - yScale * val);
+                graphPoints.emplace_back(RkRealPoint(x / graphWidth, y));
                 x++;
         }
+
+        RkPen pen = painter.pen();
+
+        // Simulate shadow
+        pen.setColor({44, 44, 44, 200});
+        pen.setWidth(2);
+        painter.setPen(pen);
+        painter.translate({2, 2});
         painter.drawPolyline(graphPoints);
+
+        pen.setColor({59, 130, 4, 150});
+        pen.setWidth(1);
+        painter.setPen(pen);
+        painter.translate({-2, -2});
+        painter.drawPolyline(graphPoints);
+
         updateGraph = false;
 }
 

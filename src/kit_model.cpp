@@ -46,6 +46,10 @@ KitModel::KitModel(GeonkickModel *parent)
         loadModelData();
         RK_ACT_BIND(dspProxy, kitUpdated, RK_ACT_ARGS(), this, loadModelData());
         RK_ACT_BIND(dspProxy, instrumentUpdated, RK_ACT_ARGS(size_t id), this, updatePercussion(getIndex(id)));
+        RK_ACT_BIND(dspProxy, kickUpdated,
+                    RK_ACT_ARGS(),
+                    this,
+                    updatePercussion(getIndex(dspProxy->currentPercussion())));
 }
 
 void KitModel::updatePercussion(PercussionIndex index)

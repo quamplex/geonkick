@@ -45,7 +45,7 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         , instrumentsContainer{new RkContainer(this, Rk::Orientation::Vertical)}
         , levelersTimer{new RkTimer(this, 30)}
 {
-        setSize(parent->size());
+        setSize({parent->size().width() - 5, parent->size().height()}) ;
 
         RK_ACT_BIND(levelersTimer, timeout, RK_ACT_ARGS(), this, onUpdateLevelers());
         instrumentsContainer->setHiddenTakesPlace();
@@ -95,7 +95,10 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         label->setSize({30, 20});
         label->show();
         topContainer->addWidget(label);
+
+        kitContainer->addSpace(5);
         kitContainer->addContainer(topContainer);
+        kitContainer->addSpace(5);
         kitContainer->addContainer(instrumentsContainer);
 
         updateView();

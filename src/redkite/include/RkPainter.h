@@ -2,7 +2,7 @@
  * File name: RkPainter.h
  * Project: Redkite (A small GUI toolkit)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Redkite.
  *
@@ -36,6 +36,13 @@ class RkCanvas;
 
 class RkPainter {
  public:
+        enum class Antialias {
+                AntialiasNone,
+                AntialiasGray,
+                AntialiasSubpixel,
+                AntialiasBest
+        };
+
         RkPainter(RkCanvas *canvas);
         ~RkPainter();
         void drawText(int x, int y, const std::string &text);
@@ -64,6 +71,8 @@ class RkPainter {
         void rotate(rk_real angle);
         int getTextWidth(const std::string &text) const;
         void scale(double x, double y);
+        void setAntialias(Antialias mode);
+        Antialias getAntialias() const;
 
 protected:
         RK_DECLARE_O_PTR(RkPainter);

@@ -41,7 +41,6 @@ CentralWidget::CentralWidget(GeonkickWidget *parent, GeonkickModel* model)
                     showWidget(view));
 
         showWidget(viewState()->getMainView());
-        setBackgroundColor({99, 100, 13});
 }
 
 void CentralWidget::showWidget(ViewState::View view)

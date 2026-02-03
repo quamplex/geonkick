@@ -2,7 +2,7 @@
  * File name: RkPainterImpl.cpp
  * Project: Redkite (A small GUI toolkit)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Redkite.
  *
@@ -56,6 +56,8 @@ class RkPainter::RkPainterImpl {
         void rotate(rk_real angle);
         int getTextWidth(const std::string &text) const;
         void scale(double x, double y);
+        void setAntialias(Antialias mode);
+        Antialias getAntialias() const;
 
  private:
         RK_DECALRE_INTERFACE_PTR(RkPainter);
