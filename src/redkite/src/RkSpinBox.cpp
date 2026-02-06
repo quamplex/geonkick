@@ -36,11 +36,11 @@ RkSpinBox::RkSpinBox(RkWidget *parent)
         RK_ACT_BIND(upControl(),
                     pressed,
                     RK_ACT_ARGS(),
-                    this, setCurrentIndex(currentIndex() + 1));
+                    this, setCurrentIndex(currentIndex() - 1));
         RK_ACT_BIND(downControl(),
                     pressed,
                     RK_ACT_ARGS(),
-                    this, setCurrentIndex(currentIndex() - 1));
+                    this, setCurrentIndex(currentIndex() + 1));
 }
 
 void RkSpinBox::setRange(int from, int to)
@@ -84,6 +84,11 @@ void RkSpinBox::setCurrentItem(const RkVariant& item)
         return impl_ptr->setCurrentItem(item);
 }
 
+RkLabel* RkSpinBox::label() const
+{
+        return impl_ptr->getLabel();
+}
+
 RkButton* RkSpinBox::upControl() const
 {
         return impl_ptr->upControl();
@@ -94,6 +99,26 @@ RkButton* RkSpinBox::downControl() const
         return impl_ptr->downControl();
 }
 
+void RkSpinBox::setControlsPosition(RkSpinBox::ControlsPosition pos)
+{
+        return impl_ptr->setControlsPosition(pos);
+}
+
+RkSpinBox::ControlsPosition RkSpinBox::controlsPosition() const
+{
+        return impl_ptr->getControlsPosition();
+}
+
+void RkSpinBox::setCustomControls(bool b)
+{
+        impl_ptr->setCustomControls(b);
+}
+
+bool RkSpinBox::customControls() const
+{
+        return impl_ptr->getCustomControls();
+}
+
 void RkSpinBox::resizeEvent([[maybe_unused]]RkResizeEvent *event)
 {
         impl_ptr->updateControls();
@@ -102,7 +127,7 @@ void RkSpinBox::resizeEvent([[maybe_unused]]RkResizeEvent *event)
 void RkSpinBox::wheelEvent(RkWheelEvent *event)
 {
         if (event->direction() == RkWheelEvent::WheelDirection::DirectionUp)
-                setCurrentIndex(currentIndex() + 1);
-        else
                 setCurrentIndex(currentIndex() - 1);
+        else
+                setCurrentIndex(currentIndex() + 1);
 }

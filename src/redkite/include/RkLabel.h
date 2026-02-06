@@ -28,22 +28,24 @@
 #include "RkImage.h"
 
 class RkLabel : public RkWidget {
- public:
-    explicit RkLabel(RkWidget *parent, const std::string &text = std::string());
-    explicit RkLabel(RkWidget *parent, const RkImage &image);
-    virtual ~RkLabel() = default;
-    void setText(const std::string &text);
-    std::string text() const;
-    void setImage(const std::string &file);
-    void setImage(const RkImage &image);
+public:
+        explicit RkLabel(RkWidget *parent, const std::string &text = std::string());
+        explicit RkLabel(RkWidget *parent, const RkImage &image);
+        virtual ~RkLabel() = default;
+        void setText(const std::string &text);
+        std::string text() const;
+        void setImage(const std::string &file);
+        void setImage(const RkImage &image);
+        void setAlignment(Rk::Alignment align);
+        Rk::Alignment alignment() const;
 
- protected:
-    RK_DECLARE_IMPL_PTR(RkLabel);
-    virtual void paintEvent(RkPaintEvent *event) override;
+protected:
+        RK_DECLARE_IMPL_PTR(RkLabel);
+        virtual void paintEvent(RkPaintEvent *event) override;
 
- private:
-    RK_DISABLE_COPY(RkLabel);
-    RK_DISABLE_MOVE(RkLabel);
+private:
+        RK_DISABLE_COPY(RkLabel);
+        RK_DISABLE_MOVE(RkLabel);
 };
 
 #endif // RK_LABEL_H

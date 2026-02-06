@@ -51,6 +51,16 @@ std::string RkLabel::text() const
      return impl_ptr->text();
 }
 
+void RkLabel::setAlignment(Rk::Alignment align)
+{
+        return impl_ptr->setAlignment(align);
+}
+
+Rk::Alignment RkLabel::alignment() const
+{
+        return impl_ptr->getAlignment();
+}
+
 void RkLabel::setImage(const RkImage &image)
 {
         setSize(image.size());

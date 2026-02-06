@@ -112,22 +112,18 @@ class RkColor {
 
         constexpr RkColor operator-(const RkColor& other) const
         {
-                return RkColor(
-                               std::max(0, redValue - other.redValue),
+                return RkColor(std::max(0, redValue - other.redValue),
                                std::max(0, greenValue - other.greenValue),
                                std::max(0, blueValue - other.blueValue),
-                               std::max(0, alphaValue - other.alphaValue)
-                               );
+                               std::max(0, alphaValue - other.alphaValue));
         }
 
         constexpr RkColor operator*(const RkColor& other) const
         {
-                return RkColor(
-                               std::min(255, redValue * other.redValue / 255),
+                return RkColor(std::min(255, redValue * other.redValue / 255),
                                std::min(255, greenValue * other.greenValue / 255),
                                std::min(255, blueValue * other.blueValue / 255),
-                               std::min(255, alphaValue * other.alphaValue / 255)
-                               );
+                               std::min(255, alphaValue * other.alphaValue / 255));
         }
 
         constexpr RkColor operator/(const RkColor& other) const

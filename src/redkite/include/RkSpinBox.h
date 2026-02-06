@@ -28,33 +28,44 @@
 #include "RkVariant.h"
 
 class RkButton;
+class RkLabel;
 
 class RkSpinBox : public RkWidget {
- public:
-    RkSpinBox(RkWidget *parent);
-    virtual ~RkSpinBox() = default;
-    void setRange(int from, int to);
-    void setCurrentIndex(int index);
-    int currentIndex() const;
-    void addItem(const RkVariant& item);
-    void clear();
-    void setCurrentItem(const RkVariant& item);
-    RkVariant currentItem() const;
-    RkButton* upControl() const;
-    RkButton* downControl() const;
-    RK_DECL_ACT(currentIndexChanged,
-                currentIndexChanged(int index),
-                RK_ARG_TYPE(size_t),
-                RK_ARG_VAL(index));
+public:
+        enum class ControlsPosition {
+                PositionLeft,
+                PositionRight
+        };
+        RkSpinBox(RkWidget *parent);
+        virtual ~RkSpinBox() = default;
+        void setRange(int from, int to);
+        void setCurrentIndex(int index);
+        int currentIndex() const;
+        void addItem(const RkVariant& item);
+        void clear();
+        void setCurrentItem(const RkVariant& item);
+        RkVariant currentItem() const;
+        RkLabel* label() const;
+        RkButton* upControl() const;
+        RkButton* downControl() const;
+        void setControlsPosition(ControlsPosition pos);
+        ControlsPosition controlsPosition() const;
+        void setCustomControls(bool b = true);
+        bool customControls() const;
+
+        RK_DECL_ACT(currentIndexChanged,
+                    currentIndexChanged(int index),
+                    RK_ARG_TYPE(size_t),
+                    RK_ARG_VAL(index));
 
 protected:
-    RK_DECLARE_IMPL_PTR(RkSpinBox);
-    void resizeEvent(RkResizeEvent *event) override;
-    void wheelEvent(RkWheelEvent *event) override;
+        RK_DECLARE_IMPL_PTR(RkSpinBox);
+        void resizeEvent(RkResizeEvent *event) override;
+        void wheelEvent(RkWheelEvent *event) override;
 
- private:
-    RK_DISABLE_COPY(RkSpinBox);
-    RK_DISABLE_MOVE(RkSpinBox);
+private:
+        RK_DISABLE_COPY(RkSpinBox);
+        RK_DISABLE_MOVE(RkSpinBox);
 };
 
 #endif // RK_SPINBOX_H

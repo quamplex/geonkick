@@ -1,8 +1,8 @@
 /**
  * File name: BufferView.h
  * Project: Geonkick (A percussive synthesizer)
-F *
- * Copyright (C) 2020 Iurie Nistor 
+ *
+ * Copyright (C) 2020 Iurie Nistor
  *
  * This file is part of Geonkick.
  *

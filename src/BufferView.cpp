@@ -62,7 +62,6 @@ void BufferView::drawGraph()
 {
         waveformImage = std::make_unique<RkImage>(size());
         RkPainter painter(waveformImage.get());
-        painter.fillRect(RkRect({0, 0}, size()), background());
         if (bufferData.empty())
                 return;
 

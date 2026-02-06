@@ -74,6 +74,7 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         auto controlsLayout = new RkContainer(this, Rk::Orientation::Vertical);
         controlsLayout->setSize({height() / 2, height()});
         controlsLayout->addSpace(2);
+
         auto previousButton = new RkButton(this);
         previousButton->setType(RkButton::ButtonType::ButtonPush);
         previousButton->setSize(height() / 2 - 2, height() / 2 - 2);
@@ -87,6 +88,7 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         previousButton->show();
         controlsLayout->addWidget(previousButton);
         controlsLayout->addSpace(1);
+
         auto nextButton = new RkButton(this);
         nextButton->setType(RkButton::ButtonType::ButtonPush);
         nextButton->setSize(height() / 2 - 2, height() / 2 - 2);
@@ -100,6 +102,7 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         nextButton->show();
         controlsLayout->addWidget(nextButton);
         mainLayout->addContainer(controlsLayout);
+
         RK_ACT_BIND(nextButton,
                     pressed,
                     RK_ACT_ARGS(),

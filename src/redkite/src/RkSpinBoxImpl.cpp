@@ -48,6 +48,8 @@ RkSpinBox::RkSpinBoxImpl::RkSpinBoxImpl(RkSpinBox *interface,
         , upButton{nullptr}
         , downButton{nullptr}
         , displayLabel{nullptr}
+        , controlsPosition{ControlsPosition::PositionRight}
+        , customControls{false}
 {
 }
 
@@ -60,25 +62,47 @@ void RkSpinBox::RkSpinBoxImpl::init()
         upButton = new RkButton(inf_ptr);
         upButton->setType(RkButton::ButtonType::ButtonPush);
         upButton->show();
+
         downButton = new RkButton(inf_ptr);
         downButton->setType(RkButton::ButtonType::ButtonPush);
         downButton->show();
+
         displayLabel = new SpinBoxLabel(inf_ptr);
         displayLabel->show();
+
         updateControls();
 }
 
 void RkSpinBox::RkSpinBoxImpl::updateControls()
 {
+        const int padding = 4;
+
         RkSize controlsSize = RkSize(inf_ptr->width() / 4, inf_ptr->height() / 2);
         if (controlsSize.isEmpty())
                 return;
 
-        upButton->setSize(controlsSize);
+        auto controlsRight = controlsPosition == ControlsPosition::PositionRight;
+
+        if (!customControls) {
+                upButton->setSize(controlsSize);
+                downButton->setSize(controlsSize);
+        }
+        displayLabel->setSize(inf_ptr->width() - upButton->width() - padding,
+                              inf_ptr->height() - 2 * padding);
+
+        auto controlPosX = controlsRight ? (inf_ptr->width() - upButton->width() - padding) : padding;
+        upButton->setPosition(controlPosX, padding);
+        downButton->setPosition(controlPosX, inf_ptr->height() - downButton->height() - padding);
+
+        auto labelPosX = controlsRight ? 0 : padding + upButton->width();
+        displayLabel->setPosition(labelPosX, padding);
+
         displayLabel->setTextColor(inf_ptr->textColor());
         displayLabel->setBackgroundColor(inf_ptr->background());
-        upButton->setPosition(inf_ptr->width() - upButton->width(), 0);
-        {
+        upButton->setBackgroundColor(background());
+        downButton->setBackgroundColor(background());
+
+        if (!customControls) {
                 RkImage img(upButton->size());
                 RkPainter painter(&img);
                 painter.fillRect(RkRect(1, 1, img.width() - 1, img.height()),
@@ -118,9 +142,7 @@ void RkSpinBox::RkSpinBoxImpl::updateControls()
                 upButton->setImage(img, RkButton::State::Pressed);
         }
 
-        downButton->setSize(controlsSize);
-        downButton->setPosition(upButton->x(), upButton->y() + upButton->height());
-        {
+        if (!customControls) {
                 RkImage img(downButton->size());
                 RkPainter painter(&img);
                 painter.fillRect(RkRect(1, 1, img.width() - 1, img.height()),
@@ -156,8 +178,6 @@ void RkSpinBox::RkSpinBoxImpl::updateControls()
                 painter.drawLine(2, img.height() / 2, img.width() - 2, img.height() / 2);
                 downButton->setImage(img, RkButton::State::Pressed);
         }
-
-        displayLabel->setSize(inf_ptr->width() - upButton->width(), inf_ptr->height());
 }
 
 void RkSpinBox::RkSpinBoxImpl::setCurrentIndex(int index)
@@ -206,6 +226,11 @@ void RkSpinBox::RkSpinBoxImpl::setCurrentItem(const RkVariant& item)
         updateTextLabel();
 }
 
+RkLabel* RkSpinBox::RkSpinBoxImpl::getLabel() const
+{
+        return displayLabel;
+}
+
 RkButton* RkSpinBox::RkSpinBoxImpl::upControl() const
 {
         return upButton;
@@ -214,6 +239,28 @@ RkButton* RkSpinBox::RkSpinBoxImpl::upControl() const
 RkButton* RkSpinBox::RkSpinBoxImpl::downControl() const
 {
         return downButton;
+}
+
+void RkSpinBox::RkSpinBoxImpl::setControlsPosition(RkSpinBox::ControlsPosition pos)
+{
+        controlsPosition = pos;
+        updateControls();
+}
+
+RkSpinBox::ControlsPosition RkSpinBox::RkSpinBoxImpl::getControlsPosition() const
+{
+        return controlsPosition;
+}
+
+void RkSpinBox::RkSpinBoxImpl::setCustomControls(bool b)
+{
+        customControls = b;
+        updateControls();
+}
+
+bool RkSpinBox::RkSpinBoxImpl::getCustomControls() const
+{
+        return customControls;
 }
 
 void RkSpinBox::RkSpinBoxImpl::updateTextLabel()

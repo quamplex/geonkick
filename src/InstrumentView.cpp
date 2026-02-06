@@ -1,5 +1,5 @@
 /**
- * File name: instrument_view.cpp
+ * File name: InstrumentView.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2020 Iurie Nistor
@@ -47,34 +47,31 @@ RK_DECLARE_IMAGE_RC(solo_on);
 RK_DECLARE_IMAGE_RC(per_play);
 RK_DECLARE_IMAGE_RC(per_play_hover);
 RK_DECLARE_IMAGE_RC(per_play_on);
-RK_DECLARE_IMAGE_RC(remove_per_button);
-RK_DECLARE_IMAGE_RC(remove_per_button_hover);
-RK_DECLARE_IMAGE_RC(remove_per_button_on);
-RK_DECLARE_IMAGE_RC(copy_per_button);
-RK_DECLARE_IMAGE_RC(copy_per_button_hover);
-RK_DECLARE_IMAGE_RC(copy_per_button_on);
 RK_DECLARE_IMAGE_RC(kit_midi_on);
 RK_DECLARE_IMAGE_RC(kit_midi_off);
 RK_DECLARE_IMAGE_RC(kit_midi_hover);
 RK_DECLARE_IMAGE_RC(note_off_unpressed);
 RK_DECLARE_IMAGE_RC(note_off_hover);
 RK_DECLARE_IMAGE_RC(note_off_pressed);
+RK_DECLARE_IMAGE_RC(instr_key_up);
+RK_DECLARE_IMAGE_RC(instr_key_up_hover);
+RK_DECLARE_IMAGE_RC(instr_key_up_on);
+RK_DECLARE_IMAGE_RC(instr_key_down);
+RK_DECLARE_IMAGE_RC(instr_key_down_hover);
+RK_DECLARE_IMAGE_RC(instr_key_down_on);
+
+using namespace Geonkick;
 
 PercussionLimiter::PercussionLimiter(GeonkickWidget *parent)
         : GeonkickSlider(parent)
         , levelerValue{0}
 {
+        setBackgroundColor({50, 50, 50});
 }
 
 void PercussionLimiter::setLeveler(int value)
 {
-        levelerValue = value;
-        if (value > 100)
-                levelerValue = 100;
-        else if (value < 0)
-                levelerValue = 0;
-        else
-                levelerValue = value;
+        levelerValue = std::clamp(value, 0, 100);
         update();
 }
 
@@ -90,12 +87,12 @@ void PercussionLimiter::paintWidget(RkPaintEvent *event)
         double value = (static_cast<double>(levelerValue) / 100) * (width() - 2);
         RkColor color(40, 200, 40);
         if (levelerValue > 0) {
-                if (getOrientation() == GeonkickSlider::Orientation::Horizontal)
-                        painter.fillRect(RkRect(1, 2,
-                                                value, height() - 4), color);
-                else
+                if (getOrientation() == GeonkickSlider::Orientation::Horizontal) {
+                        painter.fillRect(RkRect(1, 2, value, height() - 4), color);
+                } else {
                         painter.fillRect(RkRect(height() - 2 - value, 2,
                                                 width() - 4, value), color);
+                }
         }
 }
 
@@ -108,9 +105,9 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , waveformPreview{nullptr}
         , editPercussion{nullptr}
         , midiChannelSpinBox{nullptr}
-        , keyButton{nullptr}
-        , copyButton{nullptr}
-        , removeButton{nullptr}
+        , outputChannelSpinBox{nullptr}
+        , keySpinBox{nullptr}
+        , keyOctaveSpinBox{nullptr}
         , playButton{nullptr}
         , muteButton{nullptr}
         , soloButton{nullptr}
@@ -119,10 +116,12 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , padding{8}
 {
         setSize(parent->width(), 40);
+
+        setBorderWidth(1);
+        setBorderColor(38, 38, 38);
+
         createView();
         setModel(model);
-        setBorderWidth(1);
-        setBorderColor(22, 22, 22);
 }
 
 KitPercussionView::PercussionIndex KitPercussionView::index() const
@@ -139,8 +138,18 @@ void KitPercussionView::createView()
         instrumentContainer->setY(padding);
         instrumentContainer->setHiddenTakesPlace();
 
+        // Play button
+        instrumentContainer->addSpace(padding + 5);
+        playButton = new RkButton(this);
+        playButton->setType(RkButton::ButtonType::ButtonPush);
+        playButton->setImage(RK_RC_IMAGE(per_play), RkButton::State::Unpressed);
+        playButton->setImage(RK_RC_IMAGE(per_play_hover), RkButton::State::UnpressedHover);
+        playButton->setImage(RK_RC_IMAGE(per_play_on), RkButton::State::Pressed);
+        playButton->show();
+        instrumentContainer->addWidget(playButton);
+
         // Insturment name
-        instrumentContainer->addSpace(padding);
+        instrumentContainer->addSpace(3);
         nameLabel = new RkLabel(this, instrumentModel->name());
         auto font = nameLabel->font();
         font.setWeight(RkFont::Weight::Bold);
@@ -159,13 +168,27 @@ void KitPercussionView::createView()
 
         // Midi channel spinbox.
         midiChannelSpinBox = new RkSpinBox(this);
-        midiChannelSpinBox->setTextColor({250, 250, 250});
-        midiChannelSpinBox->setBackgroundColor({60, 57, 57});
-        midiChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->setSize(50, 20);
+        midiChannelSpinBox->setSize(50, 30);
+        midiChannelSpinBox->setTextColor({160, 160, 160});
+        midiChannelSpinBox->setBackgroundColor({44, 44, 44});
+        midiChannelSpinBox->label()->setTextColor({160, 160, 160});
+        midiChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
+                                                  RkButton::State::Unpressed);
+        midiChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::UnpressedHover);
+        midiChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::PressedHover);
+        midiChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_on),
+                                                  RkButton::State::Pressed);
+        midiChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down),
+                                                    RkButton::State::Unpressed);
+        midiChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::UnpressedHover);
+        midiChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::PressedHover);
+        midiChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
+                                                    RkButton::State::Pressed);
+        midiChannelSpinBox->setCustomControls(true);
         midiChannelSpinBox->show();
         RK_ACT_BIND(midiChannelSpinBox,
                     currentIndexChanged,
@@ -178,24 +201,77 @@ void KitPercussionView::createView()
                     midiChannelSpinBox,
                     setCurrentIndex(index + 1));
         instrumentContainer->addWidget(midiChannelSpinBox);
-        instrumentContainer->addSpace(5);
+        instrumentContainer->addSpace(10);
 
-        // Midi key button.
-        keyButton = new GeonkickButton(this);
-        keyButton->setTextColor({250, 250, 250});
-        keyButton->setType(RkButton::ButtonType::ButtonUncheckable);
-        keyButton->setSize(30, 20);
-        keyButton->setImage(RkImage(keyButton->size(), RK_IMAGE_RC(kit_midi_off)),
-                            RkButton::State::Unpressed);
-        keyButton->setImage(RkImage(keyButton->size(), RK_IMAGE_RC(kit_midi_on)),
-                                 RkButton::State::Pressed);
-        keyButton->setImage(RkImage(keyButton->size(), RK_IMAGE_RC(kit_midi_hover)),
-                            RkButton::State::UnpressedHover);
-        RK_ACT_BIND(keyButton, toggled, RK_ACT_ARGS(bool pressed), this, showMidiPopup());
-        instrumentContainer->addWidget(keyButton);
-        instrumentContainer->addSpace(5);
+        // Midi key spinbox
+        keySpinBox = new RkSpinBox(this);
+        keySpinBox->setSize(38, 30);
+        keySpinBox->setTextColor({160, 160, 160});
+        keySpinBox->setBackgroundColor({44, 44, 44});
+        keySpinBox->label()->setAlignment(Rk::Alignment::AlignRight);
+        keySpinBox->label()->setTextColor({160, 160, 160});
+        keySpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
+                                          RkButton::State::Unpressed);
+        keySpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                          RkButton::State::UnpressedHover);
+        keySpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                          RkButton::State::PressedHover);
+        keySpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_on),
+                                          RkButton::State::Pressed);
+        keySpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down),
+                                            RkButton::State::Unpressed);
+        keySpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                            RkButton::State::UnpressedHover);
+        keySpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                            RkButton::State::PressedHover);
+        keySpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
+                                            RkButton::State::Pressed);
+        keySpinBox->setCustomControls(true);
+        keySpinBox->setControlsPosition(RkSpinBox::ControlsPosition::PositionLeft);
+        keySpinBox->show();
+        RK_ACT_BIND(keySpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    setKey(index - 1));
+        instrumentContainer->addWidget(keySpinBox);
+
+        // Midi key octave spinbox
+        keyOctaveSpinBox = new RkSpinBox(this);
+        keyOctaveSpinBox->setSize(33, 30);
+        keyOctaveSpinBox->setTextColor({220, 220, 220});
+        keyOctaveSpinBox->setBackgroundColor({44, 44, 44});
+        keyOctaveSpinBox->label()->setAlignment(Rk::Alignment::AlignLeft);
+        keySpinBox->label()->setTextColor({160, 160, 160});
+        keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
+                                                RkButton::State::Unpressed);
+        keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                RkButton::State::UnpressedHover);
+        keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                RkButton::State::PressedHover);
+        keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_on),
+                                                RkButton::State::Pressed);
+        keyOctaveSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down),
+                                                RkButton::State::Unpressed);
+        keyOctaveSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                RkButton::State::UnpressedHover);
+        keyOctaveSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                RkButton::State::PressedHover);
+        keyOctaveSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
+                                                RkButton::State::Pressed);
+        keyOctaveSpinBox->setCustomControls(true);
+        keyOctaveSpinBox->label()->setBackgroundColor({0, 111, 111});
+        keyOctaveSpinBox->show();
+        RK_ACT_BIND(keyOctaveSpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    setKeyOctave(index - 1));
+        instrumentContainer->addWidget(keyOctaveSpinBox);
+
 
         // Note off button
+        instrumentContainer->addSpace(10);
         noteOffButton = new RkButton(this);
         noteOffButton->setType(RkButton::ButtonType::ButtonCheckable);
         noteOffButton->setSize(23, 16);
@@ -211,49 +287,12 @@ void KitPercussionView::createView()
         instrumentContainer->addWidget(noteOffButton);
         instrumentContainer->addSpace(5);
 
-        // Remove button
-        removeButton = new RkButton(this);
-        removeButton->setType(RkButton::ButtonType::ButtonPush);
-        removeButton->setSize(16, 16);
-        removeButton->setImage(RkImage(removeButton->size(), RK_IMAGE_RC(remove_per_button)),
-                               RkButton::State::Unpressed);
-        removeButton->setImage(RkImage(removeButton->size(), RK_IMAGE_RC(remove_per_button_hover)),
-                               RkButton::State::UnpressedHover);
-        removeButton->setImage(RkImage(removeButton->size(), RK_IMAGE_RC(remove_per_button_on)),
-                               RkButton::State::Pressed);
-        removeButton->setImage(RkImage(removeButton->size(), RK_IMAGE_RC(remove_per_button_hover)),
-                               RkButton::State::PressedHover);
-        removeButton->show();
-        instrumentContainer->addWidget(removeButton);
-        instrumentContainer->addSpace(3);
-
-        // Copy button
-        copyButton = new RkButton(this);
-        copyButton->setType(RkButton::ButtonType::ButtonPush);
-        copyButton->setSize(16, 16);
-        copyButton->setImage(RkImage(copyButton->size(), RK_IMAGE_RC(copy_per_button)),
-                             RkButton::State::Unpressed);
-        copyButton->setImage(RkImage(copyButton->size(), RK_IMAGE_RC(copy_per_button_hover)),
-                             RkButton::State::UnpressedHover);
-        copyButton->setImage(RkImage(copyButton->size(), RK_IMAGE_RC(copy_per_button_on)),
-                             RkButton::State::Pressed);
-        copyButton->setImage(RkImage(copyButton->size(), RK_IMAGE_RC(copy_per_button_hover)),
-                             RkButton::State::PressedHover);
-        copyButton->show();
-        instrumentContainer->addWidget(copyButton);
-        instrumentContainer->addSpace(5);
-
         // Limiter
         instrumentLimiter = new PercussionLimiter(this);
         instrumentLimiter->setSize(100, 10);
-        auto limiterBox = new RkContainer(this, Rk::Orientation::Vertical);
-        limiterBox->setHiddenTakesPlace();
-        limiterBox->setSize({instrumentLimiter->width(), instrumentContainer->height()});
-        limiterBox->addSpace((height() - instrumentLimiter->height()) / 2);
-        limiterBox->addWidget(instrumentLimiter);
         instrumentContainer->addSpace(5);
-        instrumentContainer->addContainer(limiterBox);
-        instrumentContainer->addSpace(10);
+        instrumentContainer->addWidget(instrumentLimiter);
+        instrumentContainer->addSpace(15);
 
         // Mute button
         muteButton = new RkButton(this);
@@ -285,26 +324,56 @@ void KitPercussionView::createView()
                              RkButton::State::PressedHover);
         soloButton->show();
         instrumentContainer->addWidget(soloButton);
-        instrumentContainer->addSpace(3);
+        instrumentContainer->addSpace(15);
 
-        // Play button
-        playButton = new RkButton(this);
-        playButton->setType(RkButton::ButtonType::ButtonPush);
-        playButton->setSize(16, 16);
-        playButton->setImage(RkImage(playButton->size(), RK_IMAGE_RC(per_play)),
-                         RkButton::State::Unpressed);
-        playButton->setImage(RkImage(playButton->size(), RK_IMAGE_RC(per_play_hover)),
-                         RkButton::State::UnpressedHover);
-        playButton->setImage(RkImage(playButton->size(), RK_IMAGE_RC(per_play_on)),
-                         RkButton::State::Pressed);
-        playButton->show();
-        instrumentContainer->addWidget(playButton);
+        createOutputChannelControl(instrumentContainer);
+}
+
+void KitPercussionView::createOutputChannelControl(RkContainer *container)
+{
+        // Midi channel spinbox.
+        outputChannelSpinBox = new RkSpinBox(this);
+        outputChannelSpinBox->setSize(50, 30);
+        outputChannelSpinBox->setTextColor({160, 160, 160});
+        outputChannelSpinBox->setBackgroundColor({44, 44, 44});
+        outputChannelSpinBox->label()->setTextColor({160, 160, 160});
+        outputChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
+                                                  RkButton::State::Unpressed);
+        outputChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::UnpressedHover);
+        outputChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::PressedHover);
+        outputChannelSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_on),
+                                                  RkButton::State::Pressed);
+        outputChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down),
+                                                    RkButton::State::Unpressed);
+        outputChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::UnpressedHover);
+        outputChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::PressedHover);
+        outputChannelSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
+                                                    RkButton::State::Pressed);
+        outputChannelSpinBox->setCustomControls(true);
+        outputChannelSpinBox->show();
+        RK_ACT_BIND(outputChannelSpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    instrumentModel,
+                    setChannel(index));
+        RK_ACT_BIND(instrumentModel,
+                    channelUpdated,
+                    RK_ACT_ARGS(int index),
+                    outputChannelSpinBox,
+                    setCurrentIndex(index));
+        container->addWidget(outputChannelSpinBox);
+        container->addSpace(10);
 }
 
 void KitPercussionView::updateView()
 {
-        auto backgorundColor = instrumentModel->isSelected() ? RkColor(60, 60, 60) : RkColor(50, 50, 50);
+        auto backgorundColor = instrumentModel->isSelected() ? RkColor(55, 55, 55) : RkColor(50, 50, 50);
         setBackgroundColor(backgorundColor);
+
         nameLabel->setBackgroundColor(backgorundColor);
         nameLabel->setText(instrumentModel->name());
 
@@ -312,17 +381,40 @@ void KitPercussionView::updateView()
         waveformPreview->setBackgroundColor(backgorundColor);
 
         instrumentLimiter->onSetValue(instrumentModel->limiter(), 55.0 * 100.0 / 75);
-        instrumentLimiter->setBackgroundColor(backgorundColor);
+
         muteButton->setPressed(instrumentModel->isMuted());
         soloButton->setPressed(instrumentModel->isSolo());
         noteOffButton->setPressed(instrumentModel->isNoteOffEnabled());
-        size_t nMidiChannels = instrumentModel->numberOfMidiChannels();
+
+        // Midi channel
+        auto nMidiChannels = instrumentModel->numberOfMidiChannels();
         midiChannelSpinBox->clear();
-        midiChannelSpinBox->addItem("Any");
+        midiChannelSpinBox->addItem("--");
         for (size_t i = 0; i < nMidiChannels; i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);
-        keyButton->setText(MidiKeyWidget::midiKeyToNote(instrumentModel->key()));
+
+        // Ouput channels
+        auto nChannels = instrumentModel->numberOfChannels();
+        outputChannelSpinBox->clear();
+        for (size_t i = 0; i < nChannels; i++)
+                outputChannelSpinBox->addItem(std::to_string(i + 1));
+        outputChannelSpinBox->setCurrentIndex(instrumentModel->channel());
+
+        // Midi key name
+        keySpinBox->clear();
+        keySpinBox->addItem("-");
+        for (int semitone = 0; semitone < 12; semitone++)
+                keySpinBox->addItem(std::string(semitoneToNote(semitone)));
+        keySpinBox->setCurrentIndex(midiKeySemitone(instrumentModel->key()) + 1);
+
+        // Midi key octave
+        keyOctaveSpinBox->clear();
+        keyOctaveSpinBox->addItem("-");
+        for (int oct = 0; oct < 9; oct++)
+                keyOctaveSpinBox->addItem(std::to_string(oct));
+        keyOctaveSpinBox->setCurrentIndex(midiKeyOctave(instrumentModel->key()) + 1);
+
         update();
 }
 
@@ -333,8 +425,6 @@ void KitPercussionView::setModel(PercussionModel *model)
 
         instrumentModel = model;
 
-        RK_ACT_BIND(removeButton, released, RK_ACT_ARGS(), this, remove());
-        RK_ACT_BIND(copyButton, released, RK_ACT_ARGS(), instrumentModel, copy());
         RK_ACT_BIND(playButton, pressed, RK_ACT_ARGS(), instrumentModel, play());
         RK_ACT_BIND(noteOffButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, enableNoteOff(toggled));
         RK_ACT_BIND(muteButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, mute(toggled));
@@ -406,6 +496,15 @@ void KitPercussionView::mouseDoubleClickEvent(RkMouseEvent *event)
                 }*/
 }
 
+void KitPercussionView::hoverEvent(RkHoverEvent *event)
+{
+        /*        if (!event->isHover())
+                setBackgroundColor({50, 50, 50});
+        else
+                setBackgroundColor({55, 55, 55});
+                update();*/
+}
+
 void KitPercussionView::updatePercussionName()
 {
         if (editPercussion) {
@@ -426,17 +525,11 @@ void KitPercussionView::updateLeveler()
                 instrumentLimiter->setLeveler(instrumentLimiter->getLeveler() - 2);
 }
 
-void KitPercussionView::showMidiPopup()
+void KitPercussionView::setKey(int semitone)
 {
-        auto midiPopup = new MidiKeyWidget(dynamic_cast<GeonkickWidget*>(getTopWidget()),
-                                           instrumentModel);
-        midiPopup->setPosition(keyButton->x() - midiPopup->width() - 5,
-                               getTopWidget()->height() - 2 * midiPopup->height()
-                               + height() * (index() - 3));
-        RK_ACT_BIND(midiPopup,
-                    isAboutToClose,
-                    RK_ACT_ARGS(),
-                    keyButton,
-                    setPressed(false));
-        midiPopup->show();
+        //        if ()
+}
+
+void KitPercussionView::setKeyOctave(int oct)
+{
 }

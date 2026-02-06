@@ -49,6 +49,7 @@ class KitWidget;
 class GeonkickButton;
 class RkLabel;
 class BufferView;
+class RkContainer;
 
 class KitPercussionView: public GeonkickWidget
 {
@@ -69,20 +70,25 @@ class KitPercussionView: public GeonkickWidget
         void setKeyWidth(int width);
         void mouseButtonPressEvent(RkMouseEvent *event) override;
         void mouseDoubleClickEvent(RkMouseEvent *event) override;
+        void hoverEvent(RkHoverEvent *event) override;
         void updatePercussionName();
         void remove();
         void showMidiPopup();
+        void setKey(int key);
+        void setKeyOctave(int oct);
 
  private:
+        void createOutputChannelControl(RkContainer *container);
+
         KitWidget *parentView;
         PercussionModel *instrumentModel;
         RkLabel *nameLabel;
         BufferView *waveformPreview;
         RkLineEdit *editPercussion;
         RkSpinBox *midiChannelSpinBox;
-        GeonkickButton *keyButton;
-        RkButton *copyButton;
-        RkButton *removeButton;
+        RkSpinBox *outputChannelSpinBox;
+        RkSpinBox *keySpinBox;
+        RkSpinBox *keyOctaveSpinBox;
         RkButton *playButton;
         RkButton *muteButton;
         RkButton *soloButton;

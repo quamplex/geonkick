@@ -31,6 +31,7 @@ RkLabel::RkLabelImpl::RkLabelImpl(RkLabel *interface,
     : RkWidgetImpl(static_cast<RkWidget*>(interface), parent)
     , inf_ptr{interface}
     , labelText{text}
+    , textAlignment{Rk::Alignment::AlignNone}
 {
 }
 
@@ -53,6 +54,16 @@ void RkLabel::RkLabelImpl::setImage(const RkImage &image)
         labelImage = image;
 }
 
+void RkLabel::RkLabelImpl::setAlignment(Rk::Alignment align)
+{
+        textAlignment = align;
+}
+
+Rk::Alignment RkLabel::RkLabelImpl::getAlignment() const
+{
+        return textAlignment;
+}
+
 void RkLabel::RkLabelImpl::drawLabel()
 {
         if (size().isEmpty())
@@ -71,7 +82,7 @@ void RkLabel::RkLabelImpl::drawLabel()
                 pen.setColor(textColor());
                 painter.setPen(pen);
                 painter.setFont(font());
-                painter.drawText(inf_ptr->rect(), labelText);
+                painter.drawText(inf_ptr->rect(), labelText, textAlignment);
         }
 
         RkPainter paint(inf_ptr);

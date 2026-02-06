@@ -85,6 +85,33 @@ namespace fs = std::filesystem;
 #define GEONKICK_LOG_DEBUG(msg)   // disabled
 #endif // GKICK_LOG_DEBUG_LEVEL
 
+namespace GeonkickTypes
+{
+using MidiKey = unsigned char;
+constexpr MidiKey geonkickAnyKey = GEONKICK_ANY_KEY;
+constexpr int geonkickAnyMidiChannel = GEONKICK_ANY_MIDI_CHANNEL;
+
+enum class ChokeGroup : int {
+        Off    = GKICK_CHOKE_GROUP_OFF,
+        Group1 = GKICK_CHOKE_GROUP_1,
+        Group2 = GKICK_CHOKE_GROUP_2,
+        Group3 = GKICK_CHOKE_GROUP_3,
+        Group4 = GKICK_CHOKE_GROUP_4
+};
+
+constexpr int ghokeGroupCount = GKICK_CHOKE_GROUP_COUNT;
+
+enum class Formats : int {
+          Gkick  = 0,
+          Gkit   = 1,
+          Flac   = 2,
+          Wav    = 4,
+          Ogg    = 7,
+          Sfz    = 8
+};
+
+} // namespace GeonkickTypes
+
 namespace Geonkick
 {
         constexpr int defaultSampleRate = GEONKICK_DEFAULT_SAMPLE_RATE;
@@ -128,33 +155,27 @@ namespace Geonkick
                                [](unsigned char c) { return std::tolower(c); });
                 return result;
         }
+
+        constexpr std::string_view semitoneToNote(int semitone)
+        {
+                constexpr std::array<std::string_view, 12> names = {
+                        "C", "C#", "D", "D#", "E", "F",
+                        "F#", "G", "G#", "A", "A#", "B"
+                };
+
+                semitone = (semitone % 12 + 12) % 12;
+                return names[semitone];
+        }
+
+        constexpr int midiKeySemitone(GeonkickTypes::MidiKey key)
+        {
+                return static_cast<int>(key) % 12;
+        }
+
+        constexpr int midiKeyOctave(GeonkickTypes::MidiKey key)
+        {
+                return static_cast<int>(key) / 12 - 1;
+        }
 } // namespace Geonkick
-
-namespace GeonkickTypes
-{
-using MidiKey = unsigned char;
-constexpr MidiKey geonkickAnyKey = GEONKICK_ANY_KEY;
-constexpr int geonkickAnyMidiChannel = GEONKICK_ANY_MIDI_CHANNEL;
-
-enum class ChokeGroup : int {
-        Off    = GKICK_CHOKE_GROUP_OFF,
-        Group1 = GKICK_CHOKE_GROUP_1,
-        Group2 = GKICK_CHOKE_GROUP_2,
-        Group3 = GKICK_CHOKE_GROUP_3,
-        Group4 = GKICK_CHOKE_GROUP_4
-};
-
-constexpr int ghokeGroupCount = GKICK_CHOKE_GROUP_COUNT;
-
-enum class Formats : int {
-          Gkick  = 0,
-          Gkit   = 1,
-          Flac   = 2,
-          Wav    = 4,
-          Ogg    = 7,
-          Sfz    = 8
-};
-
-} // namespace GeonkickTypes
 
 #endif // GEONKICK_GLOBALS_H

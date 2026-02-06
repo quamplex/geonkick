@@ -109,11 +109,12 @@ using rk_real = double;
 
 namespace Rk {
         enum class Alignment : int {
-                AlignLeft   = 1,
-                AlignRight  = 2,
-		AlignCenter = 3,
-		AlignTop    = 4,
-		AlignBottom = 5
+                AlignNone,
+                AlignLeft,
+                AlignRight,
+		AlignCenter,
+		AlignTop,
+		AlignBottom
         };
 
         enum class Orientation : int {

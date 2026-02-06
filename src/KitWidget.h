@@ -56,6 +56,10 @@ class KitWidget: public GeonkickWidget
  private:
         KitModel *kitModel;
         RkButton *addButton;
+        RkButton *removeButton;
+        RkButton *duplicateButton;
+        RkButton *moveupButton;
+        RkButton *movedownButton;
         RkContainer *instrumentsContainer;
         std::vector<KitPercussionView*> instrumentViewList;
         RkTimer *levelersTimer;
