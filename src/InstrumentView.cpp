@@ -112,6 +112,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , muteButton{nullptr}
         , soloButton{nullptr}
         , noteOffButton{nullptr}
+        , chokeGroupSpinbox{nullptr}
         , instrumentLimiter{nullptr}
         , padding{8}
 {
@@ -274,18 +275,18 @@ void KitPercussionView::createView()
         instrumentContainer->addSpace(10);
         noteOffButton = new RkButton(this);
         noteOffButton->setType(RkButton::ButtonType::ButtonCheckable);
-        noteOffButton->setSize(23, 16);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_unpressed)),
+        noteOffButton->setImage(RK_RC_IMAGE(note_off_unpressed),
                                 RkButton::State::Unpressed);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_hover)),
+        noteOffButton->setImage(RK_RC_IMAGE(note_off_hover),
                                 RkButton::State::UnpressedHover);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_pressed)),
-                                RkButton::State::Pressed);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_hover)),
+        noteOffButton->setImage(RK_RC_IMAGE(note_off_hover),
                                 RkButton::State::PressedHover);
+        noteOffButton->setImage(RK_RC_IMAGE(note_off_pressed),
+                                RkButton::State::Pressed);
         noteOffButton->show();
         instrumentContainer->addWidget(noteOffButton);
-        instrumentContainer->addSpace(5);
+
+        createChokeGroupControl(instrumentContainer);
 
         // Limiter
         instrumentLimiter = new PercussionLimiter(this);
@@ -369,6 +370,46 @@ void KitPercussionView::createOutputChannelControl(RkContainer *container)
         container->addSpace(10);
 }
 
+void KitPercussionView::createChokeGroupControl(RkContainer *container)
+{
+        container->addSpace(10);
+        chokeGroupSpinbox = new RkSpinBox(this);
+        chokeGroupSpinbox->setSize(54, 30);
+        chokeGroupSpinbox->setTextColor({160, 160, 160});
+        chokeGroupSpinbox->setBackgroundColor({44, 44, 44});
+        chokeGroupSpinbox->label()->setTextColor({160, 160, 160});
+        chokeGroupSpinbox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
+                                                  RkButton::State::Unpressed);
+        chokeGroupSpinbox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::UnpressedHover);
+        chokeGroupSpinbox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
+                                                  RkButton::State::PressedHover);
+        chokeGroupSpinbox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_on),
+                                                  RkButton::State::Pressed);
+        chokeGroupSpinbox->downControl()->setImage(RK_RC_IMAGE(instr_key_down),
+                                                    RkButton::State::Unpressed);
+        chokeGroupSpinbox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::UnpressedHover);
+        chokeGroupSpinbox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_hover),
+                                                    RkButton::State::PressedHover);
+        chokeGroupSpinbox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
+                                                    RkButton::State::Pressed);
+        chokeGroupSpinbox->setCustomControls(true);
+        chokeGroupSpinbox->show();
+        RK_ACT_BIND(chokeGroupSpinbox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    instrumentModel,
+                    setChokeGroup(index));
+        RK_ACT_BIND(instrumentModel,
+                    chokeGroupUpdated,
+                    RK_ACT_ARGS(int index),
+                    chokeGroupSpinbox,
+                    setCurrentIndex(index));
+        container->addWidget(chokeGroupSpinbox);
+        container->addSpace(10);
+}
+
 void KitPercussionView::updateView()
 {
         auto backgorundColor = instrumentModel->isSelected() ? RkColor(55, 55, 55) : RkColor(50, 50, 50);
@@ -400,6 +441,13 @@ void KitPercussionView::updateView()
         for (size_t i = 0; i < nChannels; i++)
                 outputChannelSpinBox->addItem(std::to_string(i + 1));
         outputChannelSpinBox->setCurrentIndex(instrumentModel->channel());
+
+        // Chocke groups
+        auto nChokeGroups = instrumentModel->numberOfChokeGroups();
+        chokeGroupSpinbox->clear();
+        for (size_t i = 0; i < nChokeGroups; i++)
+                chokeGroupSpinbox->addItem( i > 0 ? std::to_string(i) : "-");
+        chokeGroupSpinbox->setCurrentIndex(instrumentModel->getChokeGroup());
 
         // Midi key name
         keySpinBox->clear();

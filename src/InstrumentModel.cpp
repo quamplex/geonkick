@@ -286,14 +286,18 @@ bool PercussionModel::isNoteOffEnabled() const
         return kitModel->isNoteOffEnabled(index());
 }
 
-void PercussionModel::setChokeGroup(PercussionModel::ChokeGroup group)
+unsigned int PercussionModel::numberOfChokeGroups() const
+{
+        return kitModel->numberOfChokeGroups(index());
+}
+
+void PercussionModel::setChokeGroup(int group)
 {
         if (kitModel->setChokeGroup(index(), group))
                 action chokeGroupUpdated(group);
 }
 
-PercussionModel::ChokeGroup
-PercussionModel::getChokeGroup() const
+int PercussionModel::getChokeGroup() const
 {
         return kitModel->getChokeGroup(index());
 }

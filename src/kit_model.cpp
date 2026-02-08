@@ -362,18 +362,30 @@ void KitModel::removePercussion(PercussionIndex index)
                 action per->modelUpdated();
 }
 
-void KitModel::moveSelectedPercussion(bool down)
+void KitModel::moveUpSelectedPercussion()
 {
-        auto currentIndex = getIndex(dspProxy->currentPercussion());
-        auto nextIndex = currentIndex + (down ? 1 : -1);
+        /*        auto currentIndex = getIndex(dspProxy->currentPercussion()) - 1;
         if (isValidIndex(currentIndex) && isValidIndex(nextIndex)) {
-                bool res = dspProxy->moveOrdrepedPercussionId(dspProxy->currentPercussion(), down ? 1 : -1);
+                bool res = dspProxy->moveOrdrepedPercussionId(dspProxy->currentPercussion(), -1);
                 if (res) {
                         instrumentsList[currentIndex]->setId(instrumentId(currentIndex));
                         instrumentsList[nextIndex]->setId(instrumentId(nextIndex));
                         selectPercussion(nextIndex);
                 }
-        }
+                }*/
+}
+
+void KitModel::moveDownSelectedPercussion()
+{
+        /*        auto currentIndex = getIndex(dspProxy->currentPercussion()) + 1;
+        if (isValidIndex(currentIndex) && isValidIndex(nextIndex)) {
+                bool res = dspProxy->moveOrdrepedPercussionId(dspProxy->currentPercussion(), 1);
+                if (res) {
+                        instrumentsList[currentIndex]->setId(instrumentId(currentIndex));
+                        instrumentsList[nextIndex]->setId(instrumentId(nextIndex));
+                        selectPercussion(nextIndex);
+                }
+                }*/
 }
 
 size_t KitModel::instrumentNumber() const
@@ -482,12 +494,17 @@ bool KitModel::isNoteOffEnabled(PercussionIndex index) const
         return dspProxy->isNoteOffEnabled(instrumentId(index));
 }
 
-bool KitModel::setChokeGroup(PercussionIndex index, KitModel::ChokeGroup group)
+unsigned int KitModel::numberOfChokeGroups(PercussionIndex index) const
+{
+        return dspProxy->numberOfChokeGroups(instrumentId(index));
+}
+
+bool KitModel::setChokeGroup(PercussionIndex index, int group)
 {
         return dspProxy->setChokeGroup(instrumentId(index), group);
 }
 
-KitModel::ChokeGroup KitModel::getChokeGroup(PercussionIndex index) const
+int KitModel::getChokeGroup(PercussionIndex index) const
 {
         return dspProxy->getChokeGroup(instrumentId(index));
 }

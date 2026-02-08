@@ -819,6 +819,9 @@ geonkick_note_off_enabled(struct geonkick *kick,
                           size_t id,
                           bool *enabled);
 
+unsigned int
+geonkick_number_of_choke_groups(struct geonkick *kick);
+
 enum geonkick_error
 geonkick_set_choke_group(struct geonkick *kick,
                          size_t id,

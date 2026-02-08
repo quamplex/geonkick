@@ -81,18 +81,9 @@ void BufferView::drawGraph()
         }
 
         RkPen pen = painter.pen();
-
-        // Simulate shadow
-        pen.setColor({44, 44, 44, 200});
-        pen.setWidth(2);
-        painter.setPen(pen);
-        painter.translate({2, 2});
-        painter.drawPolyline(graphPoints);
-
         pen.setColor({59, 130, 4, 150});
         pen.setWidth(1);
         painter.setPen(pen);
-        painter.translate({-2, -2});
         painter.drawPolyline(graphPoints);
 
         updateGraph = false;

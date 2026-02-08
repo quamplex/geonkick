@@ -131,7 +131,7 @@ PercussionState::PercussionState()
         , instrumentMuted{false}
         , instrumentSolo{false}
         , noteOffEnabled{false}
-        , chokeGroup{ChokeGroup::Off}
+        , chokeGroup{0}
         , limiterValue{0}
         , kickLength{50}
         , kickAmplitude{0.8}
@@ -313,12 +313,12 @@ bool PercussionState::isNoteOffEnabled() const
         return noteOffEnabled;
 }
 
-void PercussionState::setChokeGroup(PercussionState::ChokeGroup group)
+void PercussionState::setChokeGroup(int group)
 {
         chokeGroup = group;
 }
 
-PercussionState::ChokeGroup PercussionState::getChokeGroup() const
+int PercussionState::getChokeGroup() const
 {
         return chokeGroup;
 }
@@ -367,7 +367,7 @@ void PercussionState::parseKickObject(const rapidjson::Value &kick)
                 if (m.name == "noteOffEnabled" && m.value.IsBool())
                         setNoteOffEnabled(m.value.GetBool());
                 if (m.name == "chokeGroup" && m.value.IsInt())
-                        setChokeGroup(static_cast<ChokeGroup>(m.value.GetInt()));
+                        setChokeGroup(m.value.GetInt());
                 if (m.name == "mute" && m.value.IsBool())
                         setMute(m.value.GetBool());
                 if (m.name == "solo" && m.value.IsBool())
@@ -1259,7 +1259,7 @@ void PercussionState::kickJson(std::ostringstream &jsonStream) const
         jsonStream << "\"channel\": " << getChannel() << "," << std::endl;
         jsonStream << "\"midiChannel\": " << static_cast<int>(getMidiChannel()) << "," << std::endl;
         jsonStream << "\"noteOffEnabled\": " << (isNoteOffEnabled() ? "true" : "false") << "," << std::endl;
-        jsonStream << "\"chokeGroup\": " << static_cast<int>(getChokeGroup()) << ", " << std::endl;
+        jsonStream << "\"chokeGroup\": " << getChokeGroup() << ", " << std::endl;
         jsonStream << "\"mute\": " << (isMuted() ? "true" : "false") << "," << std::endl;
         jsonStream << "\"solo\": " << (isSolo() ? "true" : "false") << "," << std::endl;
         jsonStream << "\"name\": \"" << getName() << "\"," << std::endl;

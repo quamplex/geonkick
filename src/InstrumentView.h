@@ -79,6 +79,7 @@ class KitPercussionView: public GeonkickWidget
 
  private:
         void createOutputChannelControl(RkContainer *container);
+        void createChokeGroupControl(RkContainer *container);
 
         KitWidget *parentView;
         PercussionModel *instrumentModel;
@@ -93,6 +94,7 @@ class KitPercussionView: public GeonkickWidget
         RkButton *muteButton;
         RkButton *soloButton;
         RkButton *noteOffButton;
+        RkSpinBox *chokeGroupSpinbox;
         PercussionLimiter *instrumentLimiter;
         int padding;
 };

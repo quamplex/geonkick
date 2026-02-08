@@ -40,7 +40,6 @@ class PercussionModel : public AbstractModel {
  public:
         using PercussionIndex = int;
         using KeyIndex = GeonkickTypes::MidiKey;
-        using ChokeGroup = GeonkickTypes::ChokeGroup;
         explicit PercussionModel(KitModel* parent, int id = -1);
         virtual ~PercussionModel();
         void setId(int id);
@@ -83,8 +82,9 @@ class PercussionModel : public AbstractModel {
         void setMidiChannel(int chIndex);
         void enableNoteOff(bool b);
         bool isNoteOffEnabled() const;
-        void setChokeGroup(ChokeGroup group);
-        ChokeGroup getChokeGroup() const;
+        unsigned int numberOfChokeGroups() const;
+        void setChokeGroup(int group);
+        int getChokeGroup() const;
         OscillatorModel* getCurrentLayerOscillator(OscillatorModel::Type type) const;
         FilterModel* getFilter() const;
         DistortionModel* getDistortion() const;
@@ -140,8 +140,8 @@ class PercussionModel : public AbstractModel {
                     RK_ARG_TYPE(double),
                     RK_ARG_VAL(val));
         RK_DECL_ACT(chokeGroupUpdated,
-                    chokeGroupUpdated(ChokeGroup group),
-                    RK_ARG_TYPE(ChokeGroup),
+                    chokeGroupUpdated(int group),
+                    RK_ARG_TYPE(int),
                     RK_ARG_VAL(group));
         RK_DECL_ACT(lengthUpdated,
                     lengthUpdated(double val),

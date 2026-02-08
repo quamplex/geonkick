@@ -83,61 +83,117 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         topContainer->setSize({width(), 18});
 
         addButton = new RkButton(this);
+        addButton->setType(RkButton::ButtonType::ButtonPush);
         addButton->setBackgroundColor(background());
-        addButton->setCheckable(true);
-        addButton->setImage(RK_RC_IMAGE(add_per_button));
+        addButton->setImage(RK_RC_IMAGE(add_per_button),
+                            RkButton::State::Unpressed);
+        addButton->setImage(RK_RC_IMAGE(add_per_button_hover),
+                            RkButton::State::UnpressedHover);
+        addButton->setImage(RK_RC_IMAGE(add_per_button_hover),
+                            RkButton::State::PressedHover);
+        addButton->setImage(RK_RC_IMAGE(add_per_button_on),
+                            RkButton::State::Pressed);
         RK_ACT_BIND(addButton, toggled, RK_ACT_ARGS(bool b), kitModel, addNewPercussion());
         topContainer->addWidget(addButton);
         addButton->show();
 
         topContainer->addSpace(3);
         removeButton = new RkButton(this);
+        removeButton->setType(RkButton::ButtonType::ButtonPush);
         removeButton->setBackgroundColor(background());
-        removeButton->setCheckable(true);
-        removeButton->setImage(RK_RC_IMAGE(remove_per_button));
+        removeButton->setImage(RK_RC_IMAGE(remove_per_button),
+                            RkButton::State::Unpressed);
+        removeButton->setImage(RK_RC_IMAGE(remove_per_button_hover),
+                            RkButton::State::UnpressedHover);
+        removeButton->setImage(RK_RC_IMAGE(remove_per_button_hover),
+                            RkButton::State::PressedHover);
+        removeButton->setImage(RK_RC_IMAGE(remove_per_button_on),
+                            RkButton::State::Pressed);
         //RK_ACT_BIND(removeButton, toggled, RK_ACT_ARGS(bool b), kitModel, removeNewPercussion());
         topContainer->addWidget(removeButton);
         removeButton->show();
 
         topContainer->addSpace(3);
         duplicateButton = new RkButton(this);
+        duplicateButton->setType(RkButton::ButtonType::ButtonPush);
         duplicateButton->setBackgroundColor(background());
-        duplicateButton->setCheckable(true);
-        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button));
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button),
+                            RkButton::State::Unpressed);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_hover),
+                            RkButton::State::UnpressedHover);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_hover),
+                            RkButton::State::PressedHover);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_on),
+                            RkButton::State::Pressed);
         //RK_ACT_BIND(duplicateButton, toggled, RK_ACT_ARGS(bool b), kitModel, duplicateNewPercussion());
         topContainer->addWidget(duplicateButton);
         duplicateButton->show();
 
         topContainer->addSpace(3);
         moveupButton = new RkButton(this);
+        moveupButton->setType(RkButton::ButtonType::ButtonPush);
         moveupButton->setBackgroundColor(background());
-        moveupButton->setCheckable(true);
-        moveupButton->setImage(RK_RC_IMAGE(move_up_per_button));
-        RK_ACT_BIND(moveupButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(false));
+        moveupButton->setImage(RK_RC_IMAGE(move_up_per_button),
+                            RkButton::State::Unpressed);
+        moveupButton->setImage(RK_RC_IMAGE(move_up_per_button_hover),
+                            RkButton::State::UnpressedHover);
+        moveupButton->setImage(RK_RC_IMAGE(move_up_per_button_hover),
+                            RkButton::State::PressedHover);
+        moveupButton->setImage(RK_RC_IMAGE(move_up_per_button_on),
+                            RkButton::State::Pressed);
+        //        RK_ACT_BIND(moveupButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(false));
         topContainer->addWidget(moveupButton);
         moveupButton->show();
 
         topContainer->addSpace(3);
         movedownButton = new RkButton(this);
+        movedownButton->setType(RkButton::ButtonType::ButtonPush);
         movedownButton->setBackgroundColor(background());
-        movedownButton->setCheckable(true);
-        movedownButton->setImage(RK_RC_IMAGE(move_down_per_button));
-        RK_ACT_BIND(movedownButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(true));
+        movedownButton->setImage(RK_RC_IMAGE(move_down_per_button),
+                            RkButton::State::Unpressed);
+        movedownButton->setImage(RK_RC_IMAGE(move_down_per_button_hover),
+                            RkButton::State::UnpressedHover);
+        movedownButton->setImage(RK_RC_IMAGE(move_down_per_button_hover),
+                            RkButton::State::PressedHover);
+        movedownButton->setImage(RK_RC_IMAGE(move_down_per_button_on),
+                            RkButton::State::Pressed);
+        //        RK_ACT_BIND(movedownButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(true));
         topContainer->addWidget(movedownButton);
         movedownButton->show();
 
-        topContainer->addSpace(180);
+        // Midi channel
+        topContainer->addSpace(212);
         auto label = new RkLabel(this, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
         label->show();
-
         topContainer->addWidget(label);
+
+        // Midi key
+        topContainer->addSpace(30);
         label = new RkLabel(this, "Key");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({30, 20});
+        label->show();
+        topContainer->addWidget(label);
+
+        // Choke group
+        topContainer->addSpace(63);
+        label = new RkLabel(this, "Choke");
+        label->setTextColor(textColor());
+        label->setBackgroundColor(background());
+        label->setSize({50, 20});
+        label->show();
+        topContainer->addWidget(label);
+
+        // Output channel
+        topContainer->addSpace(180);
+        label = new RkLabel(this, "Output ch.");
+        label->setTextColor(textColor());
+        label->setBackgroundColor(background());
+        label->setSize({54, 20});
         label->show();
         topContainer->addWidget(label);
 
@@ -199,21 +255,6 @@ void KitWidget::removePercussion(PercussionIndex index)
 void KitWidget::copyPercussion(int index)
 {
         kitModel->copyPercussion(index);
-}
-
-void KitWidget::keyPressEvent(RkKeyEvent *event)
-{
-        if (event->key() != Rk::Key::Key_Up && event->key() != Rk::Key::Key_Down)
-                return;
-
-        auto index = kitModel->selectedPercussion();
-        if ((event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control))) {
-                kitModel->moveSelectedPercussion(event->key() == Rk::Key::Key_Down);
-        } else if (event->key() == Rk::Key::Key_Up) {
-                kitModel->selectPercussion(--index);
-        } else if (event->key() == Rk::Key::Key_Down) {
-                kitModel->selectPercussion(++index);
-        }
 }
 
 KitModel* KitWidget::getModel() const

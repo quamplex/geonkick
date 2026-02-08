@@ -104,7 +104,6 @@ class PercussionState
 {
  public:
         using DistortionType = DistortionInfo::DistortionType;
-        using ChokeGroup = GeonkickTypes::ChokeGroup;
         PercussionState();
         bool loadFile(const std::string &file);
         bool loadData(const std::string &data);
@@ -117,8 +116,8 @@ class PercussionState
         signed char getMidiChannel() const;
         void setNoteOffEnabled(bool b = true);
         bool isNoteOffEnabled() const;
-        void setChokeGroup(ChokeGroup group);
-        ChokeGroup getChokeGroup() const;
+        void setChokeGroup(int group);
+        int getChokeGroup() const;
         void setMute(bool b);
         bool isMuted() const;
         void setSolo(bool b);
@@ -256,7 +255,7 @@ private:
         bool instrumentMuted;
         bool instrumentSolo;
         bool noteOffEnabled;
-        ChokeGroup chokeGroup;
+        int chokeGroup;
         double limiterValue;
         double kickLength;
         double kickAmplitude;

@@ -50,7 +50,6 @@ class KitWidget: public GeonkickWidget
         void updatePercussion(PercussionIndex index, PercussionModel *model);
         void removePercussion(PercussionIndex index);
         void copyPercussion(int index);
-        void keyPressEvent(RkKeyEvent *event) override;
         void onUpdateLevelers();
 
  private:

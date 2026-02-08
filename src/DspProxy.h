@@ -103,8 +103,6 @@ class DspProxy : public RkObject {
           FullWaveRect    = GEONKICK_DISTORTION_FULL_WAVE_RECT,
   };
 
-  using ChokeGroup = GeonkickTypes::ChokeGroup;
-
   DspProxy(int sample_rate = Geonkick::defaultSampleRate,
            InstanceType instance = InstanceType::Standalone,
            geonkick *dsp = nullptr);
@@ -298,8 +296,9 @@ class DspProxy : public RkObject {
   bool isPercussionSolo(size_t id) const;
   bool enableNoteOff(size_t id, bool b = true);
   bool isNoteOffEnabled(size_t id) const;
-  bool setChokeGroup(size_t id, ChokeGroup group);
-  ChokeGroup getChokeGroup(size_t id) const;
+  unsigned int numberOfChokeGroups(size_t id) const;
+  bool setChokeGroup(size_t id, int group);
+  int getChokeGroup(size_t id) const;
   std::string getPercussionName(int index) const;
   void copyToClipboard();
   void pasteFromClipboard();

@@ -1458,7 +1458,12 @@ bool DspProxy::isNoteOffEnabled(size_t id) const
         return enabled;
 }
 
-bool DspProxy::setChokeGroup(size_t id, DspProxy::ChokeGroup group)
+unsigned int DspProxy::numberOfChokeGroups([[maybe_unused]] size_t id) const
+{
+        return geonkick_number_of_choke_groups(geonkickDsp);
+}
+
+bool DspProxy::setChokeGroup(size_t id, int group)
 {
         auto res = geonkick_set_choke_group(geonkickDsp,
                                             id,
@@ -1466,9 +1471,9 @@ bool DspProxy::setChokeGroup(size_t id, DspProxy::ChokeGroup group)
         return res == GEONKICK_OK;
 }
 
-DspProxy::ChokeGroup DspProxy::getChokeGroup(size_t id) const
+int DspProxy::getChokeGroup(size_t id) const
 {
-        return static_cast<ChokeGroup>(geonkick_get_choke_group(geonkickDsp, id));
+        return static_cast<int>(geonkick_get_choke_group(geonkickDsp, id));
 }
 
 int DspProxy::getUnusedPercussion() const

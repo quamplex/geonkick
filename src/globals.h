@@ -90,15 +90,6 @@ namespace GeonkickTypes
 using MidiKey = unsigned char;
 constexpr MidiKey geonkickAnyKey = GEONKICK_ANY_KEY;
 constexpr int geonkickAnyMidiChannel = GEONKICK_ANY_MIDI_CHANNEL;
-
-enum class ChokeGroup : int {
-        Off    = GKICK_CHOKE_GROUP_OFF,
-        Group1 = GKICK_CHOKE_GROUP_1,
-        Group2 = GKICK_CHOKE_GROUP_2,
-        Group3 = GKICK_CHOKE_GROUP_3,
-        Group4 = GKICK_CHOKE_GROUP_4
-};
-
 constexpr int ghokeGroupCount = GKICK_CHOKE_GROUP_COUNT;
 
 enum class Formats : int {

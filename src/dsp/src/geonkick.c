@@ -2006,6 +2006,12 @@ geonkick_instrument_note_off_enabled(struct geonkick *kick,
         return gkick_mixer_note_off_enabled(kick->audio->mixer, id, enabled);
 }
 
+unsigned int
+geonkick_number_of_choke_groups(struct geonkick *kick)
+{
+        return GKICK_CHOKE_GROUP_COUNT;
+}
+
 enum geonkick_error
 geonkick_set_choke_group(struct geonkick *kick,
                          size_t id,
