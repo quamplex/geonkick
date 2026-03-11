@@ -45,6 +45,7 @@ class KitWidget: public GeonkickWidget
         KitModel* getModel() const;
 
  protected:
+        GeonkickWidget* createTopMenu();
         void updateView();
         void addPercussion(PercussionModel *model);
         void updatePercussion(PercussionIndex index, PercussionModel *model);

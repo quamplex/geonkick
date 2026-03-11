@@ -78,11 +78,40 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         kitContainer->setHiddenTakesPlace();
         kitContainer->setSize(size());
 
-        auto topContainer = new RkContainer(this);
-        instrumentsContainer->setHiddenTakesPlace();
-        topContainer->setSize({width(), 18});
+        auto topMenu = createTopMenu();
 
-        addButton = new RkButton(this);
+        instrumentsContainer->setHiddenTakesPlace();
+        instrumentsContainer->setHeight(kitContainer->height() - topMenu->height());
+
+        kitContainer->addSpace(5);
+        kitContainer->addWidget(topMenu);
+        kitContainer->addSpace(5);
+        kitContainer->addContainer(instrumentsContainer);
+
+        updateView();
+        levelersTimer->start();
+
+        show();
+}
+
+GeonkickWidget* KitWidget::createTopMenu()
+{
+        auto topMenu = new GeonkickWidget(this);
+        topMenu->setSize({width(), 24});
+
+        auto topContainer = new RkContainer(topMenu);
+
+        auto topMenuButtons = new GeonkickWidget(topMenu);
+        //        topMenuButtons->setBorderWidth(1);
+        //        topMenuButtons->setBorderColor(38, 38, 38);
+        topMenuButtons->setSize(153 + 4, topMenu->height());
+        //topMenuButtons->setBackgroundColor({50, 50, 50});
+        topContainer->addWidget(topMenuButtons);
+
+        auto buttonsContainer = new RkContainer(topMenuButtons);
+
+        buttonsContainer->addSpace(5);
+        addButton = new RkButton(topMenuButtons);
         addButton->setType(RkButton::ButtonType::ButtonPush);
         addButton->setBackgroundColor(background());
         addButton->setImage(RK_RC_IMAGE(add_per_button),
@@ -93,12 +122,12 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
                             RkButton::State::PressedHover);
         addButton->setImage(RK_RC_IMAGE(add_per_button_on),
                             RkButton::State::Pressed);
-        RK_ACT_BIND(addButton, toggled, RK_ACT_ARGS(bool b), kitModel, addNewPercussion());
-        topContainer->addWidget(addButton);
+        RK_ACT_BIND(addButton, pressed, RK_ACT_ARGS(), kitModel, addNewPercussion());
+        buttonsContainer->addWidget(addButton);
         addButton->show();
 
-        topContainer->addSpace(3);
-        removeButton = new RkButton(this);
+        buttonsContainer->addSpace(3);
+        removeButton = new RkButton(topMenuButtons);
         removeButton->setType(RkButton::ButtonType::ButtonPush);
         removeButton->setBackgroundColor(background());
         removeButton->setImage(RK_RC_IMAGE(remove_per_button),
@@ -109,12 +138,12 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
                             RkButton::State::PressedHover);
         removeButton->setImage(RK_RC_IMAGE(remove_per_button_on),
                             RkButton::State::Pressed);
-        //RK_ACT_BIND(removeButton, toggled, RK_ACT_ARGS(bool b), kitModel, removeNewPercussion());
-        topContainer->addWidget(removeButton);
+        //RK_ACT_BIND(removeButton, pressed, RK_ACT_ARGS(), kitModel, removeNewPercussion());
+        buttonsContainer->addWidget(removeButton);
         removeButton->show();
 
-        topContainer->addSpace(3);
-        duplicateButton = new RkButton(this);
+        buttonsContainer->addSpace(3);
+        duplicateButton = new RkButton(topMenuButtons);
         duplicateButton->setType(RkButton::ButtonType::ButtonPush);
         duplicateButton->setBackgroundColor(background());
         duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button),
@@ -125,12 +154,12 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
                             RkButton::State::PressedHover);
         duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_on),
                             RkButton::State::Pressed);
-        //RK_ACT_BIND(duplicateButton, toggled, RK_ACT_ARGS(bool b), kitModel, duplicateNewPercussion());
-        topContainer->addWidget(duplicateButton);
+        //RK_ACT_BIND(duplicateButton, pressed, RK_ACT_ARGS(), kitModel, duplicateNewPercussion());
+        buttonsContainer->addWidget(duplicateButton);
         duplicateButton->show();
 
-        topContainer->addSpace(3);
-        moveupButton = new RkButton(this);
+        buttonsContainer->addSpace(3);
+        moveupButton = new RkButton(topMenuButtons);
         moveupButton->setType(RkButton::ButtonType::ButtonPush);
         moveupButton->setBackgroundColor(background());
         moveupButton->setImage(RK_RC_IMAGE(move_up_per_button),
@@ -141,12 +170,12 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
                             RkButton::State::PressedHover);
         moveupButton->setImage(RK_RC_IMAGE(move_up_per_button_on),
                             RkButton::State::Pressed);
-        //        RK_ACT_BIND(moveupButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(false));
-        topContainer->addWidget(moveupButton);
+        //        RK_ACT_BIND(moveupButton, pressed, RK_ACT_ARGS(), kitModel, moveSelectedPercussion(false));
+        buttonsContainer->addWidget(moveupButton);
         moveupButton->show();
 
-        topContainer->addSpace(3);
-        movedownButton = new RkButton(this);
+        buttonsContainer->addSpace(3);
+        movedownButton = new RkButton(topMenuButtons);
         movedownButton->setType(RkButton::ButtonType::ButtonPush);
         movedownButton->setBackgroundColor(background());
         movedownButton->setImage(RK_RC_IMAGE(move_down_per_button),
@@ -158,12 +187,12 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         movedownButton->setImage(RK_RC_IMAGE(move_down_per_button_on),
                             RkButton::State::Pressed);
         //        RK_ACT_BIND(movedownButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(true));
-        topContainer->addWidget(movedownButton);
+        buttonsContainer->addWidget(movedownButton);
         movedownButton->show();
 
         // Midi channel
         topContainer->addSpace(212);
-        auto label = new RkLabel(this, "MIDI Ch.");
+        auto label = new RkLabel(topMenu, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
@@ -172,7 +201,7 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
 
         // Midi key
         topContainer->addSpace(30);
-        label = new RkLabel(this, "Key");
+        label = new RkLabel(topMenu, "Key");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({30, 20});
@@ -181,7 +210,7 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
 
         // Choke group
         topContainer->addSpace(63);
-        label = new RkLabel(this, "Choke");
+        label = new RkLabel(topMenu, "Choke");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
@@ -190,24 +219,14 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
 
         // Output channel
         topContainer->addSpace(180);
-        label = new RkLabel(this, "Output ch.");
+        label = new RkLabel(topMenu, "Output ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({54, 20});
         label->show();
         topContainer->addWidget(label);
 
-        instrumentsContainer->setHeight(kitContainer->height() - topContainer->height());
-
-        kitContainer->addSpace(5);
-        kitContainer->addContainer(topContainer);
-        kitContainer->addSpace(5);
-        kitContainer->addContainer(instrumentsContainer);
-
-        updateView();
-        levelersTimer->start();
-
-        show();
+        return topMenu;
 }
 
 void KitWidget::updateView()

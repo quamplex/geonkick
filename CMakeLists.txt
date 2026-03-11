@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.7)
 
-project(geonkick VERSION 3.7.0)
+project(geonkick VERSION 3.31)
 
 math(EXPR GEONKICK_VERSION_HEX "0x${PROJECT_VERSION_MAJOR} * 0x10000 + 0x${PROJECT_VERSION_MINOR} * 0x100 + 0x${PROJECT_VERSION_PATCH}")
 set(GEONKICK_VERSION_STR "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
@@ -22,7 +22,7 @@ endif()
 
 set(REDKITE_INSTALL OFF CACHE BOOL "Disable Redkite install" FORCE)
 option(GEONKICK_BASIC_VERSION "Enable geonkick limited version" OFF)
-option(GKICK_PLUGIN "Enable build for plugin" ON)
+option(GKICK_PLUGIN "Enable build for plugin" OFF)
 option(GKICK_PRESETS "Enable presets" ON)
 
 if (GKICK_PLUGIN)
