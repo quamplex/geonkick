@@ -70,7 +70,7 @@ class TopBar : public GeonkickWidget
 #endif // GEONKICK_BASIC_VERSION
         GeonkickButton *tuneCheckbox;
         RkLineEdit *instrumentName;
-        GeonkickButton *controlsButton;
+        GeonkickButton *synthButton;
         GeonkickButton *midiKeyButton;
         RkSpinBox *midiChannelSpinBox;
         GeonkickButton *noteOffButton;

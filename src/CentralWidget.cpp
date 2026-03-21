@@ -46,7 +46,7 @@ CentralWidget::CentralWidget(GeonkickWidget *parent, GeonkickModel* model)
 void CentralWidget::showWidget(ViewState::View view)
 {
         switch (view) {
-        case ViewState::View::Controls:
+        case ViewState::View::Synth:
                 showSynthesizer();
                 break;
 #ifndef GEONKICK_SINGLE

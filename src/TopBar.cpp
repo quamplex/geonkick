@@ -41,8 +41,6 @@
 
 RK_DECLARE_IMAGE_RC(separator);
 RK_DECLARE_IMAGE_RC(logo);
-RK_DECLARE_IMAGE_RC(export);
-RK_DECLARE_IMAGE_RC(export_hover);
 RK_DECLARE_IMAGE_RC(reset);
 RK_DECLARE_IMAGE_RC(reset_hover);
 RK_DECLARE_IMAGE_RC(reset_active);
@@ -63,9 +61,9 @@ RK_DECLARE_IMAGE_RC(layer3_hover);
 RK_DECLARE_IMAGE_RC(tune_checkbox_on);
 RK_DECLARE_IMAGE_RC(tune_checkbox_off);
 RK_DECLARE_IMAGE_RC(tune_checkbox_hover);
-RK_DECLARE_IMAGE_RC(topmenu_controls_active);
-RK_DECLARE_IMAGE_RC(topmenu_controls_hover);
-RK_DECLARE_IMAGE_RC(topmenu_controls_off);
+RK_DECLARE_IMAGE_RC(topbar_synth_tab);
+RK_DECLARE_IMAGE_RC(topbar_synth_tab_hover);
+RK_DECLARE_IMAGE_RC(topbar_synth_tab_on);
 RK_DECLARE_IMAGE_RC(topmenu_midi_off);
 RK_DECLARE_IMAGE_RC(topmenu_midi_active);
 RK_DECLARE_IMAGE_RC(topmenu_midi_hover);
@@ -84,7 +82,6 @@ RK_DECLARE_IMAGE_RC(topmenu_settings_off);
 TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
-        , exportFileButton{nullptr}
         , presetNavigator{nullptr}
 #ifndef GEONKICK_BASIC_VERSION
         , layer1Button{nullptr}
@@ -92,7 +89,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         , layer3Button{nullptr}
 #endif // GEONKICK_BASIC_VERSION
         , instrumentName {nullptr}
-        , controlsButton{nullptr}
+        , synthButton{nullptr}
         , midiKeyButton{nullptr}
         , midiChannelSpinBox{nullptr}
         , noteOffButton{nullptr}
@@ -134,6 +131,44 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         settingsButton->show();
         RK_ACT_BIND(settingsButton, pressed, RK_ACT_ARGS(), this, showSettings());
         mainLayout->addWidget(settingsButton);
+
+         // Synth button
+        addSeparator(mainLayout);
+        synthButton = new GeonkickButton(this);
+        synthButton->setPressed(viewState()->getMainView() == ViewState::View::Synth);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab),
+                                 RkButton::State::Unpressed);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_hover),
+                                 RkButton::State::UnpressedHover);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_on),
+                                 RkButton::State::Pressed);
+
+        synthButton->show();
+        mainLayout->addWidget(synthButton);
+        RK_ACT_BIND(synthButton, pressed, RK_ACT_ARGS(),
+                    viewState(), setMainView(ViewState::View::Synth));
+        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
+                    synthButton, setPressed(view == ViewState::View::Synth));
+
+#ifndef GEONKICK_SINGLE
+        // Kit button
+        addSeparator(mainLayout);
+        kitButton = new GeonkickButton(this);
+        kitButton->setPressed(viewState()->getMainView() == ViewState::View::Kit);
+        kitButton->setFixedSize(25, 20);
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_off)),
+                               RkButton::State::Unpressed);
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_active)),
+                               RkButton::State::Pressed);
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_hover)),
+                               RkButton::State::UnpressedHover);
+        kitButton->show();
+        RK_ACT_BIND(kitButton, pressed, RK_ACT_ARGS(),
+                    viewState(), setMainView(ViewState::View::Kit));
+        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
+                    kitButton, setPressed(view == ViewState::View::Kit));
+                    mainLayout->addWidget(kitButton);
+#endif // GEONKICK_SINGLE
 
         addSeparator(mainLayout, 5);
 	auto playButton = new RkButton(this);
@@ -250,44 +285,6 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                      [=, this](bool toggled) {
                              geonkickModel->getKitModel()->currentPercussion()->enableNoteOff(toggled);
                      } );
-
-        // Controls button
-        addSeparator(mainLayout);
-        controlsButton = new GeonkickButton(this);
-        controlsButton->setPressed(viewState()->getMainView() == ViewState::View::Controls);
-        controlsButton->setFixedSize(50, 20);
-        controlsButton->setImage(RkImage(controlsButton->size(), RK_IMAGE_RC(topmenu_controls_off)),
-                               RkButton::State::Unpressed);
-        controlsButton->setImage(RkImage(controlsButton->size(), RK_IMAGE_RC(topmenu_controls_active)),
-                               RkButton::State::Pressed);
-        controlsButton->setImage(RkImage(controlsButton->size(), RK_IMAGE_RC(topmenu_controls_hover)),
-                               RkButton::State::UnpressedHover);
-        controlsButton->show();
-        mainLayout->addWidget(controlsButton);
-        RK_ACT_BIND(controlsButton, pressed, RK_ACT_ARGS(),
-                    viewState(), setMainView(ViewState::View::Controls));
-        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
-                    controlsButton, setPressed(view == ViewState::View::Controls));
-
-#ifndef GEONKICK_SINGLE
-        // Kit button
-        addSeparator(mainLayout);
-        kitButton = new GeonkickButton(this);
-        kitButton->setPressed(viewState()->getMainView() == ViewState::View::Kit);
-        kitButton->setFixedSize(25, 20);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_off)),
-                               RkButton::State::Unpressed);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_active)),
-                               RkButton::State::Pressed);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_hover)),
-                               RkButton::State::UnpressedHover);
-        kitButton->show();
-        RK_ACT_BIND(kitButton, pressed, RK_ACT_ARGS(),
-                    viewState(), setMainView(ViewState::View::Kit));
-        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
-                    kitButton, setPressed(view == ViewState::View::Kit));
-                    mainLayout->addWidget(kitButton);
-#endif // GEONKICK_SINGLE
 
         RK_ACT_BIND(geonkickModel->getKitModel(),
                     modelUpdated,

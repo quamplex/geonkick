@@ -33,7 +33,7 @@
 class ViewState: public RkObject {
  public:
         enum class View : int {
-                Controls = 0,
+                Synth    = 0,
                 Kit      = 1,
                 Presets  = 2,
                 Samples  = 3,

@@ -24,7 +24,7 @@
 #include "UiSettings.h"
 
 UiSettings::UiSettings()
-        : mainView{UiSettings::View::Controls}
+        : mainView{UiSettings::View::Synth}
         , samplesBrowser{"", "", UiSettings::Oscillator::Oscillator1}
 {
 }

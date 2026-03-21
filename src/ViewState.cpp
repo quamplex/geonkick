@@ -28,7 +28,7 @@
 
 ViewState::ViewState(RkObject *parent)
         : RkObject(parent)
-        , mainView{ViewState::View::Controls}
+        , mainView{ViewState::View::Synth}
         , samplesBrowser{"", "", ViewState::Oscillator::Oscillator1}
         , envelopeType{Envelope::Type::Amplitude}
         , envelopeCategory{Envelope::Category::InstrumentGlobal}
