@@ -41,23 +41,9 @@
 
 RK_DECLARE_IMAGE_RC(separator);
 RK_DECLARE_IMAGE_RC(logo);
-RK_DECLARE_IMAGE_RC(reset);
-RK_DECLARE_IMAGE_RC(reset_hover);
-RK_DECLARE_IMAGE_RC(reset_active);
 RK_DECLARE_IMAGE_RC(play);
 RK_DECLARE_IMAGE_RC(play_pressed);
 RK_DECLARE_IMAGE_RC(play_hover);
-#ifndef GEONKICK_BASIC_VERSION
-RK_DECLARE_IMAGE_RC(layer1);
-RK_DECLARE_IMAGE_RC(layer2);
-RK_DECLARE_IMAGE_RC(layer3);
-RK_DECLARE_IMAGE_RC(layer1_disabled);
-RK_DECLARE_IMAGE_RC(layer2_disabled);
-RK_DECLARE_IMAGE_RC(layer3_disabled);
-RK_DECLARE_IMAGE_RC(layer1_hover);
-RK_DECLARE_IMAGE_RC(layer2_hover);
-RK_DECLARE_IMAGE_RC(layer3_hover);
-#endif // GEONKICK_BASIC_VERSION
 RK_DECLARE_IMAGE_RC(tune_checkbox_on);
 RK_DECLARE_IMAGE_RC(tune_checkbox_off);
 RK_DECLARE_IMAGE_RC(tune_checkbox_hover);
@@ -83,11 +69,6 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
         , presetNavigator{nullptr}
-#ifndef GEONKICK_BASIC_VERSION
-        , layer1Button{nullptr}
-        , layer2Button{nullptr}
-        , layer3Button{nullptr}
-#endif // GEONKICK_BASIC_VERSION
         , instrumentName {nullptr}
         , synthButton{nullptr}
         , midiKeyButton{nullptr}
@@ -132,45 +113,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         RK_ACT_BIND(settingsButton, pressed, RK_ACT_ARGS(), this, showSettings());
         mainLayout->addWidget(settingsButton);
 
-         // Synth button
         addSeparator(mainLayout);
-        synthButton = new GeonkickButton(this);
-        synthButton->setPressed(viewState()->getMainView() == ViewState::View::Synth);
-        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab),
-                                 RkButton::State::Unpressed);
-        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_hover),
-                                 RkButton::State::UnpressedHover);
-        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_on),
-                                 RkButton::State::Pressed);
-
-        synthButton->show();
-        mainLayout->addWidget(synthButton);
-        RK_ACT_BIND(synthButton, pressed, RK_ACT_ARGS(),
-                    viewState(), setMainView(ViewState::View::Synth));
-        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
-                    synthButton, setPressed(view == ViewState::View::Synth));
-
-#ifndef GEONKICK_SINGLE
-        // Kit button
-        addSeparator(mainLayout);
-        kitButton = new GeonkickButton(this);
-        kitButton->setPressed(viewState()->getMainView() == ViewState::View::Kit);
-        kitButton->setFixedSize(25, 20);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_off)),
-                               RkButton::State::Unpressed);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_active)),
-                               RkButton::State::Pressed);
-        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_hover)),
-                               RkButton::State::UnpressedHover);
-        kitButton->show();
-        RK_ACT_BIND(kitButton, pressed, RK_ACT_ARGS(),
-                    viewState(), setMainView(ViewState::View::Kit));
-        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
-                    kitButton, setPressed(view == ViewState::View::Kit));
-                    mainLayout->addWidget(kitButton);
-#endif // GEONKICK_SINGLE
-
-        addSeparator(mainLayout, 5);
 	auto playButton = new RkButton(this);
         playButton->setType(RkButton::ButtonType::ButtonPush);
         playButton->setSize(21, 18);
@@ -183,53 +126,40 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         RK_ACT_BIND(playButton, pressed, RK_ACT_ARGS(), geonkickModel->getDspProxy(), playKick());
 	playButton->show();
         mainLayout->addWidget(playButton);
-        addSeparator(mainLayout, 5);
 
-#ifndef GEONKICK_BASIC_VERSION
-        createLyersButtons(mainLayout);
-        addSeparator(mainLayout, 5);
-#endif // GEONKICK_BASIC_VERSION
+        // Main menu
+        createMainMenu(mainLayout);
 
-        auto resetButton = new RkButton(this);
-        resetButton->setSize(33, 18);
-        resetButton->setType(RkButton::ButtonType::ButtonPush);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset)),
-                              RkButton::State::Unpressed);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_hover)),
-                              RkButton::State::UnpressedHover);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_active)),
-                              RkButton::State::Pressed);
-        resetButton->show();
-        RK_ACT_BIND(resetButton, pressed, RK_ACT_ARGS(), this, resetToDefault());
-        mainLayout->addWidget(resetButton);
-
-        addSeparator(mainLayout, 5);
-
-        tuneCheckbox = new GeonkickButton(this);
-        tuneCheckbox->setCheckable(true);
-        tuneCheckbox->setFixedSize(33, 18);
-        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_off)),
-                               RkButton::State::Unpressed);
-        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_on)),
-                               RkButton::State::Pressed);
-        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_hover)),
-                               RkButton::State::PressedHover);
-        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_hover)),
-                               RkButton::State::UnpressedHover);
-        tuneCheckbox->show();
-        RK_ACT_BIND(tuneCheckbox, toggled, RK_ACT_ARGS(bool b), geonkickModel->getDspProxy(),
-		    tuneAudioOutput(geonkickModel->getDspProxy()->currentPercussion(), b));
-        mainLayout->addWidget(tuneCheckbox);
+        // Preset Navigator
         addSeparator(mainLayout);
-
         presetNavigator = new PresetNavigator(this, geonkickModel->getPresetsModel());
         mainLayout->addWidget(presetNavigator);
 
         // Instrument name
         addSeparator(mainLayout);
         mainLayout->addWidget(createInstrumentNameLabel());
-        addSeparator(mainLayout);
 
+        // Midi channel
+        addSeparator(mainLayout);
+        midiChannelSpinBox = new RkSpinBox(this);
+        midiChannelSpinBox->setBackgroundColor({44, 44, 44});
+        midiChannelSpinBox->setTextColor({180, 180, 180});
+        midiChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
+        midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
+        midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
+        midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
+        midiChannelSpinBox->setSize(50, 20);
+        midiChannelSpinBox->show();
+        mainLayout->addWidget(midiChannelSpinBox);
+        RK_ACT_BINDL(midiChannelSpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                     [=, this](int index) {
+                             geonkickModel->getKitModel()->currentPercussion()->setMidiChannel(index - 1);
+                     });
+
+        // Midi Key
+        mainLayout->addSpace(3);
         midiKeyButton = new GeonkickButton(this);
         midiKeyButton->setTextColor({200, 200, 200});
         midiKeyButton->setType(RkButton::ButtonType::ButtonUncheckable);
@@ -246,27 +176,8 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                     showMidiPopup());
         mainLayout->addWidget(midiKeyButton);
 
-        // Midi channel
-        addSeparator(mainLayout);
-        midiChannelSpinBox = new RkSpinBox(this);
-        midiChannelSpinBox->setTextColor({250, 250, 250});
-        midiChannelSpinBox->setBackgroundColor({60, 57, 57});
-        midiChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->setSize(50, 20);
-        midiChannelSpinBox->show();
-        mainLayout->addWidget(midiChannelSpinBox);
-        RK_ACT_BINDL(midiChannelSpinBox,
-                    currentIndexChanged,
-                    RK_ACT_ARGS(int index),
-                     [=, this](int index) {
-                             geonkickModel->getKitModel()->currentPercussion()->setMidiChannel(index - 1);
-                     });
-
         // Note off button
-        addSeparator(mainLayout);
+        mainLayout->addSpace(3);
         noteOffButton = new GeonkickButton(this);
         noteOffButton->setType(RkButton::ButtonType::ButtonCheckable);
         noteOffButton->setSize(23, 16);
@@ -286,6 +197,24 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                              geonkickModel->getKitModel()->currentPercussion()->enableNoteOff(toggled);
                      } );
 
+        // Tune instrument
+        addSeparator(mainLayout);
+        tuneCheckbox = new GeonkickButton(this);
+        tuneCheckbox->setCheckable(true);
+        tuneCheckbox->setFixedSize(33, 18);
+        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_off)),
+                               RkButton::State::Unpressed);
+        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_on)),
+                               RkButton::State::Pressed);
+        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_hover)),
+                               RkButton::State::PressedHover);
+        tuneCheckbox->setImage(RkImage(tuneCheckbox->size(), RK_IMAGE_RC(tune_checkbox_hover)),
+                               RkButton::State::UnpressedHover);
+        tuneCheckbox->show();
+        RK_ACT_BIND(tuneCheckbox, toggled, RK_ACT_ARGS(bool b), geonkickModel->getDspProxy(),
+		    tuneAudioOutput(geonkickModel->getDspProxy()->currentPercussion(), b));
+        mainLayout->addWidget(tuneCheckbox);
+
         RK_ACT_BIND(geonkickModel->getKitModel(),
                     modelUpdated,
                     RK_ACT_ARGS(),
@@ -297,6 +226,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                              if (model->isSelected())
                                      updateGui();
                      } );
+
         updateGui();
 }
 
@@ -312,64 +242,46 @@ void TopBar::addSeparator(RkContainer *mainLayout, int width)
         mainLayout->addSpace(width);
 }
 
-#ifndef GEONKICK_BASIC_VERSION
-void TopBar::createLyersButtons(RkContainer *mainLayout)
+void TopBar::createMainMenu(RkContainer *layout)
 {
-        layer1Button = new GeonkickButton(this);
-        layer1Button->setBackgroundColor(background());
-        layer1Button->setSize(24, 18);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_disabled)),
+        // Synth button
+        addSeparator(layout);
+        synthButton = new GeonkickButton(this);
+        synthButton->setPressed(viewState()->getMainView() == ViewState::View::Synth);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab),
+                                 RkButton::State::Unpressed);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_hover),
+                                 RkButton::State::UnpressedHover);
+        synthButton->setImage(RK_RC_IMAGE(topbar_synth_tab_on),
+                                 RkButton::State::Pressed);
+
+        synthButton->show();
+        layout->addWidget(synthButton);
+        RK_ACT_BIND(synthButton, pressed, RK_ACT_ARGS(),
+                    viewState(), setMainView(ViewState::View::Synth));
+        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
+        synthButton, setPressed(view == ViewState::View::Synth));
+
+#ifndef GEONKICK_SINGLE
+        // Kit button
+        addSeparator(layout);
+        kitButton = new GeonkickButton(this);
+        kitButton->setPressed(viewState()->getMainView() == ViewState::View::Kit);
+        kitButton->setFixedSize(25, 20);
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_off)),
                                RkButton::State::Unpressed);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1)),
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_active)),
                                RkButton::State::Pressed);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_hover)),
-                               RkButton::State::PressedHover);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_hover)),
+        kitButton->setImage(RkImage(kitButton->size(), RK_IMAGE_RC(topmenu_kit_hover)),
                                RkButton::State::UnpressedHover);
-
-        layer1Button->setCheckable(true);
-        mainLayout->addWidget(layer1Button);
-        mainLayout->addSpace(2);
-
-        layer2Button = new GeonkickButton(this);
-        layer2Button->setBackgroundColor(background());
-        layer2Button->setSize(24, 18);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_disabled)),
-                               RkButton::State::Unpressed);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2)),
-                               RkButton::State::Pressed);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_hover)),
-                               RkButton::State::PressedHover);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_hover)),
-                               RkButton::State::UnpressedHover);
-
-        layer2Button->setCheckable(true);
-        mainLayout->addWidget(layer2Button);
-        mainLayout->addSpace(2);
-
-        layer3Button = new GeonkickButton(this);
-        layer3Button->setBackgroundColor(background());
-        layer3Button->setSize(24, 18);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_disabled)),
-                               RkButton::State::Unpressed);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3)),
-                               RkButton::State::Pressed);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_hover)),
-                               RkButton::State::PressedHover);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_hover)),
-                               RkButton::State::UnpressedHover);
-
-        layer3Button->setCheckable(true);
-        mainLayout->addWidget(layer3Button);
-
-        RK_ACT_BIND(layer1Button, toggled, RK_ACT_ARGS(bool b),
-                    geonkickModel->getDspProxy(), enbaleLayer(DspProxy::Layer::Layer1, b));
-        RK_ACT_BIND(layer3Button, toggled, RK_ACT_ARGS(bool b),
-                    geonkickModel->getDspProxy(), enbaleLayer(DspProxy::Layer::Layer3, b));
-        RK_ACT_BIND(layer2Button, toggled, RK_ACT_ARGS(bool b),
-        geonkickModel->getDspProxy(), enbaleLayer(DspProxy::Layer::Layer2, b));
+        kitButton->show();
+        RK_ACT_BIND(kitButton, pressed, RK_ACT_ARGS(),
+                    viewState(), setMainView(ViewState::View::Kit));
+        RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
+                    kitButton, setPressed(view == ViewState::View::Kit));
+                    layout->addWidget(kitButton);
+#endif // GEONKICK_SINGLE
 }
-#endif // GEONKICK_BASIC_VERSION
 
 RkWidget* TopBar::createInstrumentNameLabel()
 {
@@ -410,11 +322,6 @@ void TopBar::setPresetName(const std::string &name)
 void TopBar::updateGui()
 {
         auto dsp = geonkickModel->getDspProxy();
-#ifndef GEONKICK_BASIC_VERSION
-        layer1Button->setPressed(dsp->isLayerEnabled(DspProxy::Layer::Layer1));
-        layer2Button->setPressed(dsp->isLayerEnabled(DspProxy::Layer::Layer2));
-        layer3Button->setPressed(dsp->isLayerEnabled(DspProxy::Layer::Layer3));
-#endif // GEONKICK_BASIC_VERSION
         tuneCheckbox->setPressed(dsp->isAudioOutputTuned(dsp->currentPercussion()));
         setPresetName(geonkickModel->getKitModel()->currentPercussion()->name());
         auto kitModel = geonkickModel->getKitModel();

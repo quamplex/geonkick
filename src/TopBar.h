@@ -43,10 +43,6 @@ class TopBar : public GeonkickWidget
         void setPresetName(const std::string &name);
         RK_DECL_ACT(openAbout, openAbout(), RK_ARG_TYPE(), RK_ARG_VAL());
         RK_DECL_ACT(resetToDefault, resetToDefault(), RK_ARG_TYPE(), RK_ARG_VAL());
-        RK_DECL_ACT(layerSelected,
-                    layerSelected(DspProxy::Layer layer, bool b),
-                    RK_ARG_TYPE(DspProxy::Layer, bool),
-                    RK_ARG_VAL(layer, b));
         void updateGui();
 
  protected:
@@ -55,19 +51,13 @@ class TopBar : public GeonkickWidget
         void showSettings();
 
  private:
-#ifndef GEONKICK_BASIC_VERSION
-        void createLyersButtons(RkContainer *mainLayout);
-#endif // GEONKICK_BASIC_VERSION
         void addSeparator(RkContainer *mainLayout, int width = 5);
+        void createMainMenu(RkContainer *layout);
+
         GeonkickModel *geonkickModel;
         GeonkickButton *saveFileButton;
         GeonkickButton *exportFileButton;
         PresetNavigator* presetNavigator;
-#ifndef GEONKICK_BASIC_VERSION
-        GeonkickButton *layer1Button;
-        GeonkickButton *layer2Button;
-        GeonkickButton *layer3Button;
-#endif // GEONKICK_BASIC_VERSION
         GeonkickButton *tuneCheckbox;
         RkLineEdit *instrumentName;
         GeonkickButton *synthButton;
