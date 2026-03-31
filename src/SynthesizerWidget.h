@@ -33,6 +33,9 @@ class SynthesizerWidget: public GeonkickWidget
  public:
         SynthesizerWidget(GeonkickWidget *parent, GeonkickModel* model);
 
+protected:
+        RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
+
  private:
         GeonkickModel *geonkickModel;
 };

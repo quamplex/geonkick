@@ -2,7 +2,7 @@
  * File name: limiter.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2018 Iurie Nistor 
+ * Copyright (C) 2018 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
