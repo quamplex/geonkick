@@ -70,6 +70,7 @@ void InstrumentWaveform::updateWaveform(bool lock)
         } else {
                 redrawWaveform = true;
         }
+
         threadConditionVar.notify_one();
 }
 
@@ -82,28 +83,27 @@ void InstrumentWaveform::updateWaveformBuffer()
                         dspProxy->triggerSynthesis();
                 updateWaveform(false);
         }
+
         threadConditionVar.notify_one();
 }
 
 void InstrumentWaveform::drawInstrumentWaveform()
 {
         while (isRunning) {
-                // Ignore too many updates. The last update will be processed.
-                std::this_thread::sleep_for(std::chrono::milliseconds(60));
                 std::unique_lock<std::mutex> lock(waveformMutex);
                 if (!redrawWaveform)
                         threadConditionVar.wait(lock);
 
                 if (!isRunning)
                         break;
+
                 if (!currentEnvelope || kickBuffer.empty()) {
                         redrawWaveform = false;
                         continue;
                 }
+
                 const auto zoomFactor = currentEnvelope->getZoom();
                 const auto timeOrigin = currentEnvelope->getTimeOrigin();
-                // const auto envelopeAmplitude = currentEnvelope->envelopeAmplitude();
-                // const auto valueOrigin = currentEnvelope->getValueOrigin() / envelopeAmplitude;
                 auto waveformImage = std::make_shared<RkImage>(waveformSize.width(), waveformSize.height());
                 RkPainter painter(waveformImage.get());
                 RkPen pen(RkColor(59, 130, 4, 255));
@@ -116,6 +116,7 @@ void InstrumentWaveform::drawInstrumentWaveform()
                 const size_t indexOffset = (instrumentBuffer.size() / dspProxy->kickLength()) * timeOrigin;
                 const auto instrumentWaveformSize = waveformSize;
                 redrawWaveform = false;
+
                 lock.unlock();
 
                 /**
@@ -128,10 +129,6 @@ void InstrumentWaveform::drawInstrumentWaveform()
                 painter.translate({0, instrumentWaveformSize.height()});
                 for (decltype(instrumentBuffer.size()) i = indexOffset; i < instrumentBuffer.size(); i++) {
                         const double x = k * (i - indexOffset);
-                        // TODO:
-                        // const double value = -zoomFactor * (instrumentWaveformSize.height() / 2
-                        //                               + instrumentWaveformSize.height() * (instrumentBuffer[i] / 2
-                        //                               - valueOrigin));
                         const double value = -(instrumentWaveformSize.height() / 2
                                                + instrumentWaveformSize.height() * (instrumentBuffer[i] / 2));
                         double y = value;
@@ -159,8 +156,10 @@ void InstrumentWaveform::drawInstrumentWaveform()
                                 waveformPoints.emplace_back(RkRealPoint(x, y));
                         }
                 }
+
                 waveformPoints.shrink_to_fit();
                 painter.drawPolyline(waveformPoints);
+
                 if (eventQueue()) {
                         auto act = std::make_unique<RkAction>(this);
                         act->setCallback([this, waveformImage](void){ waveformUpdated(waveformImage); });
