@@ -252,8 +252,10 @@ void OscillatorGroupBox::createWaveFunctionGroupBox()
 void OscillatorGroupBox::createEvelopeGroupBox()
 {
         amplitudeEnvelopeBox = new GeonkickWidget(this);
+        amplitudeEnvelopeBox->setBorderWidth(1);
+        amplitudeEnvelopeBox->setBorderColor(55, 54, 54);
+        amplitudeEnvelopeBox->setBackgroundColor(70, 68, 68);
         amplitudeEnvelopeBox->setFixedSize(224, 125);
-        amplitudeEnvelopeBox->setBackgroundImage(RkImage(224, 125, RK_IMAGE_RC(hboxbk_osc_env)));
         amplitudeEnvelopeBox->setPosition(0, 85);
         amplitudeEnvelopeBox->show();
 
