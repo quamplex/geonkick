@@ -35,10 +35,53 @@ LayersGroupBox::LayersGroupBox(DspProxy *dsp, GeonkickWidget *parent)
         , dspProxy{dsp}
         , layerSliders{nullptr, nullptr, nullptr}
 {
-        setFixedSize(110, 65);
-        setBackgroundImage(RkImage(size(), RK_IMAGE_RC(layers_mixer)));
+        setFixedSize(224, 83);
+        setBackgroundColor({99, 0, 0});
 
+        auto layerLayout = new RkCotainer(this);
+        layerLayout->setSize(width(), 24);
 
+        craeteLayersMenu(layerLayout);
+
+        for (auto i = 0; i < 3; i++) {
+                // Name label
+                auto nameLabel = new RkLabel(this, RK_RC_IMAGE(layer1_name_label));
+                layerLayout->addWidget(nameLabel);
+
+                // Layer 1
+                layerLayout->addSpace(5);
+                auto layerSlider = new GeonkickSlider(this);
+                layerSlider->setFixedSize(100, 10);
+                layerLayout->addWidget(layerSlider);
+                RK_ACT_BIND(layerSlider,
+                            valueUpdated,
+                            RK_ACT_ARGS(int val),
+                            this,
+                            setLayerAmplitude(1, val));
+
+                // Enable button
+                auto enableButton = new RkButton(this);
+                muteButton->setType(RkButton::ButtonType::ButtonCheckable);
+                muteButton->setSize(16, 16);
+                muteButton->setImage(RkImage(muteButton->size(), RK_IMAGE_RC(mute)),
+                                     RkButton::State::Unpressed);
+                muteButton->setImage(RkImage(muteButton->size(), RK_IMAGE_RC(mute_hover)),
+                                     RkButton::State::UnpressedHover);
+                muteButton->setImage(RkImage(muteButton->size(), RK_IMAGE_RC(mute_on)),
+                                     RkButton::State::Pressed);
+                muteButton->setImage(RkImage(muteButton->size(), RK_IMAGE_RC(mute_hover)),
+                                     RkButton::State::PressedHover);
+                muteButton->show();
+        }
+
+        createLayerMixer();
+
+        show();
+        updateGui();
+}
+
+void LayersGroupBox::createLayerMixer()
+{
         int y = 23;
         for (auto i = 0; i < 3; i++) {
                 layerSliders[i] = new GeonkickSlider(this);
@@ -52,8 +95,6 @@ LayersGroupBox::LayersGroupBox(DspProxy *dsp, GeonkickWidget *parent)
                             this,
                             setLayerAmplitude(i, val));
         }
-        show();
-        updateGui();
 }
 
 void LayersGroupBox::setLayerAmplitude(int layer, int val)

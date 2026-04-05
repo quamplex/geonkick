@@ -77,6 +77,12 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
+        auto layersWidget = new LayersGroupBox(geonkickModel->getDspProxy(), this);
+        layersWidget->setPosition(3 * (8 + 223), controlsYPos);
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
+        layersWidget->show();
+
+        controlsYPos = layersWidget->y() + layersWidget->height();
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);
@@ -97,15 +103,6 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
                     globalWidget,
                     setModel(kitModel->currentPercussion()));
         globalWidget->show();
-
-        auto layersWidget = new LayersGroupBox(geonkickModel->getDspProxy(), this);
-        layersWidget->setPosition(3 * (8 + 223), controlsYPos + 270);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
-        layersWidget->show();
-
-        auto appInfoWidget = new AppInfoWidget(this, geonkickModel);
-        appInfoWidget->setPosition(layersWidget->x() + layersWidget->width(),
-                                   controlsYPos + layersWidget->y());
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());

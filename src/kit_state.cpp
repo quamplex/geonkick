@@ -30,7 +30,7 @@ KitState::KitState()
         , kitName{"Default"}
         , kitAuthor{"Unknown"}
 {
-        addPercussion(std::move(DspProxy::getDefaultPercussionState()));
+        addPercussion(DspProxy::getDefaultPercussionState());
 }
 
 bool KitState::open(const std::string &fileName)
