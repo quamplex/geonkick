@@ -263,7 +263,7 @@ class DspProxy : public RkObject {
   Layer layer() const;
   void setLayerAmplitude(Layer layer, double amplitude);
   double getLayerAmplitude(Layer layer) const;
-  void enbaleLayer(Layer layer, bool enable = true);
+  void enableLayer(Layer layer, bool enable = true);
   bool isLayerEnabled(Layer layer) const;
   int getOscIndex(int index) const;
   double getLimiterLevelerValue(size_t index = -1) const;

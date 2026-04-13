@@ -264,7 +264,7 @@ void DspProxy::setPercussionState(const std::unique_ptr<PercussionState> &state)
         soloPercussion(state->getId(), state->isSolo());
         auto nLayers = numberOfLayers();
         for (size_t i = 0; i < nLayers; i++) {
-                enbaleLayer(static_cast<Layer>(i), state->isLayerEnabled(static_cast<Layer>(i)));
+                enableLayer(static_cast<Layer>(i), state->isLayerEnabled(static_cast<Layer>(i)));
                 setLayerAmplitude(static_cast<Layer>(i), state->getLayerAmplitude(static_cast<Layer>(i)));
         }
         setLimiterValue(state->getLimiterValue());
@@ -1374,7 +1374,7 @@ double DspProxy::getLayerAmplitude(Layer layer) const
         return amplitude;
 }
 
-void DspProxy::enbaleLayer(Layer layer, bool enable)
+void DspProxy::enableLayer(Layer layer, bool enable)
 {
         geonkick_enable_group(geonkickDsp,
                               static_cast<int>(layer),

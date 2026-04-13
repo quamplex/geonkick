@@ -1,8 +1,8 @@
 /**
- * File name: layers_group_box.h
+ * File name: LayersView.h
  * Project: Geonkick (A percussive synthesizer)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Geonkick.
  *
@@ -21,27 +21,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef GEONKICK_LAYERS_GROUPBOX_H
-#define GEONKICK_LAYERS_GROUPBOX_H
+#ifndef GKICK_LAYERS_VIEW_H
+#define GKICK_LAYERS_VIEW_H
 
-#include "geonkick_groupbox.h"
+#include "AbstractView.h"
 
-class GeonkickSlider;
-class DspProxy;
-class GeonkickButton;
+class LayersModel;
 
-class LayersGroupBox: public GeonkickGroupBox
+class LayersView: public AbstractView
 {
  public:
-        LayersGroupBox(DspProxy *dsp, GeonkickWidget *parent);
-        void updateGui();
+        LayersView(GeonkickWidget *parent, LayersModel *model);
+        void createView() override;
+        void updateView() override;
 
  protected:
-        void setLayerAmplitude(int layer, int val);
-
- private:
-        DspProxy *dspProxy;
-        GeonkickSlider *layerSliders[3];
+        void bindModel() override;
+        void unbindModel() override;
 };
 
-#endif // GEONKICK_LAYERS_WIDGET_H
+#endif // GKICK_LAYERS_VIEW_H
