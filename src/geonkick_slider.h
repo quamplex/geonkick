@@ -31,9 +31,9 @@ class RkMouseEvent;
 class GeonkickSlider: public GeonkickWidget
 {
  public:
-        enum class Orientation:char {
-               Horizontal,
-               Vertical
+        enum class Orientation {
+                Horizontal,
+                Vertical
         };
 
         GeonkickSlider(GeonkickWidget *parent,

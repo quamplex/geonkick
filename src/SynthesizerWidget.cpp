@@ -77,10 +77,8 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
-        auto layersWidget = new LayersGroupBox(geonkickModel->getDspProxy(), this);
+        auto layersWidget = new LayersView(geonkickModel->layers(), this);
         layersWidget->setPosition(3 * (8 + 223), controlsYPos);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), layersWidget, updateGui());
-        layersWidget->show();
 
         controlsYPos = layersWidget->y() + layersWidget->height();
         auto kitModel = geonkickModel->getKitModel();

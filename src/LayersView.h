@@ -26,18 +26,37 @@
 
 #include "AbstractView.h"
 
-class LayersModel;
+#include <vector>
 
-class LayersView: public AbstractView
+class LayersModel;
+class GeonkickButton;
+class GeonkickLimiter;
+class RkLabel;
+
+class LayersView : public AbstractView
 {
- public:
+public:
         LayersView(GeonkickWidget *parent, LayersModel *model);
+        virtual ~LayersView() = default;
+
         void createView() override;
         void updateView() override;
 
- protected:
+protected:
         void bindModel() override;
         void unbindModel() override;
+
+private:
+        void updateLimiter(size_t i, double val);
+        void setLimiter(size_t i, int val);
+
+        struct LayerControls {
+                RkLabel *name;
+                GeonkickLimiter *limiter;
+                GeonkickButton *enableButton;
+        };
+
+        std::vector<LayerControls> layerControls;
 };
 
 #endif // GKICK_LAYERS_VIEW_H
