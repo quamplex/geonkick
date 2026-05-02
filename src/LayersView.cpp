@@ -1,5 +1,5 @@
 /**
- * File name: layers_group_box.cpp
+ * File name: LayersView.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2019 Iurie Nistor

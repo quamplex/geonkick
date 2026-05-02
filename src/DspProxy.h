@@ -375,7 +375,7 @@ protected:
                                   size_t size,
                                   size_t id);
   static void limiterCallback(void *arg, size_t index, gkick_real val);
-  void updateKickBuffer(const std::vector<gkick_real> &&buffer, size_t id);
+  void updateKickBuffer(std::vector<gkick_real> &&buffer, size_t id);
   void setOscillatorState(Layer layer,
                           OscillatorType oscillator,
                           const std::unique_ptr<PercussionState> &state);

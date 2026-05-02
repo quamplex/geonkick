@@ -1183,20 +1183,20 @@ double DspProxy::getLimiterLevelerValue(size_t index) const
         return 0;
 }
 
-void DspProxy::updateKickBuffer(const std::vector<gkick_real> &&buffer,
+void DspProxy::updateKickBuffer(std::vector<gkick_real> &&buffer,
                                 size_t id)
 {
         GEONKICK_LOG_DEBUG("id: " << id);
         std::lock_guard<std::mutex> lock(dspMutex);
         if (id < numberOfInstruments()) {
                 GEONKICK_LOG_DEBUG("kickBuffers[id] = buffer" << id);
-                kickBuffers[id] = buffer;
+                kickBuffers[id] = std::move(buffer);
         }
         if (eventQueue && id == currentPercussion()) {
                 auto act = std::make_unique<RkAction>();
-                act->setCallback([&](void){ kickUpdated(); });
+                act->setCallback([this](void){ kickUpdated(); });
                 eventQueue->postAction(std::move(act));
-                GEONKICK_LOG_DEBUG("eventQueue->postAction / kickUpdated()");
+                GEONKICK_LOG_DEBUG("waveform Updated");
         }
 }
 
@@ -1810,6 +1810,7 @@ void DspProxy::pasteFromClipboard()
 
 void DspProxy::notifyUpdateGraph()
 {
+        std::lock_guard<std::mutex> lock(dspMutex);
         if (eventQueue) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([&](void){ action kickUpdated(); });
@@ -1819,6 +1820,7 @@ void DspProxy::notifyUpdateGraph()
 
 void DspProxy::notifyUpdateParameters()
 {
+        std::lock_guard<std::mutex> lock(dspMutex);
         if (eventQueue) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([&](void){ action stateChanged(); });
@@ -1828,6 +1830,7 @@ void DspProxy::notifyUpdateParameters()
 
 void DspProxy::notifyUpdateGui()
 {
+        std::lock_guard<std::mutex> lock(dspMutex);
         if (eventQueue) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([&](void){
@@ -1840,6 +1843,7 @@ void DspProxy::notifyUpdateGui()
 
 void DspProxy::notifyPercussionUpdated(int id)
 {
+        std::lock_guard<std::mutex> lock(dspMutex);
         if (eventQueue) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([this, id](void){
@@ -1852,6 +1856,7 @@ void DspProxy::notifyPercussionUpdated(int id)
 
 void DspProxy::notifyKitUpdated()
 {
+        std::lock_guard<std::mutex> lock(dspMutex);
         if (eventQueue) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([&](void){
