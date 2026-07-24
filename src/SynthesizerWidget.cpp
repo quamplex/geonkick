@@ -31,9 +31,9 @@
 #include "oscillator_group_box.h"
 #include "HumanizerView.h"
 #include "general_group_box.h"
-#include "layers_group_box.h"
+#include "LayersView.h"
 #include "AppInfoWidget.h"
-#include "limiter.h"
+#include "Limiter.h"
 #include "kit_model.h"
 #ifndef GEONKICK_SINGLE
 #include "KitTabs.h"
@@ -51,10 +51,10 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         envelopeWidget->show();
 
         // Limiter
-        auto limiterWidget = new Limiter(geonkickModel->getDspProxy(), this);
-        limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8,
-                                   envelopeWidget->y());
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
+        //auto limiterWidget = new Limiter(geonkickModel->getDspProxy(), this);
+        //limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8,
+        //                           envelopeWidget->y());
+        //RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
 
         auto controlsYPos = envelopeWidget->y() +  envelopeWidget->height();
         const auto& oscillators = geonkickModel->getOscillatorModels();
@@ -77,10 +77,10 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
-        auto layersWidget = new LayersView(geonkickModel->layers(), this);
-        layersWidget->setPosition(3 * (8 + 223), controlsYPos);
+        //auto layersWidget = new LayersView(geonkickModel->layers(), this);
+        //layersWidget->setPosition(3 * (8 + 223), controlsYPos);
 
-        controlsYPos = layersWidget->y() + layersWidget->height();
+        controlsYPos = 0;//layersWidget->y() + layersWidget->height();
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);

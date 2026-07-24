@@ -36,7 +36,7 @@ class LayersModel: public AbstractModel
  public:
         explicit LayersModel(DspProxy *proxy, RkObject *parent);
         ~LayersModel() = default;
-        const std::vector<Layers*>& layers() const;
+        const std::vector<LayerModel*>& layers() const;
 
  private:
         std::vector<LayerModel*> layersList;

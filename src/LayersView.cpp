@@ -43,8 +43,10 @@ LayersView::LayersView(GeonkickWidget *parent, LayersModel *model)
 {
         setFixedSize(224, 83);
         setBackgroundColor({99, 0, 0});
+
         createView();
         bindModel();
+
         show();
 }
 
@@ -55,13 +57,13 @@ void LayersView::createView()
         auto layerLayout = new RkContainer(this);
         layerLayout->setSize(width(), 83);
 
-        std::vector<RkImage> rcNameLabels {
+        const std::vector<RkImage> rcNameLabels {
                 RK_RC_IMAGE(layer1_name_label),
                 RK_RC_IMAGE(layer2_name_label),
                 RK_RC_IMAGE(layer3_name_label)
         };
 
-        auto nLayers = layersModel->layers().size();
+        const auto nLayers = layersModel->layers().size();
         for (size_t i = 0; i < nLayers; i++) {
                 // Name label
                 auto nameLabel = new RkLabel(this, rcNameLabels[i % rcNameLabels.size()]);
@@ -88,7 +90,7 @@ void LayersView::createView()
                 enableButton->show();
                 layerLayout->addWidget(enableButton);
 
-                layerControls.push_back({nameLabel, limiter, enableButton});
+                layerControls.empalce_back(nameLabel, limiter, enableButton);
         }
 }
 

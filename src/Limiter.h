@@ -30,7 +30,7 @@
 class GeonkickLimiter : public GeonkickWidget
 {
  public:
-        using Orientation = GeonkickSlider::Orientation::Horizontal;
+        using Orientation = GeonkickSlider::Orientation;
 
         GeonkickLimiter(GeonkickWidget *parent);
         ~GeonkickLimiter() = default;

@@ -27,7 +27,7 @@ LayersModel::LayersModel(DspProxy *proxy, RkObject *parent)
         : AbstractModel(parent)
         , dspProxy{proxy}
 {
-        size_t nLayers = numberOfLayers();
+        size_t nLayers = dspProxy->numberOfLayers();
         for (size_t i = 0; i < nLayers; i++)
-                layersList.push_back(new LayerModel(dspProxy));
+                layersList.push_back(new LayerModel(this, dspProxy));
 }

@@ -149,10 +149,10 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/KitWidget.h
   ${GKICK_COMMON_DIR}/KitTabs.h
   ${GKICK_COMMON_DIR}/envelope_draw_area.h
-  ${GKICK_COMMON_DIR}/limiter.h
+#  ${GKICK_COMMON_DIR}/Limiter.h
   ${GKICK_COMMON_DIR}/general_envelope.h
   ${GKICK_COMMON_DIR}/AppInfoWidget.h
-  ${GKICK_COMMON_DIR}/layers_group_box.h
+  ${GKICK_COMMON_DIR}/LayersView.h
   ${GKICK_COMMON_DIR}/general_group_box.h
   ${GKICK_COMMON_DIR}/EnvelopePoint.h
   ${GKICK_COMMON_DIR}/envelope.h
@@ -227,10 +227,10 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/KitWidget.cpp
   ${GKICK_COMMON_DIR}/KitTabs.cpp
   ${GKICK_COMMON_DIR}/envelope_draw_area.cpp
-  ${GKICK_COMMON_DIR}/limiter.cpp
+#  ${GKICK_COMMON_DIR}/Limiter.cpp
   ${GKICK_COMMON_DIR}/general_envelope.cpp
   ${GKICK_COMMON_DIR}/AppInfoWidget.cpp
-  ${GKICK_COMMON_DIR}/layers_group_box.cpp
+  ${GKICK_COMMON_DIR}/LayersView.cpp
   ${GKICK_COMMON_DIR}/general_group_box.cpp
   ${GKICK_COMMON_DIR}/EnvelopePoint.cpp
   ${GKICK_COMMON_DIR}/envelope.cpp
