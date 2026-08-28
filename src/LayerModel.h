@@ -1,5 +1,5 @@
 /**
- * File name: LayersModel.cpp
+ * File name: LayerModel.h
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2026 Iurie Nistor
@@ -21,19 +21,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "LayersModel.h"
-#include "LayerModel.h"
+#ifndef GKICK_LAYER_MODEL_H
+#define GKICK_LAYER_MODEL_H
 
-LayersModel::LayersModel(DspProxy *proxy, RkObject *parent)
-        : AbstractModel(parent)
-        , dspProxy{proxy}
-{
-        size_t nLayers = dspProxy->numberOfLayers();
-        for (size_t i = 0; i < nLayers; i++)
-                layersList.push_back(new LayerModel(this, dspProxy->layer(i)));
-}
+#include "AbstractModel.h"
 
-const std::vector<LayerModel*>& LayersModel::layers() const
+class DspLayerProxy;
+
+class LayerModel: public AbstractModel
 {
-        return layersList;
-}
+ public:
+        explicit LayersModel(DspLayerProxy *proxy, RkObject *parent);
+        ~LayersModel() = default;
+        bool isEnabled() const;
+        bool enable() const;
+        double limiter() const;
+        void setLimiter(double value);
+
+        RK_DECL_ACT(enbaledUpdated,
+                    enbaledUpdated(bool b),
+                    RK_ARG_TYPE(bool),
+                    RK_ARG_VAL(b));
+        RK_DECL_ACT(limiterUpdated,
+                    limiterUpdated(double value),
+                    RK_ARG_TYPE(double),
+                    RK_ARG_VAL(value));
+
+ private:
+        DspLayerProxy *dspProxy;
+};
+
+#endif // GKICK_LAYER_MODEL_H

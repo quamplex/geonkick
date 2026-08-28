@@ -25,6 +25,7 @@
 #include "Limiter.h"
 #include "geonkick_button.h"
 #include "LayersModel.h"
+#include "LayerModel.h"
 
 #include "RkLabel.h"
 #include "RkContainer.h"
@@ -69,7 +70,7 @@ void LayersView::createView()
                 auto nameLabel = new RkLabel(this, rcNameLabels[i % rcNameLabels.size()]);
                 layerLayout->addWidget(nameLabel);
 
-                // Limiter / Slider
+                // Limiter
                 layerLayout->addSpace(5);
                 auto limiter = new GeonkickLimiter(this);
                 limiter->setFixedSize(100, 10);
@@ -90,7 +91,7 @@ void LayersView::createView()
                 enableButton->show();
                 layerLayout->addWidget(enableButton);
 
-                layerControls.empalce_back(nameLabel, limiter, enableButton);
+                layerControls.push_back({nameLabel, limiter, enableButton});
         }
 }
 
@@ -101,7 +102,7 @@ void LayersView::updateView()
 
         size_t n = std::min(layers.size(), layerControls.size());
         for (size_t i = 0; i < n; i++) {
-                layerControls[i].limiter->setValue(layers[i]->getValue());
+                layerControls[i].limiter->setValue(layers[i]->getLimiterValue());
                 layerControls[i].enableButton->setPressed(layers[i]->isEnabled());
         }
 }
