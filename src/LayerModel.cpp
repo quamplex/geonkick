@@ -34,7 +34,7 @@ bool LayerModel::isEnabled() const
         return dspProxy->isEnabled();
 }
 
-bool LayerModel::enable(bool b) const
+void LayerModel::enable(bool b) const
 {
         if (dspProxy->enable(b))
                 action enbaledUpdated(b);

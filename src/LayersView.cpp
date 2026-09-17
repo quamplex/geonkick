@@ -102,7 +102,7 @@ void LayersView::updateView()
 
         size_t n = std::min(layers.size(), layerControls.size());
         for (size_t i = 0; i < n; i++) {
-                layerControls[i].limiter->setValue(layers[i]->getLimiterValue());
+                layerControls[i].limiter->setValue(layers[i]->limiter());
                 layerControls[i].enableButton->setPressed(layers[i]->isEnabled());
         }
 }
@@ -113,34 +113,28 @@ void LayersView::bindModel()
         auto nLayers = layersModel->layers().size();
 
         for (size_t i = 0; i < nLayers; i++) {
-                auto layer = layersModel->layer(i);
+                auto layer = layersModel->layers()[i];
+                auto& layerControl = layerControls[i];
 
-                // UI to Model: Limiter
-                RK_ACT_BIND(layerControls[i].limiter,
+                RK_ACT_BIND(layerControl.limiter,
                             valueUpdated,
                             RK_ACT_ARGS(double val),
                             layer,
                             setLimiter(val));
-
-                // UI to Model: Enable Toggled
-                RK_ACT_BIND(layerControls[i].enableButton,
+                RK_ACT_BIND(layerControl.enableButton,
                             toggled,
                             RK_ACT_ARGS(bool b),
                             layer,
                             enable(b));
-
-                // Model to UI: Enable State
                 RK_ACT_BIND(layer,
-                            enableChanged, // Assuming signal name
+                            enbaledUpdated,
                             RK_ACT_ARGS(bool b),
-                            layerControls[i].enableButton,
+                            layerControl.enableButton,
                             setPressed(b));
-
-                // Model to UI: Limiter Value
                 RK_ACT_BIND(layer,
                             limiterUpdated,
                             RK_ACT_ARGS(double val),
-                            layerControls[i],
+                            layerControl.limiter,
                             setValue(val));
         }
 }
@@ -150,8 +144,8 @@ void LayersView::unbindModel()
         auto model = getModel();
 
         unbindObject(model);
-        for (auto controls& : layerControls) {
-                controls.limiter->unbinObject(model);
-                controls.enableButton->unbinObject(model);
+        for (auto& control : layerControls) {
+                control.limiter->unbindObject(model);
+                control.enableButton->unbindObject(model);
         }
 }
