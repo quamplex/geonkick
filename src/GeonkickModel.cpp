@@ -26,12 +26,14 @@
 #include "kit_model.h"
 #include "preset_browser_model.h"
 #include "OscillatorModel.h"
+#include "LayersModel.h"
 
 GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
         : RkObject(parent)
         , dspProxy{dsp}
         , kitModel{new KitModel(this)}
         , presetModel{new PresetBrowserModel(this, dspProxy)}
+        , layersModel{new LayersModel(dsp, this)}
 {
         dspProxy->registerCallbacks(true);
         auto n = dspProxy->oscillatorsPerLayer();
@@ -65,6 +67,11 @@ KitModel* GeonkickModel::getKitModel() const
 PresetBrowserModel* GeonkickModel::getPresetsModel() const
 {
         return presetModel;
+}
+
+LayersModel* GeonkickModel::layers() const
+{
+        return layersModel;
 }
 
 GeonkickModel::InstanceType GeonkickModel::instanceType() const

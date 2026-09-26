@@ -23,13 +23,14 @@
 
 #include "Limiter.h"
 
+#include <algorithm>
+
 GeonkickLimiter::GeonkickLimiter(GeonkickWidget *parent)
         : GeonkickWidget(parent),
           rangeMin{0.0}
         , rangeMax{1.0}
+        , slider{new GeonkickSlider(this, GeonkickSlider::Orientation::Horizontal)}
 {
-        slider = new GeonkickSlider(this, GeonkickSlider::Orientation::Horizontal);
-
         RK_ACT_BIND(slider, valueUpdated, RK_ACT_ARGS(int val),
                     this, onSliderUpdated(val));
 }
@@ -40,7 +41,7 @@ void GeonkickLimiter::setRange(double min, double max)
         rangeMax = max;
 }
 
-void GeonkickLimiter::onSetValue(double value)
+void GeonkickLimiter::setValue(double value)
 {
         slider->onSetValue(mapDoubleToInt(value));
 }
@@ -59,7 +60,7 @@ void GeonkickLimiter::setSize(int w, int h)
 void GeonkickLimiter::onSliderUpdated(int value)
 {
         double dVal = mapIntToDouble(value);
-        RK_ACT_EMIT(valueUpdated, dVal);
+        action valueUpdated(dVal);
 }
 
 double GeonkickLimiter::mapIntToDouble(int val) const
@@ -74,7 +75,7 @@ int GeonkickLimiter::mapDoubleToInt(double val) const
                 return 0;
 
         val = std::clamp(val, rangeMin, rangeMax);
-        double norm = (clamped - rangeMin) / (rangeMax - rangeMin);
+        double norm = (val - rangeMin) / (rangeMax - rangeMin);
 
         return static_cast<int>(norm * 100.0);
 }

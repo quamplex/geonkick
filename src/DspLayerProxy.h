@@ -1,5 +1,5 @@
 /**
- * File name: LayerModel.cpp
+ * File name: DspLayerProxy.h
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2026 Iurie Nistor
@@ -21,33 +21,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "LayerModel.h"
-#include "DspLayerProxy.h"
+#ifndef DSP_LAYER_PROXY_H
+#define DSP_LAYER_PROXY_H
 
-LayerModel::LayerModel(DspLayerProxy *proxy, RkObject *parent)
-        : AbstractModel(parent)
-        , dspProxy{proxy}
-{
-}
+#include <cstddef>
 
-bool LayerModel::isEnabled() const
-{
-        return dspProxy->isEnabled();
-}
+class DspProxy;
 
-void LayerModel::enable(bool b)
-{
-        if (dspProxy->enable(b))
-                action enbaledUpdated(b);
-}
+class DspLayerProxy {
+public:
+        DspLayerProxy(DspProxy *dspProxy, size_t layer);
+        bool enable(bool b);
+        bool isEnabled() const;
+        double getLimiterValue() const;
+        bool setLimiterValue(double value);
 
-double LayerModel::limiter() const
-{
-        return dspProxy->getLimiterValue();
-}
+private:
+        DspProxy *dspProxy;
+        size_t layer;
+};
 
-void LayerModel::setLimiter(double value)
-{
-        if (dspProxy->setLimiterValue(value))
-                action limiterUpdated(value);
-}
+#endif // DSP_LAYER_PROXY_H

@@ -42,7 +42,6 @@ public:
         void showEnvelope(Envelope::Category category = Envelope::Category::InstrumentGlobal,
                           Envelope::Type type = Envelope::Type::Amplitude);
         void updateGui();
-        RK_DECL_ACT(requestUpdateGui, requestUpdateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
         RK_DECL_ACT(envelopeTypeSelected,
                     envelopeTypeSelected(Envelope::Type type),
                     RK_ARG_TYPE(Envelope::Type),
@@ -53,10 +52,6 @@ public:
 protected:
         Envelope* getEnvelope(Envelope::Category category);
         void updateInstrumentWaveform(std::shared_ptr<RkImage> waveformImage);
-#ifndef GEONKICK_BASIC_VERSION
-        void createLayersButtons(GeonkickWidget *buttomAreaWidget);
-#endif // GEONKICK_BASIC_VERSION
-        void setLayer(DspProxy::Layer layer);
         void createButtomMenu();
         void createBezierModeControls(GeonkickWidget* widget, RkContainer *container);
         void createZoomInfoLabel();
@@ -66,11 +61,6 @@ protected:
 private:
         std::unordered_map<int, std::unique_ptr<Envelope>> envelopes;
         EnvelopeWidgetDrawingArea *drawArea;
-#ifndef GEONKICK_BASIC_VERSION
-        GeonkickButton *layer1Button;
-        GeonkickButton *layer2Button;
-        GeonkickButton *layer3Button;
-#endif // GEONKICK_BASIC_VERSION
         GeonkickButton *bezierModeButton;
         GeonkickModel *geonkickModel;
         DspProxy *dspProxy;

@@ -31,23 +31,24 @@ class GeonkickLimiter : public GeonkickWidget
 {
  public:
         using Orientation = GeonkickSlider::Orientation;
-
         GeonkickLimiter(GeonkickWidget *parent);
         ~GeonkickLimiter() = default;
 
         void setRange(double min, double max);
         std::pair<double, double> getRange(double min, double max);
-
         void setValue(double value);
         double getValue() const;
-
-        RK_DECL_ACT(valueUpdated, valueUpdated(double value),
-                    RK_ARG_TYPE(double), RK_ARG_VAL(value));
+        void setSize(int w, int h);
+        RK_DECL_ACT(valueUpdated,
+                    valueUpdated(double value),
+                    RK_ARG_TYPE(double),
+                    RK_ARG_VAL(value));
 
  private:
         void onSliderUpdated(int value);
         double mapIntToDouble(int val) const;
         int mapDoubleToInt(double val) const;
+
         GeonkickSlider *slider;
         double rangeMin;
         double rangeMax;

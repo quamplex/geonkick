@@ -35,12 +35,6 @@
 #include "RkLabel.h"
 
 RK_DECLARE_IMAGE_RC(separator);
-RK_DECLARE_IMAGE_RC(layer1_env);
-RK_DECLARE_IMAGE_RC(layer1_env_active);
-RK_DECLARE_IMAGE_RC(layer2_env);
-RK_DECLARE_IMAGE_RC(layer2_env_active);
-RK_DECLARE_IMAGE_RC(layer3_env);
-RK_DECLARE_IMAGE_RC(layer3_env_active);
 RK_DECLARE_IMAGE_RC(bezier_mode_button);
 RK_DECLARE_IMAGE_RC(bezier_mode_button_on);
 RK_DECLARE_IMAGE_RC(bezier_mode_button_hover);
@@ -48,11 +42,6 @@ RK_DECLARE_IMAGE_RC(bezier_mode_button_hover);
 EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , drawArea{nullptr}
-#ifndef GEONKICK_BASIC_VERSION
-        , layer1Button{nullptr}
-        , layer2Button{nullptr}
-        , layer3Button{nullptr}
-#endif // GEONKICK_BASIC_VERSION
         , bezierModeButton {nullptr}
         , geonkickModel{model}
         , dspProxy{geonkickModel->getDspProxy()}
@@ -105,24 +94,11 @@ void EnvelopeWidget::createButtomMenu()
 {
         auto buttomAreaWidget = new GeonkickWidget(drawArea);
         buttomAreaWidget->setBackgroundColor(40, 40, 40);
-#ifndef GEONKICK_BASIC_VERSION
-        buttomAreaWidget->setFixedSize(120, 20);
-#else
         buttomAreaWidget->setFixedSize(25, 20);
-#endif  // GEONKICK_BASIC_VERSION
         buttomAreaWidget->setPosition(55 + drawArea->x(),
                                       drawArea->y() + drawArea->height() - buttomAreaWidget->height() - 6);
 
         auto menuContainer = new RkContainer(buttomAreaWidget);
-#ifndef GEONKICK_BASIC_VERSION
-        createLayersButtons(buttomAreaWidget);
-        menuContainer->addWidget(layer1Button);
-        menuContainer->addSpace(5);
-        menuContainer->addWidget(layer2Button);
-        menuContainer->addSpace(5);
-        menuContainer->addWidget(layer3Button);
-        menuContainer->addSpace(10);
-#endif // GEONKICK_BASIC_VERSION
         createBezierModeControls(buttomAreaWidget, menuContainer);
         buttomAreaWidget->show();
 }
@@ -200,62 +176,6 @@ void EnvelopeWidget::showEnvelope(Envelope::Category category, Envelope::Type ty
 void EnvelopeWidget::hideEnvelope(bool b)
 {
         drawArea->setHideEnvelope(b);
-}
-
-#ifndef GEONKICK_BASIC_VERSION
-void EnvelopeWidget::createLayersButtons(GeonkickWidget *buttomAreaWidget)
-{
-        layer1Button = new GeonkickButton(buttomAreaWidget);
-        layer1Button->setBackgroundColor(buttomAreaWidget->background());
-        layer1Button->setSize(24, 18);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_env)),
-                               RkButton::State::Unpressed);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_env_active)),
-                               RkButton::State::Pressed);
-        layer1Button->setImage(RkImage(layer1Button->size(), RK_IMAGE_RC(layer1_env_active)),
-                               RkButton::State::UnpressedHover);
-        layer1Button->setCheckable(true);
-        layer1Button->setPressed(true);
-        RK_ACT_BIND(layer1Button, toggled, RK_ACT_ARGS(bool b),
-                    this, setLayer(DspProxy::Layer::Layer1));
-
-        layer2Button = new GeonkickButton(buttomAreaWidget);
-        layer2Button->setBackgroundColor(buttomAreaWidget->background());
-        layer2Button->setSize(24, 18);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_env)),
-                               RkButton::State::Unpressed);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_env_active)),
-                               RkButton::State::Pressed);
-        layer2Button->setImage(RkImage(layer2Button->size(), RK_IMAGE_RC(layer2_env_active)),
-                               RkButton::State::UnpressedHover);
-        layer2Button->setCheckable(true);
-        RK_ACT_BIND(layer2Button, toggled, RK_ACT_ARGS(bool b),
-                    this, setLayer(DspProxy::Layer::Layer2));
-
-        layer3Button = new GeonkickButton(buttomAreaWidget);
-        layer3Button->setBackgroundColor(buttomAreaWidget->background());
-        layer3Button->setSize(24, 18);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_env)),
-                               RkButton::State::Unpressed);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_env_active)),
-                               RkButton::State::Pressed);
-        layer3Button->setImage(RkImage(layer3Button->size(), RK_IMAGE_RC(layer3_env_active)),
-                               RkButton::State::UnpressedHover);
-        layer3Button->setCheckable(true);
-        RK_ACT_BIND(layer3Button, toggled, RK_ACT_ARGS(bool b),
-                    this, setLayer(DspProxy::Layer::Layer3));
-}
-#endif // GEONKICK_BASIC_VERSION
-
-void EnvelopeWidget::setLayer(DspProxy::Layer layer)
-{
-#ifndef GEONKICK_BASIC_VERSION
-        layer1Button->setPressed(DspProxy::Layer::Layer1 == layer);
-        layer2Button->setPressed(DspProxy::Layer::Layer2 == layer);
-        layer3Button->setPressed(DspProxy::Layer::Layer3 == layer);
-#endif // GEONKICK_BASIC_VERSION
-        dspProxy->setLayer(layer);
-        action requestUpdateGui();
 }
 
 void EnvelopeWidget::updateGui()

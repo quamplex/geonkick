@@ -26,6 +26,7 @@
 
 #include "globals.h"
 #include "EnvelopePoint.h"
+#include "DspLayerProxy.h"
 
 class DspProxyHumanizer;
 class OscillatorModel;
@@ -261,9 +262,10 @@ class DspProxy : public RkObject {
   void triggerSynthesis();
   void setLayer(Layer layer);
   Layer layer() const;
-  void setLayerAmplitude(Layer layer, double amplitude);
+  DspLayerProxy* layer(size_t index) const;
+  bool setLayerAmplitude(Layer layer, double amplitude);
   double getLayerAmplitude(Layer layer) const;
-  void enableLayer(Layer layer, bool enable = true);
+  bool enableLayer(Layer layer, bool enable = true);
   bool isLayerEnabled(Layer layer) const;
   int getOscIndex(int index) const;
   double getLimiterLevelerValue(size_t index = -1) const;
@@ -398,6 +400,7 @@ private:
   mutable std::mutex dspMutex;
   RkEventQueue *eventQueue;
   std::vector<std::vector<gkick_real>> kickBuffers;
+  std::vector<std::unique_ptr<DspLayerProxy>> layerProxies;
   mutable Layer currentLayer;
   std::string kitName;
   std::string kitAuthor;

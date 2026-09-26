@@ -29,9 +29,7 @@
 #include <vector>
 
 class LayersModel;
-class GeonkickButton;
-class GeonkickLimiter;
-class RkLabel;
+class LayerView;
 
 class LayersView : public AbstractView
 {
@@ -47,16 +45,7 @@ protected:
         void unbindModel() override;
 
 private:
-        void updateLimiter(size_t i, double val);
-        void setLimiter(size_t i, int val);
-
-        struct LayerControls {
-                RkLabel *name;
-                GeonkickLimiter *limiter;
-                GeonkickButton *enableButton;
-        };
-
-        std::vector<LayerControls> layerControls;
+        std::vector<LayerView*> layerViews;
 };
 
 #endif // GKICK_LAYERS_VIEW_H

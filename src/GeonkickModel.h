@@ -32,6 +32,7 @@
 class KitModel;
 class PresetBrowserModel;
 class OscillatorModel;
+class LayersModel;
 
 class GeonkickModel : public RkObject {
  public:
@@ -46,6 +47,7 @@ class GeonkickModel : public RkObject {
         DspProxy* getDspProxy() const;
         KitModel* getKitModel() const;
         PresetBrowserModel* getPresetsModel() const;
+        LayersModel* layers() const;
         const std::vector<OscillatorModel*>& getOscillatorModels() const;
         InstanceType instanceType() const;
         KitType kitType() const;
@@ -56,6 +58,7 @@ class GeonkickModel : public RkObject {
         std::vector<OscillatorModel*> oscillatorModels;
         KitModel *kitModel;
         PresetBrowserModel* presetModel;
+        LayersModel *layersModel;
 };
 
 #endif // GEONKICK_MODEL_H

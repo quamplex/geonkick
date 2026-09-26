@@ -149,7 +149,7 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/KitWidget.h
   ${GKICK_COMMON_DIR}/KitTabs.h
   ${GKICK_COMMON_DIR}/envelope_draw_area.h
-#  ${GKICK_COMMON_DIR}/Limiter.h
+  ${GKICK_COMMON_DIR}/Limiter.h
   ${GKICK_COMMON_DIR}/general_envelope.h
   ${GKICK_COMMON_DIR}/AppInfoWidget.h
   ${GKICK_COMMON_DIR}/LayersView.h
@@ -161,8 +161,12 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/envelope_widget.h
   ${GKICK_COMMON_DIR}/knob.h
   ${GKICK_COMMON_DIR}/OscillatorModel.h
+  ${GKICK_COMMON_DIR}/LayerModel.h
+  ${GKICK_COMMON_DIR}/LayerView.h
+  ${GKICK_COMMON_DIR}/LayersModel.h
   ${GKICK_COMMON_DIR}/DspProxy.h
   ${GKICK_COMMON_DIR}/DspProxyHumanizer.h
+  ${GKICK_COMMON_DIR}/DspLayerProxy.h
   ${GKICK_COMMON_DIR}/InstrumentState.h
   ${GKICK_COMMON_DIR}/kit_state.h
   ${GKICK_COMMON_DIR}/oscillator_envelope.h
@@ -227,7 +231,7 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/KitWidget.cpp
   ${GKICK_COMMON_DIR}/KitTabs.cpp
   ${GKICK_COMMON_DIR}/envelope_draw_area.cpp
-#  ${GKICK_COMMON_DIR}/Limiter.cpp
+  ${GKICK_COMMON_DIR}/Limiter.cpp
   ${GKICK_COMMON_DIR}/general_envelope.cpp
   ${GKICK_COMMON_DIR}/AppInfoWidget.cpp
   ${GKICK_COMMON_DIR}/LayersView.cpp
@@ -239,8 +243,12 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/envelope_widget.cpp
   ${GKICK_COMMON_DIR}/knob.cpp
   ${GKICK_COMMON_DIR}/OscillatorModel.cpp
+  ${GKICK_COMMON_DIR}/LayerModel.cpp
+  ${GKICK_COMMON_DIR}/LayerView.cpp
+  ${GKICK_COMMON_DIR}/LayersModel.cpp
   ${GKICK_COMMON_DIR}/DspProxy.cpp
   ${GKICK_COMMON_DIR}/DspProxyHumanizer.cpp
+  ${GKICK_COMMON_DIR}/DspLayerProxy.cpp
   ${GKICK_COMMON_DIR}/InstrumentState.cpp
   ${GKICK_COMMON_DIR}/kit_state.cpp
   ${GKICK_COMMON_DIR}/oscillator_envelope.cpp
@@ -453,5 +461,3 @@ else(ENABLE_LOGGING)
   message(STATUS "Debug enabled: no" )
 endif(ENABLE_LOGGING)
 message(STATUS "------------------------------")
-
-

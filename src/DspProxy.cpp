@@ -53,6 +53,11 @@ DspProxy::DspProxy(int sample_rate, InstanceType instance, geonkick *dsp)
 	, sampleRate{sample_rate}
         , scaleFactor{1.0}
 {
+        const auto nLayers = numberOfLayers();
+        layerProxies.reserve(nLayers);
+        for (size_t i = 0; i < nLayers; ++i)
+                layerProxies.push_back(std::make_unique<DspLayerProxy>(this, i));
+
         setupPaths();
         uiSettings->setSamplesBrowserPath(getSettings("GEONKICK_CONFIG/HOME_PATH"));
         GeonkickConfig cfg;
@@ -1358,11 +1363,19 @@ DspProxy::Layer DspProxy::layer() const
         return currentLayer;
 }
 
-void DspProxy::setLayerAmplitude(Layer layer, double amplitude)
+DspLayerProxy* DspProxy::layer(size_t index) const
 {
-        geonkick_group_set_amplitude(geonkickDsp,
-                                     static_cast<size_t>(layer),
-                                     amplitude);
+        if (index >= layerProxies.size())
+                return nullptr;
+        return layerProxies[index].get();
+}
+
+bool DspProxy::setLayerAmplitude(Layer layer, double amplitude)
+{
+        auto result = geonkick_group_set_amplitude(geonkickDsp,
+                                                   static_cast<size_t>(layer),
+                                                   amplitude);
+        return result == GEONKICK_OK;
 }
 
 double DspProxy::getLayerAmplitude(Layer layer) const
@@ -1374,11 +1387,12 @@ double DspProxy::getLayerAmplitude(Layer layer) const
         return amplitude;
 }
 
-void DspProxy::enableLayer(Layer layer, bool enable)
+bool DspProxy::enableLayer(Layer layer, bool enable)
 {
-        geonkick_enable_group(geonkickDsp,
-                              static_cast<int>(layer),
-                              enable);
+        auto result = geonkick_enable_group(geonkickDsp,
+                                            static_cast<size_t>(layer),
+                                            enable);
+        return result == GEONKICK_OK;
 }
 
 bool DspProxy::isLayerEnabled(Layer layer) const

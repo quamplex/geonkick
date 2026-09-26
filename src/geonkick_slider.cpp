@@ -34,6 +34,7 @@ GeonkickSlider::GeonkickSlider(GeonkickWidget *parent, Orientation orientation)
         , defaultValue{0}
         , sliderPixels{0}
 {
+        setSize(100, 12);
         setBackgroundColor(100, 100, 100);
         show();
 }

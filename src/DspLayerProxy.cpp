@@ -1,5 +1,5 @@
 /**
- * File name: LayerModel.cpp
+ * File name: DspLayerProxy.cpp
  * Project: Geonkick (A percussive synthesizer)
  *
  * Copyright (C) 2026 Iurie Nistor
@@ -21,33 +21,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "LayerModel.h"
 #include "DspLayerProxy.h"
+#include "DspProxy.h"
 
-LayerModel::LayerModel(DspLayerProxy *proxy, RkObject *parent)
-        : AbstractModel(parent)
-        , dspProxy{proxy}
+DspLayerProxy::DspLayerProxy(DspProxy *proxy, size_t layerIndex)
+        : dspProxy{proxy}
+        , layer{layerIndex}
 {
 }
 
-bool LayerModel::isEnabled() const
+bool DspLayerProxy::enable(bool b)
 {
-        return dspProxy->isEnabled();
+        return dspProxy->enableLayer(static_cast<DspProxy::Layer>(layer), b);
 }
 
-void LayerModel::enable(bool b)
+bool DspLayerProxy::isEnabled() const
 {
-        if (dspProxy->enable(b))
-                action enbaledUpdated(b);
+        return dspProxy->isLayerEnabled(static_cast<DspProxy::Layer>(layer));
 }
 
-double LayerModel::limiter() const
+double DspLayerProxy::getLimiterValue() const
 {
-        return dspProxy->getLimiterValue();
+        return dspProxy->getLayerAmplitude(static_cast<DspProxy::Layer>(layer));
 }
 
-void LayerModel::setLimiter(double value)
+bool DspLayerProxy::setLimiterValue(double value)
 {
-        if (dspProxy->setLimiterValue(value))
-                action limiterUpdated(value);
+        return dspProxy->setLayerAmplitude(static_cast<DspProxy::Layer>(layer), value);
 }

@@ -22,41 +22,31 @@
  */
 
 #include "LayersView.h"
-#include "Limiter.h"
-#include "geonkick_button.h"
 #include "LayersModel.h"
-#include "LayerModel.h"
+#include "LayerView.h"
 
-#include "RkLabel.h"
 #include "RkContainer.h"
-
-#include <algorithm>
 
 RK_DECLARE_IMAGE_RC(layer1_name_label);
 RK_DECLARE_IMAGE_RC(layer2_name_label);
 RK_DECLARE_IMAGE_RC(layer3_name_label);
-RK_DECLARE_IMAGE_RC(layer_enable_button);
-RK_DECLARE_IMAGE_RC(layer_enable_button_hover);
-RK_DECLARE_IMAGE_RC(layer_enable_button_on);
 
 LayersView::LayersView(GeonkickWidget *parent, LayersModel *model)
         : AbstractView(parent, model)
 {
-        setFixedSize(224, 83);
-        setBackgroundColor({99, 0, 0});
-
+        setFixedSize(224, 80);
+        setBackgroundColor({70, 68, 68});
+        setBorderWidth(1);
+        setBorderColor(55, 54, 54);
         createView();
-        bindModel();
-
-        show();
 }
 
 void LayersView::createView()
 {
         auto layersModel = static_cast<LayersModel*>(getModel());
 
-        auto layerLayout = new RkContainer(this);
-        layerLayout->setSize(width(), 83);
+        auto layerListLayout = new RkContainer(this, Rk::Orientation::Vertical);
+        layerListLayout->setSize(size());
 
         const std::vector<RkImage> rcNameLabels {
                 RK_RC_IMAGE(layer1_name_label),
@@ -64,88 +54,30 @@ void LayersView::createView()
                 RK_RC_IMAGE(layer3_name_label)
         };
 
+        layerListLayout->addSpace(3);
         const auto nLayers = layersModel->layers().size();
         for (size_t i = 0; i < nLayers; i++) {
-                // Name label
-                auto nameLabel = new RkLabel(this, rcNameLabels[i % rcNameLabels.size()]);
-                layerLayout->addWidget(nameLabel);
-
-                // Limiter
-                layerLayout->addSpace(5);
-                auto limiter = new GeonkickLimiter(this);
-                limiter->setFixedSize(100, 10);
-                layerLayout->addWidget(limiter);
-
-                // Enable button
-                auto enableButton = new GeonkickButton(this);
-                enableButton->setType(RkButton::ButtonType::ButtonCheckable);
-                enableButton->setSize(16, 16);
-                enableButton->setImage(RK_RC_IMAGE(layer_enable_button),
-                                       RkButton::State::Unpressed);
-                enableButton->setImage(RK_RC_IMAGE(layer_enable_button_hover),
-                                       RkButton::State::UnpressedHover);
-                enableButton->setImage(RK_RC_IMAGE(layer_enable_button_on),
-                                       RkButton::State::Pressed);
-                enableButton->setImage(RK_RC_IMAGE(layer_enable_button_hover),
-                                       RkButton::State::PressedHover);
-                enableButton->show();
-                layerLayout->addWidget(enableButton);
-
-                layerControls.push_back({nameLabel, limiter, enableButton});
+                auto layerView = new LayerView(this,
+                                               layersModel->layers()[i],
+                                               layersModel,
+                                               i,
+                                               rcNameLabels[i % rcNameLabels.size()]);
+                layerViews.push_back(layerView);
+                layerListLayout->addSpace(3);
+                layerListLayout->addWidget(layerView);
         }
 }
 
 void LayersView::updateView()
 {
-        auto layersModel = static_cast<LayersModel*>(getModel());
-        auto& layers = layersModel->layers();
-
-        size_t n = std::min(layers.size(), layerControls.size());
-        for (size_t i = 0; i < n; i++) {
-                layerControls[i].limiter->setValue(layers[i]->limiter());
-                layerControls[i].enableButton->setPressed(layers[i]->isEnabled());
-        }
+        for (auto layerView : layerViews)
+                layerView->updateView();
 }
 
 void LayersView::bindModel()
 {
-        auto layersModel = static_cast<LayersModel*>(getModel());
-        auto nLayers = layersModel->layers().size();
-
-        for (size_t i = 0; i < nLayers; i++) {
-                auto layer = layersModel->layers()[i];
-                auto& layerControl = layerControls[i];
-
-                RK_ACT_BIND(layerControl.limiter,
-                            valueUpdated,
-                            RK_ACT_ARGS(double val),
-                            layer,
-                            setLimiter(val));
-                RK_ACT_BIND(layerControl.enableButton,
-                            toggled,
-                            RK_ACT_ARGS(bool b),
-                            layer,
-                            enable(b));
-                RK_ACT_BIND(layer,
-                            enbaledUpdated,
-                            RK_ACT_ARGS(bool b),
-                            layerControl.enableButton,
-                            setPressed(b));
-                RK_ACT_BIND(layer,
-                            limiterUpdated,
-                            RK_ACT_ARGS(double val),
-                            layerControl.limiter,
-                            setValue(val));
-        }
 }
 
 void LayersView::unbindModel()
 {
-        auto model = getModel();
-
-        unbindObject(model);
-        for (auto& control : layerControls) {
-                control.limiter->unbindObject(model);
-                control.enableButton->unbindObject(model);
-        }
 }

@@ -37,6 +37,13 @@ class LayersModel: public AbstractModel
         explicit LayersModel(DspProxy *proxy, RkObject *parent);
         ~LayersModel() = default;
         const std::vector<LayerModel*>& layers() const;
+        size_t currentLayer() const;
+        void setCurrentLayer(size_t index);
+
+        RK_DECL_ACT(currentLayerChanged,
+                    currentLayerChanged(size_t index),
+                    RK_ARG_TYPE(size_t),
+                    RK_ARG_VAL(index));
 
  private:
         std::vector<LayerModel*> layersList;

@@ -33,8 +33,9 @@
 #include "general_group_box.h"
 #include "LayersView.h"
 #include "AppInfoWidget.h"
-#include "Limiter.h"
+//#include "Limiter.h"
 #include "kit_model.h"
+#include "LayersModel.h"
 #ifndef GEONKICK_SINGLE
 #include "KitTabs.h"
 #endif // GEONKICK_SINGLE
@@ -58,7 +59,9 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
 
         auto controlsYPos = envelopeWidget->y() +  envelopeWidget->height();
         const auto& oscillators = geonkickModel->getOscillatorModels();
+
         setFixedSize({parent->width(), parent->height()});
+
         auto oscillator = oscillators[static_cast<int>(OscillatorModel::Type::Oscillator1)];
         auto widget = new OscillatorGroupBox(this, oscillator);
         widget->setPosition(0, controlsYPos);
@@ -77,10 +80,6 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), widget, updateGui());
         widget->show();
 
-        //auto layersWidget = new LayersView(geonkickModel->layers(), this);
-        //layersWidget->setPosition(3 * (8 + 223), controlsYPos);
-
-        controlsYPos = 0;//layersWidget->y() + layersWidget->height();
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);
@@ -101,6 +100,15 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
                     globalWidget,
                     setModel(kitModel->currentPercussion()));
         globalWidget->show();
+
+        controlsYPos = globalWidget->y() + globalWidget->height() + 4;
+        auto layersWidget = new LayersView(this, geonkickModel->layers());
+        layersWidget->setPosition(3 * (8 + 223), controlsYPos);
+        RK_ACT_BIND(geonkickModel->layers(),
+                    currentLayerChanged,
+                    RK_ACT_ARGS(size_t index),
+                    this,
+                    updateGui());
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());

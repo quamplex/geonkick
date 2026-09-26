@@ -23,17 +23,36 @@
 
 #include "LayersModel.h"
 #include "LayerModel.h"
+#include "DspProxy.h"
 
 LayersModel::LayersModel(DspProxy *proxy, RkObject *parent)
         : AbstractModel(parent)
         , dspProxy{proxy}
 {
         size_t nLayers = dspProxy->numberOfLayers();
+        layersList.reserve(nLayers);
         for (size_t i = 0; i < nLayers; i++)
-                layersList.push_back(new LayerModel(this, dspProxy->layer(i)));
+                layersList.push_back(new LayerModel(dspProxy->layer(i), this));
 }
 
 const std::vector<LayerModel*>& LayersModel::layers() const
 {
         return layersList;
+}
+
+size_t LayersModel::currentLayer() const
+{
+        return static_cast<size_t>(dspProxy->layer());
+}
+
+void LayersModel::setCurrentLayer(size_t index)
+{
+        if (index >= layersList.size())
+                return;
+
+        if (currentLayer() == index)
+                return;
+
+        dspProxy->setLayer(static_cast<DspProxy::Layer>(index));
+        action currentLayerChanged(index);
 }

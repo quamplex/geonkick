@@ -34,7 +34,7 @@ class LayerModel: public AbstractModel
         explicit LayerModel(DspLayerProxy *proxy, RkObject *parent);
         ~LayerModel() = default;
         bool isEnabled() const;
-        void enable(bool b = true) const;
+        void enable(bool b = true);
         double limiter() const;
         void setLimiter(double value);
 
