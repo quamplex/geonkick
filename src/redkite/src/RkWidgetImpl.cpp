@@ -262,8 +262,11 @@ void RkWidget::RkWidgetImpl::event(RkEvent *event)
                 RK_LOG_DEBUG("RkEvent::Type::Unknown:" << title());
         }
 
-        if (!event->isAccepted())
-                parent()->event(event);
+        if (!event->isAccepted()) {
+                auto parentWidget = dynamic_cast<RkWidget*>(parent());
+                if (parentWidget)
+                        RK_IMPL_PTR(parentWidget)->event(event);
+        }
 }
 
 void RkWidget::RkWidgetImpl::processPaintEvent(RkPaintEvent* event)

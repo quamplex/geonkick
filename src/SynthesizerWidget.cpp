@@ -50,6 +50,7 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         // Wavefrom widget
         auto envelopeWidget = new EnvelopeWidget(this, geonkickModel);
         envelopeWidget->show();
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
 
         // Limiter
         //auto limiterWidget = new Limiter(geonkickModel->getDspProxy(), this);

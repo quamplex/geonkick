@@ -35,6 +35,27 @@
 #include "RkEvent.h"
 #include "RkLabel.h"
 
+namespace {
+
+class LayerNameLabel : public RkLabel
+{
+public:
+        using RkLabel::RkLabel;
+
+protected:
+        void mouseButtonPressEvent(RkMouseEvent *event) override
+        {
+                event->setAccepted(false);
+        }
+
+        void hoverEvent(RkHoverEvent *event) override
+        {
+                event->setAccepted(false);
+        }
+};
+
+} // namespace
+
 RK_DECLARE_IMAGE_RC(layer_enable_button);
 RK_DECLARE_IMAGE_RC(layer_enable_button_hover);
 RK_DECLARE_IMAGE_RC(layer_enable_button_on);
@@ -66,7 +87,7 @@ LayerView::LayerView(GeonkickWidget *parent,
 void LayerView::createView()
 {
         int xPos = 2;
-        nameLabel = new RkLabel(this, layerNameLabel);
+        nameLabel = new LayerNameLabel(this, layerNameLabel);
         nameLabel->setBackgroundColor(background());
         nameLabel->setPosition(xPos, 1 + (height() - nameLabel->height()) / 2);
         nameLabel->show();
@@ -172,9 +193,9 @@ void LayerView::setSelectedLayer(size_t index)
 void LayerView::updateBackground()
 {
         const RkColor color = selected
-                ? RkColor{75, 83, 101}
+                ? RkColor{82, 82, 84}
                 : hovered
-                  ? RkColor{78, 78, 80}
+                  ? RkColor{74, 74, 76}
                   : RkColor{68, 68, 70};
         setBackgroundColor(color);
         if (nameLabel)
