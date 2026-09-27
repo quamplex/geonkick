@@ -85,7 +85,8 @@ GKickVstEditor::attached(void* parent, FIDString type)
         auto info = rk_from_native_x11(xDisplay, screenNumber, reinterpret_cast<Window>(parent));
 #endif // GEONKICK_OS_GNU
 
-        new MainWindow(*guiApp.get(), dspProxy, info);
+        mainWindow = new MainWindow(*guiApp.get(), dspProxy, info);
+        mainWindow->show();
 
 #ifdef GEONKICK_OS_GNU
         IRunLoop* loop = nullptr;

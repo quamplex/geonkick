@@ -21,14 +21,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <lv2/lv2plug.in/ns/lv2core/lv2.h>
-#include <lv2/lv2plug.in/ns/ext/atom/atom.h>
-#include <lv2/lv2plug.in/ns/ext/atom/util.h>
-#include <lv2/lv2plug.in/ns/ext/midi/midi.h>
-#include <lv2/lv2plug.in/ns/ext/urid/urid.h>
-#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
-#include <lv2/lv2plug.in/ns/ext/instance-access/instance-access.h>
-#include <lv2/lv2plug.in/ns/ext/state/state.h>
+#include <lv2/core/lv2.h>
+#include <lv2/atom/atom.h>
+#include <lv2/atom/util.h>
+#include <lv2/midi/midi.h>
+#include <lv2/urid/urid.h>
+#include <lv2/ui/ui.h>
+#include <lv2/instance-access/instance-access.h>
+#include <lv2/state/state.h>
 
 #include "MainWindow.h"
 #include "DspProxy.h"
@@ -321,6 +321,7 @@ static LV2UI_Handle gkick_instantiate_ui(const LV2UI_Descriptor*   descriptor,
         auto guiApp = new RkMain();
         geonkickLv2PLugin->getProxy()->setEventQueue(guiApp->eventQueue());
         auto mainWidget = new MainWindow(*guiApp, geonkickLv2PLugin->getProxy(), info);
+        mainWidget->show();
         RK_ACT_BINDL(mainWidget,
                      onScaleFactor,
                      RK_ACT_ARGS(double factor),
