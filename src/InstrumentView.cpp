@@ -62,6 +62,34 @@ RK_DECLARE_IMAGE_RC(instr_key_down_on);
 
 using namespace Geonkick;
 
+namespace {
+
+class InstrumentWaveformPreview : public BufferView
+{
+public:
+        using BufferView::BufferView;
+
+protected:
+        void mouseButtonPressEvent(RkMouseEvent *event) override
+        {
+                event->setAccepted(false);
+        }
+};
+
+class InstrumentNameLabel : public RkLabel
+{
+public:
+        using RkLabel::RkLabel;
+
+protected:
+        void mouseButtonPressEvent(RkMouseEvent *event) override
+        {
+                event->setAccepted(false);
+        }
+};
+
+} // namespace
+
 PercussionLimiter::PercussionLimiter(GeonkickWidget *parent)
         : GeonkickSlider(parent)
         , levelerValue{0}
@@ -151,7 +179,7 @@ void KitPercussionView::createView()
 
         // Insturment name
         instrumentContainer->addSpace(3);
-        nameLabel = new RkLabel(this, instrumentModel->name());
+        nameLabel = new InstrumentNameLabel(this, instrumentModel->name());
         auto font = nameLabel->font();
         font.setWeight(RkFont::Weight::Bold);
         nameLabel->setFont(font);
@@ -162,7 +190,7 @@ void KitPercussionView::createView()
 
         // Waveform preview
         instrumentContainer->addSpace(10);
-        waveformPreview = new BufferView(this, instrumentModel->data());
+        waveformPreview = new InstrumentWaveformPreview(this, instrumentModel->data());
         waveformPreview->setSize(140, height() - 10);
         instrumentContainer->addWidget(waveformPreview);
         instrumentContainer->addSpace(20);
