@@ -177,6 +177,17 @@ void SettingsWidget::createScaleGUISettings(RkContainer *container)
         buttonsContainer->addWidget(xNoScale);
 
         buttonsContainer->addSpace(7);
+        auto oneTwentyFiveCheckBox = new SettingsCheckBox(this, {16, 16});
+        oneTwentyFiveCheckBox->setPressed(config.getScaleFactor() == 1.25);
+        buttonsContainer->addWidget(oneTwentyFiveCheckBox);
+        buttonsContainer->addSpace(2);
+        auto xOneTwentyFiveScale = new RkLabel(this, "x1.25");
+        xOneTwentyFiveScale->setTextColor({255, 255, 255});
+        xOneTwentyFiveScale->setBackgroundColor(background());
+        xOneTwentyFiveScale->setSize(28, 16);
+        buttonsContainer->addWidget(xOneTwentyFiveScale);
+
+        buttonsContainer->addSpace(7);
         auto oneHalfCheckBox = new SettingsCheckBox(this, {16, 16});
         oneHalfCheckBox->setPressed(config.getScaleFactor() == 1.5);
         buttonsContainer->addWidget(oneHalfCheckBox);
@@ -186,6 +197,17 @@ void SettingsWidget::createScaleGUISettings(RkContainer *container)
         xOneHalfScale->setBackgroundColor(background());
         xOneHalfScale->setSize(22, 16);
         buttonsContainer->addWidget(xOneHalfScale);
+
+        buttonsContainer->addSpace(7);
+        auto oneSeventyFiveCheckBox = new SettingsCheckBox(this, {16, 16});
+        oneSeventyFiveCheckBox->setPressed(config.getScaleFactor() == 1.75);
+        buttonsContainer->addWidget(oneSeventyFiveCheckBox);
+        buttonsContainer->addSpace(2);
+        auto xOneSeventyFiveScale = new RkLabel(this, "x1.75");
+        xOneSeventyFiveScale->setTextColor({255, 255, 255});
+        xOneSeventyFiveScale->setBackgroundColor(background());
+        xOneSeventyFiveScale->setSize(30, 16);
+        buttonsContainer->addWidget(xOneSeventyFiveScale);
 
         buttonsContainer->addSpace(7);
         auto doubleScaleCheckBox = new SettingsCheckBox(this, {16, 16});
@@ -201,24 +223,50 @@ void SettingsWidget::createScaleGUISettings(RkContainer *container)
 
         RK_ACT_BINDL(noScaleCheckBox, toggled,  RK_ACT_ARGS(bool b),
                      [=, this](bool b){
+                             oneTwentyFiveCheckBox->setPressed(false);
                              oneHalfCheckBox->setPressed(false);
+                             oneSeventyFiveCheckBox->setPressed(false);
                              doubleScaleCheckBox->setPressed(false);
                              GeonkickConfig cfg;
                              cfg.setScaleFactor(1.0);
                              cfg.save();
                      });
+        RK_ACT_BINDL(oneTwentyFiveCheckBox, toggled,  RK_ACT_ARGS(bool b),
+                     [=, this](bool b){
+                             noScaleCheckBox->setPressed(false);
+                             oneHalfCheckBox->setPressed(false);
+                             oneSeventyFiveCheckBox->setPressed(false);
+                             doubleScaleCheckBox->setPressed(false);
+                             GeonkickConfig cfg;
+                             cfg.setScaleFactor(1.25);
+                             cfg.save();
+                     });
         RK_ACT_BINDL(oneHalfCheckBox, toggled,  RK_ACT_ARGS(bool b),
                      [=, this](bool b){
                              noScaleCheckBox->setPressed(false);
+                             oneTwentyFiveCheckBox->setPressed(false);
+                             oneSeventyFiveCheckBox->setPressed(false);
                              doubleScaleCheckBox->setPressed(false);
                              GeonkickConfig cfg;
                              cfg.setScaleFactor(1.5);
                              cfg.save();
                      });
+        RK_ACT_BINDL(oneSeventyFiveCheckBox, toggled,  RK_ACT_ARGS(bool b),
+                     [=, this](bool b){
+                             noScaleCheckBox->setPressed(false);
+                             oneTwentyFiveCheckBox->setPressed(false);
+                             oneHalfCheckBox->setPressed(false);
+                             doubleScaleCheckBox->setPressed(false);
+                             GeonkickConfig cfg;
+                             cfg.setScaleFactor(1.75);
+                             cfg.save();
+                     });
         RK_ACT_BINDL(doubleScaleCheckBox, toggled,  RK_ACT_ARGS(bool b),
                      [=, this](bool b){
                              noScaleCheckBox->setPressed(false);
+                             oneTwentyFiveCheckBox->setPressed(false);
                              oneHalfCheckBox->setPressed(false);
+                             oneSeventyFiveCheckBox->setPressed(false);
                              GeonkickConfig cfg;
                              cfg.setScaleFactor(2.0);
                              cfg.save();

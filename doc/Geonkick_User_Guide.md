@@ -123,7 +123,7 @@ The instrument's user interface serves as the primary window of Geonkick, displa
 - **'Ctrl + h':** Hides the envelope, showing only the graph.
 - **'Ctrl + c':** Copies the currently selected instrument.
 - **'Ctrl + v':** Pastes the copied instrument into the currently selected instrument.
-- **'Left Ctrl + f':** Scales up the UI by a factor of x1.5, 2x, or restores the original size.
+- **'Left Ctrl + f':** Scales up the UI by a factor of x1.25, x1.5, x1.75, 2x, or restores the original size.
 - **'Up/Down arrows':** Navigates the kit list.
 - **'Ctrl + Up/Down arrows':** Moves up/down the position of the currently selected instrument in the kit list.
 - **'Left Ctrl + left mouse double-click on an envelope point':** Opens the envelope point context input for its value.
@@ -340,7 +340,7 @@ For settings to take effect (especially UI-related ones), it may be necessary to
 or reopen the standalone application).
 
 - **Force all MIDI channels to** - Forces all instrument MIDI input channels to a specific channel (applies to all instances).
-- **Scale UI** - Sets the scale of the UI (options: no scale, 1.5x, and 2x). Useful for HiDPI screens.
+- **Scale UI** - Sets the scale of the UI (options: no scale, 1.25x, 1.5x, 1.75x, and 2x). Useful for HiDPI screens.
 - **Show sidebar** - Toggles the visibility of the sidebar.
 
 ### LV2 Plugin

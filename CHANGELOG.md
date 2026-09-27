@@ -1,3 +1,9 @@
+## [3.8.0]
+
+### Improvements
+
+- Add UI scale options for 1.25x and 1.75x in the Settings dialog.
+
 ## [3.7.0]
 
 ### Features
