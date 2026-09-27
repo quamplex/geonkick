@@ -51,6 +51,7 @@ EnvelopeWidgetDrawingArea::EnvelopeWidgetDrawingArea(GeonkickWidget *parent, Dsp
                     RK_ACT_ARGS(std::shared_ptr<RkImage> waveformImage),
                     this, updateInstrumentWaveform(waveformImage));
         addShortcut(Rk::Key::Key_Control_Left, Rk::KeyModifiers::Control_Left);
+        addShortcut(Rk::Key::Key_Control_Right, Rk::KeyModifiers::Control_Right);
 }
 
 void EnvelopeWidgetDrawingArea::setEnvelope(Envelope* envelope)
@@ -273,13 +274,13 @@ void EnvelopeWidgetDrawingArea::mouseMoveEvent(RkMouseEvent *event)
 
 void EnvelopeWidgetDrawingArea::shortcutEvent(RkKeyEvent *event)
 {
+        pointEditingMode = event->modifiers()
+                & static_cast<int>(Rk::KeyModifiers::Control);
+
         if (bezierMode)
                 return;
 
-        if (event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control))
-                addAsControlPoint = true;
-        else
-                addAsControlPoint = false;
+        addAsControlPoint = pointEditingMode;
 }
 
 void EnvelopeWidgetDrawingArea::wheelEvent(RkWheelEvent *event)
@@ -375,4 +376,3 @@ void EnvelopeWidgetDrawingArea::setPointEditingMode(bool b)
 {
         pointEditingMode = b;
 }
-

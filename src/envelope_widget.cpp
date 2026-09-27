@@ -105,10 +105,13 @@ void EnvelopeWidget::createButtomMenu()
 
 void EnvelopeWidget::createBezierModeControls(GeonkickWidget* widget, RkContainer *container)
 {
+        const bool bezierMode = GeonkickConfig().isBezierMode();
+        drawArea->setBezierMode(bezierMode);
+
         bezierModeButton = new GeonkickButton(widget);
         bezierModeButton->setSize(24, 18);
         bezierModeButton->setCheckable(true);
-        bezierModeButton->setPressed(GeonkickConfig().isBezierMode());
+        bezierModeButton->setPressed(bezierMode);
         bezierModeButton->setImage(RK_RC_IMAGE(bezier_mode_button),
                                   RkButton::State::Unpressed);
         bezierModeButton->setImage(RK_RC_IMAGE(bezier_mode_button_on),
