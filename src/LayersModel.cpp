@@ -31,8 +31,15 @@ LayersModel::LayersModel(DspProxy *proxy, RkObject *parent)
 {
         size_t nLayers = dspProxy->numberOfLayers();
         layersList.reserve(nLayers);
-        for (size_t i = 0; i < nLayers; i++)
-                layersList.push_back(new LayerModel(dspProxy->layer(i), this));
+        for (size_t i = 0; i < nLayers; i++) {
+                auto layer = new LayerModel(dspProxy->layer(i), this);
+                layersList.push_back(layer);
+                RK_ACT_BIND(this,
+                            modelUpdated,
+                            RK_ACT_ARGS(),
+                            layer,
+                            modelUpdated());
+        }
 }
 
 const std::vector<LayerModel*>& LayersModel::layers() const

@@ -56,10 +56,12 @@ protected:
 private:
         void updateBackground();
         void setSelectedLayer(size_t index);
+        void showValue(double value);
 
         RkImage layerNameLabel;
         RkLabel *nameLabel;
         GeonkickLimiter *limiter;
+        RkLabel *limiterValueLabel;
         GeonkickButton *enableButton;
         LayersModel *layersModel;
         size_t layerIndex;

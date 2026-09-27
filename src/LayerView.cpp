@@ -69,6 +69,7 @@ LayerView::LayerView(GeonkickWidget *parent,
         , layerNameLabel{layerNameLabel}
         , nameLabel{nullptr}
         , limiter{nullptr}
+        , limiterValueLabel{nullptr}
         , enableButton{nullptr}
         , layersModel{layerListModel}
         , layerIndex{index}
@@ -94,9 +95,8 @@ void LayerView::createView()
 
         xPos += nameLabel->width() + 3;
         limiter = new GeonkickLimiter(this);
-        constexpr int limiterWidth = 140;
         constexpr int limiterHeight = 10;
-        limiter->setSize(limiterWidth, limiterHeight);
+        limiter->setSize(130, limiterHeight);
         limiter->setPosition(xPos, 1 + (height() - limiterHeight) / 2);
 
         enableButton = new GeonkickButton(this);
@@ -113,6 +113,14 @@ void LayerView::createView()
         enableButton->setImage(RK_RC_IMAGE(layer_enable_button_hover),
                                RkButton::State::PressedHover);
         enableButton->show();
+
+        xPos += limiter->width() + 3;
+        limiterValueLabel = new LayerNameLabel(this);
+        limiterValueLabel->setSize(enableButton->x() - xPos - 2, 16);
+        limiterValueLabel->setBackgroundColor(background());
+        limiterValueLabel->setTextColor({160, 160, 160});
+        limiterValueLabel->setPosition(xPos, 1 + (height() - limiterValueLabel->height()) / 2);
+        limiterValueLabel->show();
 }
 
 void LayerView::updateView()
@@ -123,6 +131,7 @@ void LayerView::updateView()
 
         selected = layersModel->currentLayer() == layerIndex;
         limiter->setValue(model->limiter());
+        showValue(model->limiter());
         enableButton->setPressed(model->isEnabled());
         updateBackground();
 }
@@ -144,6 +153,11 @@ void LayerView::bindModel()
                     model,
                     enable(enabled));
         RK_ACT_BIND(model,
+                    modelUpdated,
+                    RK_ACT_ARGS(),
+                    this,
+                    updateView());
+        RK_ACT_BIND(model,
                     enbaledUpdated,
                     RK_ACT_ARGS(bool enabled),
                     enableButton,
@@ -153,6 +167,11 @@ void LayerView::bindModel()
                     RK_ACT_ARGS(double value),
                     limiter,
                     setValue(value));
+        RK_ACT_BIND(model,
+                    limiterUpdated,
+                    RK_ACT_ARGS(double value),
+                    this,
+                    showValue(value));
         RK_ACT_BIND(layersModel,
                     currentLayerChanged,
                     RK_ACT_ARGS(size_t index),
@@ -192,13 +211,28 @@ void LayerView::setSelectedLayer(size_t index)
 
 void LayerView::updateBackground()
 {
-        const RkColor color = selected
+        const auto color = selected
                 ? RkColor{82, 82, 84}
                 : hovered
-                  ? RkColor{74, 74, 76}
-                  : RkColor{68, 68, 70};
+                ? RkColor{74, 74, 76}
+                : RkColor{68, 68, 70};
         setBackgroundColor(color);
+
         if (nameLabel)
                 nameLabel->setBackgroundColor(color);
+        if (limiterValueLabel) {
+                limiterValueLabel->setBackgroundColor(color);
+                limiterValueLabel->setTextColor(selected
+                                                       ? RkColor{230, 230, 230}
+                                                       : RkColor{160, 160, 160});
+        }
+
         update();
+}
+
+void LayerView::showValue(double value)
+{
+        auto dbValue = Geonkick::toDecibel(value);
+        auto dbStrvalue = dbValue < -50 ? "-inf" : Geonkick::doubleToStr(dbValue, 0);
+        limiterValueLabel->setText(dbStrvalue + " dB");
 }

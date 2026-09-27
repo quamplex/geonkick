@@ -39,6 +39,22 @@ GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
         auto n = dspProxy->oscillatorsPerLayer();
         for (decltype(n) i = 0; i < n; i++)
                 oscillatorModels.emplace_back(new OscillatorModel(this, static_cast<OscillatorModel::Type>(i)));
+
+        RK_ACT_BIND(kitModel,
+                    modelUpdated,
+                    RK_ACT_ARGS(),
+                    layersModel,
+                    modelUpdated());
+        RK_ACT_BIND(kitModel,
+                    instrumentSelected,
+                    RK_ACT_ARGS(PercussionModel* model),
+                    layersModel,
+                    modelUpdated());
+        RK_ACT_BIND(kitModel,
+                    instrumentUpdated,
+                    RK_ACT_ARGS(PercussionModel*),
+                    layersModel,
+                    modelUpdated());
 }
 
 GeonkickModel::~GeonkickModel()

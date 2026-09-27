@@ -22,7 +22,7 @@ endif()
 
 set(REDKITE_INSTALL OFF CACHE BOOL "Disable Redkite install" FORCE)
 option(GEONKICK_BASIC_VERSION "Enable geonkick limited version" OFF)
-option(GKICK_PLUGIN "Enable build for plugin" OFF)
+option(GKICK_PLUGIN "Enable build for plugin" ON)
 option(GKICK_PRESETS "Enable presets" ON)
 
 if (GKICK_PLUGIN)
