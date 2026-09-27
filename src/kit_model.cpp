@@ -484,14 +484,14 @@ std::vector<float> KitModel::instrumentData(PercussionIndex index) const
         return dspProxy->getInstrumentBuffer(instrumentId(index));
 }
 
-bool KitModel::enableNoteOff(PercussionIndex index, bool b)
+DspProxy::PlaybackMode KitModel::playbackMode(PercussionIndex index) const
 {
-        return dspProxy->enableNoteOff(instrumentId(index), b);
+        return dspProxy->getPlaybackMode(instrumentId(index));
 }
 
-bool KitModel::isNoteOffEnabled(PercussionIndex index) const
+bool KitModel::setPlaybackMode(PercussionIndex index, DspProxy::PlaybackMode mode)
 {
-        return dspProxy->isNoteOffEnabled(instrumentId(index));
+        return dspProxy->setPlaybackMode(instrumentId(index), mode);
 }
 
 unsigned int KitModel::numberOfChokeGroups(PercussionIndex index) const

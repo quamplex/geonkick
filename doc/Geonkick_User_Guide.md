@@ -89,13 +89,13 @@ An instrument consists of three layers that can be turned on/off using the butto
 
 #### Playing Instrument and Note off
 
-Every time the user presses the key associated with the instrument, Geonkick will play the instrument until the end or until the key is released. If the key is released before the sound ends, Geonkick will apply a 30 ms linear decay to the sound if the "noff" button is enabled.
+The playback button cycles between three modes:
 
-If the "noff" button is disabled, Geonkick will mix the current sound with the next one pressed. This is often useful for playing instruments like crash cymbals.
+- **Full Length:** Plays the entire sound and ignores Note Off. New notes mix with any sound already playing.
+- **Note Off:** Stops adding samples when Note Off is received and applies a short fade-out.
+- **Cut:** Plays the entire sound and ignores Note Off, but cuts the currently playing sound when a new Note On arrives.
 
-By default, the "noff" button is disabled. In future releases, this may change.
-
-**Important:** When "noff" is disabled, sounds will accumulate, and if the sound is played repeatedly and very quickly, it may introduce distortion. In such cases, it is better to enable the "noff" button or adjust the instrument limiter, or even the oscillators or effects output.
+Full Length is the default. Repeated notes can accumulate in Full Length mode and may introduce distortion; use the instrument limiter or Cut mode if needed.
 
 If there are changes to controls during instrument playback, the changes will only be applied on the next key press. However, the instrument wavefrom will display the changes instantly.
 
@@ -113,7 +113,7 @@ The instrument's user interface serves as the primary window of Geonkick, displa
 - **Preset navigator:** The navigator to select factory presetes.
 - **MIDI Key:** Displays the current MIDI input key for the instrument. Pressing on the label opens a popup to select a MIDI key for the instrument.
 - **MIDI channel:** Spinbox for selecting the current instrument's MIDI channel
-- **noff:** Turns off/on for the current instrument to ignore the NOTE OFF when the MIDI key is released.
+- **Playback mode button:** Cycles through Full Length, Note Off, and Cut playback modes.
 - **Tabs:** "Controls", "Kit", switch to instrument main controls or kit UI.
 
 #### Shortcut Keys
@@ -275,7 +275,7 @@ The instrument list has a maximum limit of 16 instruments and displays the instr
 - **"Copy" button:** Copies an instrument and adds it to the list.
 - **Spinbox for setting MIDI input channel for an instrument.**
 - **Key:** Control to MIDI key the instrument can be mapped to. The "Any" label indicates that the instrument will be played by pressing any key.
-- **noff:** Turns off/on to ignore the NOTE OFF when the MIDI key is released.
+- **Playback mode button:** Cycles through Full Length, Note Off, and Cut playback modes.
 - **Green circle:** Indicates which instrument is mapped to which output channel and can be changed by left-clicking on the grid cell.
 - **Limiter slider:** Controls the limiter for the current instrument.
 - **"M" button:** Mutes the current instrument.

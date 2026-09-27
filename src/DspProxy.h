@@ -53,6 +53,12 @@ class DspProxy : public RkObject {
                 Layer3 = 2
   };
 
+  enum class PlaybackMode: int {
+          FullLength = GEONKICK_PLAYBACK_FULL_LENGTH,
+          NoteOff = GEONKICK_PLAYBACK_NOTE_OFF,
+          Cut = GEONKICK_PLAYBACK_CUT
+  };
+
   enum class OscillatorType: int {
          Oscillator1 = 0,
          Oscillator2 = 1,
@@ -296,8 +302,8 @@ class DspProxy : public RkObject {
   bool isPercussionMuted(size_t id) const;
   bool soloPercussion(size_t id, bool b);
   bool isPercussionSolo(size_t id) const;
-  bool enableNoteOff(size_t id, bool b = true);
-  bool isNoteOffEnabled(size_t id) const;
+  bool setPlaybackMode(size_t id, PlaybackMode mode);
+  PlaybackMode getPlaybackMode(size_t id) const;
   unsigned int numberOfChokeGroups(size_t id) const;
   bool setChokeGroup(size_t id, int group);
   int getChokeGroup(size_t id) const;

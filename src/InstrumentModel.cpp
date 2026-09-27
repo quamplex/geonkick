@@ -275,15 +275,15 @@ void PercussionModel::setMidiChannel(int chIndex)
                 action midiChannelUpdated(chIndex);
 }
 
-void PercussionModel::enableNoteOff(bool b)
+void PercussionModel::setPlaybackMode(DspProxy::PlaybackMode mode)
 {
-        if (kitModel->enableNoteOff(index(), b))
-                action noteOffUpdated(b);
+        if (kitModel->setPlaybackMode(index(), mode))
+                action playbackModeUpdated(mode);
 }
 
-bool PercussionModel::isNoteOffEnabled() const
+DspProxy::PlaybackMode PercussionModel::playbackMode() const
 {
-        return kitModel->isNoteOffEnabled(index());
+        return kitModel->playbackMode(index());
 }
 
 unsigned int PercussionModel::numberOfChokeGroups() const

@@ -93,7 +93,7 @@ class KitPercussionView: public GeonkickWidget
         RkButton *playButton;
         RkButton *muteButton;
         RkButton *soloButton;
-        RkButton *noteOffButton;
+        RkButton *playbackModeButton;
         RkSpinBox *chokeGroupSpinbox;
         PercussionLimiter *instrumentLimiter;
         int padding;

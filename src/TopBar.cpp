@@ -53,9 +53,6 @@ RK_DECLARE_IMAGE_RC(topbar_synth_tab_on);
 RK_DECLARE_IMAGE_RC(topmenu_midi_off);
 RK_DECLARE_IMAGE_RC(topmenu_midi_active);
 RK_DECLARE_IMAGE_RC(topmenu_midi_hover);
-RK_DECLARE_IMAGE_RC(note_off_unpressed);
-RK_DECLARE_IMAGE_RC(note_off_hover);
-RK_DECLARE_IMAGE_RC(note_off_pressed);
 #ifndef GEONKICK_SINGLE
 RK_DECLARE_IMAGE_RC(topmenu_kit_active);
 RK_DECLARE_IMAGE_RC(topmenu_kit_hover);
@@ -73,7 +70,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         , synthButton{nullptr}
         , midiKeyButton{nullptr}
         , midiChannelSpinBox{nullptr}
-        , noteOffButton{nullptr}
+        , playbackModeButton{nullptr}
 #ifndef GEONKICK_SINGLE
         , kitButton{nullptr}
 #endif // GEONKICK_SINGLE
@@ -176,25 +173,24 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                     showMidiPopup());
         mainLayout->addWidget(midiKeyButton);
 
-        // Note off button
+        // Playback mode button
         mainLayout->addSpace(3);
-        noteOffButton = new GeonkickButton(this);
-        noteOffButton->setType(RkButton::ButtonType::ButtonCheckable);
-        noteOffButton->setSize(23, 16);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_unpressed)),
-                                RkButton::State::Unpressed);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_hover)),
-                                RkButton::State::UnpressedHover);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_pressed)),
-                                RkButton::State::Pressed);
-        noteOffButton->setImage(RkImage(noteOffButton->size(), RK_IMAGE_RC(note_off_hover)),
-                                RkButton::State::PressedHover);
-        mainLayout->addWidget(noteOffButton);
-        RK_ACT_BINDL(noteOffButton,
-                     toggled,
-                     RK_ACT_ARGS(bool toggled),
-                     [=, this](bool toggled) {
-                             geonkickModel->getKitModel()->currentPercussion()->enableNoteOff(toggled);
+        playbackModeButton = new GeonkickButton(this);
+        playbackModeButton->setType(RkButton::ButtonType::ButtonPush);
+        playbackModeButton->setSize(56, 20);
+        playbackModeButton->setBackgroundColor({42, 42, 42});
+        playbackModeButton->setTextColor({200, 200, 200});
+        mainLayout->addWidget(playbackModeButton);
+        RK_ACT_BINDL(playbackModeButton,
+                     pressed,
+                     RK_ACT_ARGS(),
+                     [=, this]() {
+                             auto instrument = geonkickModel->getKitModel()->currentPercussion();
+                             const int nextMode =
+                                     (static_cast<int>(instrument->playbackMode()) + 1) % 3;
+                             instrument->setPlaybackMode(
+                                     static_cast<DspProxy::PlaybackMode>(nextMode));
+                             updateGui();
                      } );
 
         // Tune instrument
@@ -333,7 +329,17 @@ void TopBar::updateGui()
         for (size_t i = 0; i < nMidiChannels; i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);
-        noteOffButton->setPressed(instrumentModel->isNoteOffEnabled());
+        switch (instrumentModel->playbackMode()) {
+        case DspProxy::PlaybackMode::FullLength:
+                playbackModeButton->setText("FULL");
+                break;
+        case DspProxy::PlaybackMode::NoteOff:
+                playbackModeButton->setText("NOFF");
+                break;
+        case DspProxy::PlaybackMode::Cut:
+                playbackModeButton->setText("CUT");
+                break;
+        }
 }
 
 void TopBar::showMidiPopup()

@@ -130,7 +130,7 @@ PercussionState::PercussionState()
         , kickEnabled{true}
         , instrumentMuted{false}
         , instrumentSolo{false}
-        , noteOffEnabled{false}
+        , playbackMode{DspProxy::PlaybackMode::FullLength}
         , chokeGroup{0}
         , limiterValue{0}
         , kickLength{50}
@@ -303,14 +303,14 @@ signed char PercussionState::getMidiChannel() const
         return outputMidiChannel;
 }
 
-void PercussionState::setNoteOffEnabled(bool b)
+void PercussionState::setPlaybackMode(DspProxy::PlaybackMode mode)
 {
-        noteOffEnabled = b;
+        playbackMode = mode;
 }
 
-bool PercussionState::isNoteOffEnabled() const
+DspProxy::PlaybackMode PercussionState::getPlaybackMode() const
 {
-        return noteOffEnabled;
+        return playbackMode;
 }
 
 void PercussionState::setChokeGroup(int group)
@@ -365,7 +365,12 @@ void PercussionState::parseKickObject(const rapidjson::Value &kick)
                 if (m.name == "midiChannel" && m.value.IsInt())
                         setMidiChannel(m.value.GetInt());
                 if (m.name == "noteOffEnabled" && m.value.IsBool())
-                        setNoteOffEnabled(m.value.GetBool());
+                        setPlaybackMode(m.value.GetBool() ? DspProxy::PlaybackMode::NoteOff
+                                                          : DspProxy::PlaybackMode::FullLength);
+                if (m.name == "playbackMode" && m.value.IsInt()
+                    && m.value.GetInt() >= static_cast<int>(DspProxy::PlaybackMode::FullLength)
+                    && m.value.GetInt() <= static_cast<int>(DspProxy::PlaybackMode::Cut))
+                        setPlaybackMode(static_cast<DspProxy::PlaybackMode>(m.value.GetInt()));
                 if (m.name == "chokeGroup" && m.value.IsInt())
                         setChokeGroup(m.value.GetInt());
                 if (m.name == "mute" && m.value.IsBool())
@@ -1258,7 +1263,7 @@ void PercussionState::kickJson(std::ostringstream &jsonStream) const
 	jsonStream << "\"id\": " << getId() << "," << std::endl;
         jsonStream << "\"channel\": " << getChannel() << "," << std::endl;
         jsonStream << "\"midiChannel\": " << static_cast<int>(getMidiChannel()) << "," << std::endl;
-        jsonStream << "\"noteOffEnabled\": " << (isNoteOffEnabled() ? "true" : "false") << "," << std::endl;
+        jsonStream << "\"playbackMode\": " << static_cast<int>(getPlaybackMode()) << "," << std::endl;
         jsonStream << "\"chokeGroup\": " << getChokeGroup() << ", " << std::endl;
         jsonStream << "\"mute\": " << (isMuted() ? "true" : "false") << "," << std::endl;
         jsonStream << "\"solo\": " << (isSolo() ? "true" : "false") << "," << std::endl;
@@ -1480,4 +1485,3 @@ double PercussionState::humanizerGetTiming() const
 {
         return instrumentHumanizer.timing;
 }
-

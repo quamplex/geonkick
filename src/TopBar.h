@@ -63,7 +63,7 @@ class TopBar : public GeonkickWidget
         GeonkickButton *synthButton;
         GeonkickButton *midiKeyButton;
         RkSpinBox *midiChannelSpinBox;
-        GeonkickButton *noteOffButton;
+        GeonkickButton *playbackModeButton;
 #ifndef GEONKICK_SINGLE
         GeonkickButton *kitButton;
 #endif // GEONKICK_SINGLE

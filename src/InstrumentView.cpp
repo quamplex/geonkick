@@ -50,9 +50,6 @@ RK_DECLARE_IMAGE_RC(per_play_on);
 RK_DECLARE_IMAGE_RC(kit_midi_on);
 RK_DECLARE_IMAGE_RC(kit_midi_off);
 RK_DECLARE_IMAGE_RC(kit_midi_hover);
-RK_DECLARE_IMAGE_RC(note_off_unpressed);
-RK_DECLARE_IMAGE_RC(note_off_hover);
-RK_DECLARE_IMAGE_RC(note_off_pressed);
 RK_DECLARE_IMAGE_RC(instr_key_up);
 RK_DECLARE_IMAGE_RC(instr_key_up_hover);
 RK_DECLARE_IMAGE_RC(instr_key_up_on);
@@ -139,7 +136,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , playButton{nullptr}
         , muteButton{nullptr}
         , soloButton{nullptr}
-        , noteOffButton{nullptr}
+        , playbackModeButton{nullptr}
         , chokeGroupSpinbox{nullptr}
         , instrumentLimiter{nullptr}
         , padding{8}
@@ -299,20 +296,15 @@ void KitPercussionView::createView()
         instrumentContainer->addWidget(keyOctaveSpinBox);
 
 
-        // Note off button
+        // Playback mode button
         instrumentContainer->addSpace(10);
-        noteOffButton = new RkButton(this);
-        noteOffButton->setType(RkButton::ButtonType::ButtonCheckable);
-        noteOffButton->setImage(RK_RC_IMAGE(note_off_unpressed),
-                                RkButton::State::Unpressed);
-        noteOffButton->setImage(RK_RC_IMAGE(note_off_hover),
-                                RkButton::State::UnpressedHover);
-        noteOffButton->setImage(RK_RC_IMAGE(note_off_hover),
-                                RkButton::State::PressedHover);
-        noteOffButton->setImage(RK_RC_IMAGE(note_off_pressed),
-                                RkButton::State::Pressed);
-        noteOffButton->show();
-        instrumentContainer->addWidget(noteOffButton);
+        playbackModeButton = new RkButton(this);
+        playbackModeButton->setType(RkButton::ButtonType::ButtonPush);
+        playbackModeButton->setSize(56, 20);
+        playbackModeButton->setBackgroundColor({48, 62, 62});
+        playbackModeButton->setTextColor({180, 180, 180});
+        playbackModeButton->show();
+        instrumentContainer->addWidget(playbackModeButton);
 
         createChokeGroupControl(instrumentContainer);
 
@@ -453,7 +445,17 @@ void KitPercussionView::updateView()
 
         muteButton->setPressed(instrumentModel->isMuted());
         soloButton->setPressed(instrumentModel->isSolo());
-        noteOffButton->setPressed(instrumentModel->isNoteOffEnabled());
+        switch (instrumentModel->playbackMode()) {
+        case DspProxy::PlaybackMode::FullLength:
+                playbackModeButton->setText("FULL");
+                break;
+        case DspProxy::PlaybackMode::NoteOff:
+                playbackModeButton->setText("NOFF");
+                break;
+        case DspProxy::PlaybackMode::Cut:
+                playbackModeButton->setText("CUT");
+                break;
+        }
 
         // Midi channel
         auto nMidiChannels = instrumentModel->numberOfMidiChannels();
@@ -502,7 +504,15 @@ void KitPercussionView::setModel(PercussionModel *model)
         instrumentModel = model;
 
         RK_ACT_BIND(playButton, pressed, RK_ACT_ARGS(), instrumentModel, play());
-        RK_ACT_BIND(noteOffButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, enableNoteOff(toggled));
+        RK_ACT_BINDL(playbackModeButton,
+                     pressed,
+                     RK_ACT_ARGS(),
+                     [this]() {
+                             const int nextMode =
+                                     (static_cast<int>(instrumentModel->playbackMode()) + 1) % 3;
+                             instrumentModel->setPlaybackMode(
+                                     static_cast<DspProxy::PlaybackMode>(nextMode));
+                     });
         RK_ACT_BIND(muteButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, mute(toggled));
         RK_ACT_BIND(soloButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, solo(toggled));
         RK_ACT_BIND(instrumentLimiter, valueUpdated, RK_ACT_ARGS(int val), instrumentModel, setLimiter(val));
@@ -517,7 +527,11 @@ void KitPercussionView::setModel(PercussionModel *model)
         RK_ACT_BIND(instrumentModel, selected, RK_ACT_ARGS(), this, updateView());
         RK_ACT_BIND(instrumentModel, modelUpdated, RK_ACT_ARGS(), this, updateView());
         RK_ACT_BIND(instrumentModel, midiChannelUpdated, RK_ACT_ARGS(int val), this, update());
-        RK_ACT_BIND(instrumentModel, noteOffUpdated, RK_ACT_ARGS(bool b), this, update());
+        RK_ACT_BIND(instrumentModel,
+                    playbackModeUpdated,
+                    RK_ACT_ARGS(DspProxy::PlaybackMode mode),
+                    this,
+                    updateView());
         RK_ACT_BIND(instrumentModel, waveformUpdated, RK_ACT_ARGS(), this, updateView());
 
         updateView();

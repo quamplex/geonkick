@@ -89,6 +89,12 @@ enum gkick_key_state {
         GKICK_KEY_STATE_RELEASED = 2
 };
 
+enum geonkick_playback_mode {
+        GEONKICK_PLAYBACK_FULL_LENGTH = 0,
+        GEONKICK_PLAYBACK_NOTE_OFF = 1,
+        GEONKICK_PLAYBACK_CUT = 2
+};
+
 enum geonkick_envelope_type {
         GEONKICK_AMPLITUDE_ENVELOPE         = 0,
         GEONKICK_FREQUENCY_ENVELOPE         = 1,
@@ -813,6 +819,16 @@ enum geonkick_error
 geonkick_instrument_note_off_enabled(struct geonkick *kick,
                                      size_t id,
                                      bool *enabled);
+
+enum geonkick_error
+geonkick_instrument_set_playback_mode(struct geonkick *kick,
+                                      size_t id,
+                                      enum geonkick_playback_mode mode);
+
+enum geonkick_error
+geonkick_instrument_get_playback_mode(struct geonkick *kick,
+                                      size_t id,
+                                      enum geonkick_playback_mode *mode);
 
 enum geonkick_error
 geonkick_note_off_enabled(struct geonkick *kick,

@@ -80,8 +80,8 @@ class PercussionModel : public AbstractModel {
         size_t numberOfMidiChannels() const;
         int midiChannel() const;
         void setMidiChannel(int chIndex);
-        void enableNoteOff(bool b);
-        bool isNoteOffEnabled() const;
+        void setPlaybackMode(DspProxy::PlaybackMode mode);
+        DspProxy::PlaybackMode playbackMode() const;
         unsigned int numberOfChokeGroups() const;
         void setChokeGroup(int group);
         int getChokeGroup() const;
@@ -131,10 +131,10 @@ class PercussionModel : public AbstractModel {
                     midiChannelUpdated(int index),
                     RK_ARG_TYPE(int),
                     RK_ARG_VAL(index));
-        RK_DECL_ACT(noteOffUpdated,
-                    noteOffUpdated(bool b),
-                    RK_ARG_TYPE(bool),
-                    RK_ARG_VAL(b));
+        RK_DECL_ACT(playbackModeUpdated,
+                    playbackModeUpdated(DspProxy::PlaybackMode mode),
+                    RK_ARG_TYPE(DspProxy::PlaybackMode),
+                    RK_ARG_VAL(mode));
         RK_DECL_ACT(amplitudeUpdated,
                     amplitudeUpdated(double val),
                     RK_ARG_TYPE(double),

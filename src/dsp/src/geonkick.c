@@ -2006,6 +2006,26 @@ geonkick_instrument_note_off_enabled(struct geonkick *kick,
         return gkick_mixer_note_off_enabled(kick->audio->mixer, id, enabled);
 }
 
+enum geonkick_error
+geonkick_instrument_set_playback_mode(struct geonkick *kick,
+                                      size_t id,
+                                      enum geonkick_playback_mode mode)
+{
+        if (kick == NULL || kick->audio == NULL)
+                return GEONKICK_ERROR_WRONG_ARGUMENTS;
+        return gkick_mixer_set_playback_mode(kick->audio->mixer, id, mode);
+}
+
+enum geonkick_error
+geonkick_instrument_get_playback_mode(struct geonkick *kick,
+                                      size_t id,
+                                      enum geonkick_playback_mode *mode)
+{
+        if (kick == NULL || kick->audio == NULL)
+                return GEONKICK_ERROR_WRONG_ARGUMENTS;
+        return gkick_mixer_get_playback_mode(kick->audio->mixer, id, mode);
+}
+
 unsigned int
 geonkick_number_of_choke_groups(struct geonkick *kick)
 {

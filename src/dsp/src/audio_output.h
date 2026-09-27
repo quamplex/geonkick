@@ -105,8 +105,8 @@ struct gkick_audio_output
         /* Output audio limiter value. */
         atomic_int limiter;
 
-        /* Enable/disable note off */
-        _Atomic bool note_off;
+        /* Instrument playback behavior. */
+        _Atomic int playback_mode;
 
         /* Current instrument choke group. 0 value is none (off) */
         _Atomic unsigned char choke_group;
@@ -183,9 +183,13 @@ void gkick_audio_output_get_data(struct gkick_audio_output *audio_output,
                                  gkick_real *leveler,
                                  size_t size);
 void gkick_audio_output_enable_note_off(struct gkick_audio_output *audio_output,
-                                 bool enable);
+                                        bool enable);
 
 bool gkick_audio_output_note_off(struct gkick_audio_output *audio_output);
+void gkick_audio_output_set_playback_mode(struct gkick_audio_output *audio_output,
+                                          enum geonkick_playback_mode mode);
+enum geonkick_playback_mode
+gkick_audio_output_get_playback_mode(struct gkick_audio_output *audio_output);
 
 void gkick_instrument_set_param(struct gkick_audio_output *audio_output,
                                 enum gkick_instrument_param param,

@@ -127,4 +127,14 @@ gkick_mixer_note_off_enabled(struct gkick_mixer *mixer,
                              size_t id,
                              bool *enabled);
 
+enum geonkick_error
+gkick_mixer_set_playback_mode(struct gkick_mixer *mixer,
+                              size_t id,
+                              enum geonkick_playback_mode mode);
+
+enum geonkick_error
+gkick_mixer_get_playback_mode(struct gkick_mixer *mixer,
+                              size_t id,
+                              enum geonkick_playback_mode *mode);
+
 #endif // GKICK_MIXER_H

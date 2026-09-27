@@ -3,6 +3,7 @@
 ### Improvements
 
 - Add UI scale options for 1.25x and 1.75x in the Settings dialog.
+- Add Cut playback mode, which replaces the current sound when a new note is played.
 
 ## [3.7.0]
 

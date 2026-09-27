@@ -263,7 +263,7 @@ void DspProxy::setPercussionState(const std::unique_ptr<PercussionState> &state)
         setPercussionPlayingKey(state->getId(), state->getPlayingKey());
         setPercussionChannel(state->getId(), state->getChannel());
         setPercussionMidiChannel(state->getId(), state->getMidiChannel());
-        enableNoteOff(state->getId(), state->isNoteOffEnabled());
+        setPlaybackMode(state->getId(), state->getPlaybackMode());
         setChokeGroup(state->getId(), state->getChokeGroup());
         mutePercussion(state->getId(), state->isMuted());
         soloPercussion(state->getId(), state->isSolo());
@@ -345,7 +345,7 @@ std::unique_ptr<PercussionState> DspProxy::getPercussionState() const
         state->setPlayingKey(getPercussionPlayingKey(state->getId()));
         state->setChannel(getPercussionChannel(state->getId()));
         state->setMidiChannel(getPercussionMidiChannel(state->getId()));
-        state->setNoteOffEnabled(isNoteOffEnabled(state->getId()));
+        state->setPlaybackMode(getPlaybackMode(state->getId()));
         state->setChokeGroup(getChokeGroup(state->getId()));
         state->setMute(isPercussionMuted(state->getId()));
         state->setSolo(isPercussionSolo(state->getId()));
@@ -1460,16 +1460,17 @@ bool DspProxy::isPercussionSolo(size_t id) const
         return solo;
 }
 
-bool DspProxy::enableNoteOff(size_t id, bool b)
+bool DspProxy::setPlaybackMode(size_t id, PlaybackMode mode)
 {
-        return geonkick_instrument_enable_note_off(geonkickDsp, id, b) == GEONKICK_OK;
+        return geonkick_instrument_set_playback_mode(
+                geonkickDsp, id, static_cast<geonkick_playback_mode>(mode)) == GEONKICK_OK;
 }
 
-bool DspProxy::isNoteOffEnabled(size_t id) const
+DspProxy::PlaybackMode DspProxy::getPlaybackMode(size_t id) const
 {
-        bool enabled = false;
-        geonkick_instrument_note_off_enabled(geonkickDsp, id, &enabled);
-        return enabled;
+        geonkick_playback_mode mode = GEONKICK_PLAYBACK_FULL_LENGTH;
+        geonkick_instrument_get_playback_mode(geonkickDsp, id, &mode);
+        return static_cast<PlaybackMode>(mode);
 }
 
 unsigned int DspProxy::numberOfChokeGroups([[maybe_unused]] size_t id) const

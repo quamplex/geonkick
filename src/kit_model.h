@@ -95,8 +95,8 @@ class KitModel : public RkObject {
         void updatePercussion(PercussionIndex index);
         DspProxy* getDspProxy() const;
         bool doExport(const std::string &file, const ExportInfo &info) const;
-        bool enableNoteOff(PercussionIndex index, bool b);
-        bool isNoteOffEnabled(PercussionIndex index) const;
+        bool setPlaybackMode(PercussionIndex index, DspProxy::PlaybackMode mode);
+        DspProxy::PlaybackMode playbackMode(PercussionIndex index) const;
         unsigned int numberOfChokeGroups(PercussionIndex index) const;
         bool setChokeGroup(PercussionIndex index, int group);
         int getChokeGroup(PercussionIndex index) const;

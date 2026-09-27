@@ -114,8 +114,8 @@ class PercussionState
         size_t getChannel() const;
         void setMidiChannel(signed char channel);
         signed char getMidiChannel() const;
-        void setNoteOffEnabled(bool b = true);
-        bool isNoteOffEnabled() const;
+        void setPlaybackMode(DspProxy::PlaybackMode mode);
+        DspProxy::PlaybackMode getPlaybackMode() const;
         void setChokeGroup(int group);
         int getChokeGroup() const;
         void setMute(bool b);
@@ -254,7 +254,7 @@ private:
         bool kickEnabled;
         bool instrumentMuted;
         bool instrumentSolo;
-        bool noteOffEnabled;
+        DspProxy::PlaybackMode playbackMode;
         int chokeGroup;
         double limiterValue;
         double kickLength;
