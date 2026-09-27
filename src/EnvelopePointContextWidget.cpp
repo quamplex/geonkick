@@ -27,6 +27,63 @@
 #include "RkEvent.h"
 #include "RkLineEdit.h"
 
+#include <charconv>
+#include <cctype>
+#include <cmath>
+
+namespace {
+
+std::optional<double> noteFrequency(std::string_view text)
+{
+        text = Geonkick::trim(text);
+        if (text.size() < 2)
+                return std::nullopt;
+
+        constexpr std::array<int, 7> noteOffsets = {9, 11, 0, 2, 4, 5, 7};
+        const char note = static_cast<char>(std::toupper(static_cast<unsigned char>(text.front())));
+        if (note < 'A' || note > 'G')
+                return std::nullopt;
+
+        int semitone = noteOffsets[note - 'A'];
+        text.remove_prefix(1);
+        if (!text.empty() && text.front() == '#') {
+                ++semitone;
+                text.remove_prefix(1);
+        }
+
+        int octave = 0;
+        const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), octave);
+        if (error != std::errc{} || end != text.data() + text.size())
+                return std::nullopt;
+
+        const int midiNote = 12 * (octave + 1) + semitone;
+        if (midiNote < 21 || midiNote > 128)
+                return std::nullopt;
+
+        return 440.0 * std::pow(2.0, (midiNote - 69) / 12.0);
+}
+
+std::optional<double> numericValue(std::string_view text)
+{
+        text = Geonkick::trim(text);
+        if (text.empty())
+                return std::nullopt;
+
+        double value = 0.0;
+        const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
+        if (error != std::errc{} || end != text.data() + text.size() || !std::isfinite(value))
+                return std::nullopt;
+
+        return value;
+}
+
+bool acceptsNoteNames(Envelope::Type type)
+{
+        return type == Envelope::Type::Frequency || type == Envelope::Type::FilterCutOff;
+}
+
+} // namespace
+
 EnvelopePointContextWidget::EnvelopePointContextWidget(Envelope* envelope,
                                                        GeonkickWidget *parent,
                                                        Rk::WidgetFlags flag)
@@ -74,11 +131,15 @@ void EnvelopePointContextWidget::closeEvent(RkCloseEvent *event)
 
 void EnvelopePointContextWidget::onUpdateValue()
 {
-        double value = 0.0;
-        try {
-                value = std::stod(lineEdit->text());
-        } catch (...) {
+        const auto text = lineEdit->text();
+        auto value = acceptsNoteNames(pointEnvelope->type()) ? noteFrequency(text) : std::nullopt;
+        if (!value)
+                value = numericValue(text);
+        if (!value) {
+                lineEdit->setFocus();
+                return;
         }
-        pointEnvelope->updateSelectedPointValue(value);
+        pointEnvelope->updateSelectedPointValue(*value);
+
         close();
 }

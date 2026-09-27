@@ -165,7 +165,7 @@ Envelope points have labels showing the current value related to vertical axes (
 
 #### Manually Input Envelope Point Value
 
-Users can set the value of an envelope point manually with a maximum precision of 4 digits after the floating point:
+Users can set the value of an envelope point manually with a maximum precision of 4 digits after the floating point. For oscillator frequency and filter cutoff envelopes, the value can also be entered as a sharp note name from A0 to G#9 (for example, `C#4`):
 
 1. Press `Left Ctrl` and double-click on the envelope point. An input context line edit will be displayed.
 

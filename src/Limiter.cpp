@@ -27,9 +27,9 @@
 
 GeonkickLimiter::GeonkickLimiter(GeonkickWidget *parent)
         : GeonkickWidget(parent),
-          rangeMin{0.0}
+          slider{new GeonkickSlider(this, GeonkickSlider::Orientation::Horizontal)}
+        , rangeMin{0.0}
         , rangeMax{1.0}
-        , slider{new GeonkickSlider(this, GeonkickSlider::Orientation::Horizontal)}
 {
         RK_ACT_BIND(slider, valueUpdated, RK_ACT_ARGS(int val),
                     this, onSliderUpdated(val));

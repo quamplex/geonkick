@@ -37,6 +37,7 @@
 #include <filesystem>
 #include <fstream>
 #include <algorithm>
+#include <cctype>
 #include <string_view>
 #include <array>
 #include <mutex>
@@ -146,6 +147,15 @@ namespace Geonkick
                 std::transform(result.begin(), result.end(), result.begin(),
                                [](unsigned char c) { return std::tolower(c); });
                 return result;
+        }
+
+        inline std::string_view trim(std::string_view value)
+        {
+                while (!value.empty() && std::isspace(static_cast<unsigned char>(value.front())))
+                        value.remove_prefix(1);
+                while (!value.empty() && std::isspace(static_cast<unsigned char>(value.back())))
+                        value.remove_suffix(1);
+                return value;
         }
 
         constexpr std::string_view semitoneToNote(int semitone)
