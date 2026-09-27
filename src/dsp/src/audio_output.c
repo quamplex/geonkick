@@ -125,8 +125,12 @@ gkick_audio_output_key_pressed(struct gkick_audio_output *audio_output,
 #ifndef GEONKICK_BASIC_VERSION
                 gkick_instrument_humanize_key(audio_output, &audio_output->key);
 #endif // GEONKICK_BASIC_VERSION
-                if (mode == GEONKICK_PLAYBACK_CUT)
-                        ring_buffer_reset(audio_output->ring_buffer);
+                if (mode == GEONKICK_PLAYBACK_CUT) {
+                        size_t fade_frames = (size_t)audio_output->sample_rate / 20;
+                        if (fade_frames == 0)
+                                fade_frames = 1;
+                        ring_buffer_fade_out(audio_output->ring_buffer, fade_frames);
+                }
                 atomic_store_explicit(&audio_output->play,
                                       true,
                                       memory_order_relaxed);

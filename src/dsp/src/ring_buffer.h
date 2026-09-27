@@ -69,6 +69,10 @@ void
 ring_buffer_reset(struct ring_buffer *ring);
 
 void
+ring_buffer_fade_out(struct ring_buffer *ring,
+                     size_t fade_frames);
+
+void
 ring_buffer_start_decay(struct ring_buffer *ring);
 
 void

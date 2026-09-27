@@ -79,6 +79,28 @@ ring_buffer_reset(struct ring_buffer *ring)
 }
 
 void
+ring_buffer_fade_out(struct ring_buffer *ring,
+                     size_t fade_frames)
+{
+        if (ring == NULL || ring->size == 0)
+                return;
+
+        fade_frames = min(fade_frames, ring->size);
+        for (size_t i = 0; i < ring->size; i++) {
+                size_t index = (ring->index + i) % ring->size;
+                if (i < fade_frames) {
+                        float gain = fade_frames > 1
+                                ? 1.0f - (float)i / (fade_frames - 1)
+                                : 0.0f;
+                        ring->buff[index] *= gain;
+                } else {
+                        ring->buff[index] = 0.0f;
+                }
+        }
+        ring->flashed = true;
+}
+
+void
 ring_buffer_start_decay(struct ring_buffer *ring)
 {
         qx_fader_enable(&ring->decay, false);
