@@ -88,11 +88,6 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
                     createFile());
 
         RK_ACT_BIND(filesView,
-                    fileActivated,
-                    RK_ACT_ARGS(const fs::path &file),
-                    kitModel,
-                    loadPreset(file));
-        RK_ACT_BIND(filesView,
                     fileSelected,
                     RK_ACT_ARGS(const fs::path &file),
                     kitModel,
