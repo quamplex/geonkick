@@ -35,6 +35,7 @@ class GeonkickModel;
 class PresetNavigator;
 class RkSpinBox;
 class RkLineEdit;
+class KitModel;
 
 class TopBar : public GeonkickWidget
 {
@@ -53,8 +54,10 @@ class TopBar : public GeonkickWidget
  private:
         void addSeparator(RkContainer *mainLayout, int width = 5);
         void createMainMenu(RkContainer *layout);
+        void updatePlaymodeButton();
 
         GeonkickModel *geonkickModel;
+        KitModel *kitModel;
         GeonkickButton *saveFileButton;
         GeonkickButton *exportFileButton;
         PresetNavigator* presetNavigator;

@@ -280,36 +280,15 @@ gkick_mixer_get_forced_midi_channel(struct gkick_mixer *mixer,
 }
 
 enum geonkick_error
-gkick_mixer_enable_note_off(struct gkick_mixer *mixer,
-                            size_t id,
-                            bool enable)
-{
-        if (id < GEONKICK_MAX_INSTRUMENTS)
-                gkick_audio_output_enable_note_off(mixer->audio_outputs[id], enable);
-        return GEONKICK_OK;
-}
-
-enum geonkick_error
-gkick_mixer_note_off_enabled(struct gkick_mixer *mixer,
-                             size_t id,
-                             bool *enabled)
-{
-        if (id < GEONKICK_MAX_INSTRUMENTS)
-                *enabled = gkick_audio_output_note_off(mixer->audio_outputs[id]);
-        return GEONKICK_OK;
-}
-
-enum geonkick_error
 gkick_mixer_set_playback_mode(struct gkick_mixer *mixer,
                               size_t id,
                               enum geonkick_playback_mode mode)
 {
-        if (id >= GEONKICK_MAX_INSTRUMENTS
-            || mode < GEONKICK_PLAYBACK_FULL_LENGTH
-            || mode > GEONKICK_PLAYBACK_CUT)
+        if (id >= GEONKICK_MAX_INSTRUMENTS)
                 return GEONKICK_ERROR_WRONG_ARGUMENTS;
 
         gkick_audio_output_set_playback_mode(mixer->audio_outputs[id], mode);
+
         return GEONKICK_OK;
 }
 
@@ -322,5 +301,6 @@ gkick_mixer_get_playback_mode(struct gkick_mixer *mixer,
                 return GEONKICK_ERROR_WRONG_ARGUMENTS;
 
         *mode = gkick_audio_output_get_playback_mode(mixer->audio_outputs[id]);
+
         return GEONKICK_OK;
 }

@@ -182,10 +182,6 @@ void gkick_audio_output_get_data(struct gkick_audio_output *audio_output,
                                  gkick_real **data,
                                  gkick_real *leveler,
                                  size_t size);
-void gkick_audio_output_enable_note_off(struct gkick_audio_output *audio_output,
-                                        bool enable);
-
-bool gkick_audio_output_note_off(struct gkick_audio_output *audio_output);
 void gkick_audio_output_set_playback_mode(struct gkick_audio_output *audio_output,
                                           enum geonkick_playback_mode mode);
 enum geonkick_playback_mode

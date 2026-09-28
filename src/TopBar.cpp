@@ -65,6 +65,7 @@ RK_DECLARE_IMAGE_RC(topmenu_settings_off);
 TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
+        , kitModel{geonkickModel->getKitModel()}
         , presetNavigator{nullptr}
         , instrumentName {nullptr}
         , synthButton{nullptr}
@@ -152,7 +153,8 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                     currentIndexChanged,
                     RK_ACT_ARGS(int index),
                      [=, this](int index) {
-                             geonkickModel->getKitModel()->currentPercussion()->setMidiChannel(index - 1);
+                             auto *currentIntrument = kitModel->currentPercussion();
+                             currentIntrument->setMidiChannel(index - 1);
                      });
 
         // Midi Key
@@ -185,12 +187,10 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                      pressed,
                      RK_ACT_ARGS(),
                      [=, this]() {
-                             auto instrument = geonkickModel->getKitModel()->currentPercussion();
-                             const int nextMode =
-                                     (static_cast<int>(instrument->playbackMode()) + 1) % 3;
-                             instrument->setPlaybackMode(
-                                     static_cast<DspProxy::PlaybackMode>(nextMode));
-                             updateGui();
+                             auto instrument = kitModel->currentPercussion();
+                             const auto mode = (static_cast<int>(instrument->playbackMode()) + 1) % 3;
+                             instrument->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(mode));
+                             updatePlaymodeButton();
                      } );
 
         // Tune instrument
@@ -211,11 +211,11 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
 		    tuneAudioOutput(geonkickModel->getDspProxy()->currentPercussion(), b));
         mainLayout->addWidget(tuneCheckbox);
 
-        RK_ACT_BIND(geonkickModel->getKitModel(),
+        RK_ACT_BIND(kitModel,
                     modelUpdated,
                     RK_ACT_ARGS(),
                     this, updateGui());
-        RK_ACT_BINDL(geonkickModel->getKitModel(),
+        RK_ACT_BINDL(kitModel,
                      instrumentUpdated,
                      RK_ACT_ARGS(PercussionModel* model),
                      [=, this](PercussionModel* model) {
@@ -289,13 +289,13 @@ RkWidget* TopBar::createInstrumentNameLabel()
         instrumentName->show();
         RK_ACT_BINDL(instrumentName, editingFinished, RK_ACT_ARGS(),
                      [=, this]() {
-                             auto currentInstrument = geonkickModel->getKitModel()->currentPercussion();
+                             auto currentInstrument = kitModel->currentPercussion();
                              if (!currentInstrument->setName(instrumentName->text()))
                                      instrumentName->setText(currentInstrument->name());
                      });
         RK_ACT_BINDL(instrumentName, escapePressed, RK_ACT_ARGS(),
                      [=, this]() {
-                             auto currentInstrument = geonkickModel->getKitModel()->currentPercussion();
+                             auto currentInstrument = kitModel->currentPercussion();
                              instrumentName->setText(currentInstrument->name());
                      });
 
@@ -319,16 +319,21 @@ void TopBar::updateGui()
 {
         auto dsp = geonkickModel->getDspProxy();
         tuneCheckbox->setPressed(dsp->isAudioOutputTuned(dsp->currentPercussion()));
-        setPresetName(geonkickModel->getKitModel()->currentPercussion()->name());
-        auto kitModel = geonkickModel->getKitModel();
+        setPresetName(kitModel->currentPercussion()->name());
         midiKeyButton->setText(MidiKeyWidget::midiKeyToNote(kitModel->currentPercussion()->key()));
-        auto instrumentModel = geonkickModel->getKitModel()->currentPercussion();
+        auto instrumentModel = kitModel->currentPercussion();
         auto nMidiChannels = instrumentModel->numberOfMidiChannels();
         midiChannelSpinBox->clear();
         midiChannelSpinBox->addItem("Any");
         for (size_t i = 0; i < nMidiChannels; i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);
+        updatePlaymodeButton();
+}
+
+void TopBar::updatePlaymodeButton()
+{
+        auto instrumentModel = kitModel->currentPercussion();
         switch (instrumentModel->playbackMode()) {
         case DspProxy::PlaybackMode::FullLength:
                 playbackModeButton->setText("FULL");
@@ -344,7 +349,6 @@ void TopBar::updateGui()
 
 void TopBar::showMidiPopup()
 {
-        auto kitModel = geonkickModel->getKitModel();
         auto midiPopup = new MidiKeyWidget(dynamic_cast<GeonkickWidget*>(getTopWidget()),
                                            kitModel->currentPercussion());
         midiPopup->setPosition(150, y() + 35);

@@ -90,8 +90,16 @@ enum gkick_key_state {
 };
 
 enum geonkick_playback_mode {
+        /* Always play the entire sound and ignore Note Off events */
         GEONKICK_PLAYBACK_FULL_LENGTH = 0,
+
+        /* Stop playback when a Note Off event is received. */
         GEONKICK_PLAYBACK_NOTE_OFF = 1,
+
+        /**
+         *  Always play the full sound and ignore Note Off events,
+         *  but cut the current playback when a new Note On event occurs.
+         */
         GEONKICK_PLAYBACK_CUT = 2
 };
 
@@ -811,16 +819,6 @@ enum geonkick_error
 geonkick_get_sample_preview_limiter(struct geonkick *kick, gkick_real *val);
 
 enum geonkick_error
-geonkick_instrument_enable_note_off(struct geonkick *kick,
-                                    size_t id,
-                                    bool enable);
-
-enum geonkick_error
-geonkick_instrument_note_off_enabled(struct geonkick *kick,
-                                     size_t id,
-                                     bool *enabled);
-
-enum geonkick_error
 geonkick_instrument_set_playback_mode(struct geonkick *kick,
                                       size_t id,
                                       enum geonkick_playback_mode mode);
@@ -829,11 +827,6 @@ enum geonkick_error
 geonkick_instrument_get_playback_mode(struct geonkick *kick,
                                       size_t id,
                                       enum geonkick_playback_mode *mode);
-
-enum geonkick_error
-geonkick_note_off_enabled(struct geonkick *kick,
-                          size_t id,
-                          bool *enabled);
 
 unsigned int
 geonkick_number_of_choke_groups(struct geonkick *kick);

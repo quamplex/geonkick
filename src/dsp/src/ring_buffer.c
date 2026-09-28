@@ -78,6 +78,11 @@ ring_buffer_reset(struct ring_buffer *ring)
         ring->flashed = true;
 }
 
+
+/**
+ * Fade out and clear all the rest
+ * of the ring buffer until the start of the fade out position.
+ */
 void
 ring_buffer_fade_out(struct ring_buffer *ring,
                      size_t fade_frames)

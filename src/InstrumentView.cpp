@@ -445,17 +445,7 @@ void KitPercussionView::updateView()
 
         muteButton->setPressed(instrumentModel->isMuted());
         soloButton->setPressed(instrumentModel->isSolo());
-        switch (instrumentModel->playbackMode()) {
-        case DspProxy::PlaybackMode::FullLength:
-                playbackModeButton->setText("FULL");
-                break;
-        case DspProxy::PlaybackMode::NoteOff:
-                playbackModeButton->setText("NOFF");
-                break;
-        case DspProxy::PlaybackMode::Cut:
-                playbackModeButton->setText("CUT");
-                break;
-        }
+        updatePlaymodeButton();
 
         // Midi channel
         auto nMidiChannels = instrumentModel->numberOfMidiChannels();
@@ -508,10 +498,10 @@ void KitPercussionView::setModel(PercussionModel *model)
                      pressed,
                      RK_ACT_ARGS(),
                      [this]() {
-                             const int nextMode =
-                                     (static_cast<int>(instrumentModel->playbackMode()) + 1) % 3;
-                             instrumentModel->setPlaybackMode(
-                                     static_cast<DspProxy::PlaybackMode>(nextMode));
+                             const auto mode = instrumentModel->playbackMode();
+                             const auto nextMode = (static_cast<int>(mode) + 1) % 3;
+                             instrumentModel->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(nextMode));
+                             updatePlaymodeButton();
                      });
         RK_ACT_BIND(muteButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, mute(toggled));
         RK_ACT_BIND(soloButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, solo(toggled));
@@ -622,4 +612,19 @@ void KitPercussionView::setKey(int semitone)
 
 void KitPercussionView::setKeyOctave(int oct)
 {
+}
+
+void KitPercussionView::updatePlaymodeButton()
+{
+        switch (instrumentModel->playbackMode()) {
+        case DspProxy::PlaybackMode::FullLength:
+                playbackModeButton->setText("FULL");
+                break;
+        case DspProxy::PlaybackMode::NoteOff:
+                playbackModeButton->setText("NOFF");
+                break;
+        case DspProxy::PlaybackMode::Cut:
+                playbackModeButton->setText("CUT");
+                break;
+        }
 }

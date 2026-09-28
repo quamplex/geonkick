@@ -118,16 +118,6 @@ gkick_mixer_get_forced_midi_channel(struct gkick_mixer *mixer,
                                     bool *force);
 
 enum geonkick_error
-gkick_mixer_enable_note_off(struct gkick_mixer *mixer,
-                            size_t id,
-                            bool enable);
-
-enum geonkick_error
-gkick_mixer_note_off_enabled(struct gkick_mixer *mixer,
-                             size_t id,
-                             bool *enabled);
-
-enum geonkick_error
 gkick_mixer_set_playback_mode(struct gkick_mixer *mixer,
                               size_t id,
                               enum geonkick_playback_mode mode);

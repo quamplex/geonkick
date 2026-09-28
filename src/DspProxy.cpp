@@ -1462,8 +1462,12 @@ bool DspProxy::isPercussionSolo(size_t id) const
 
 bool DspProxy::setPlaybackMode(size_t id, PlaybackMode mode)
 {
-        return geonkick_instrument_set_playback_mode(
-                geonkickDsp, id, static_cast<geonkick_playback_mode>(mode)) == GEONKICK_OK;
+        const auto dspMode = static_cast<geonkick_playback_mode>(mode);
+        auto res = geonkick_instrument_set_playback_mode(geonkickDsp,
+                                                         id,
+                                                         dspMode);
+
+        return res == GEONKICK_OK;
 }
 
 DspProxy::PlaybackMode DspProxy::getPlaybackMode(size_t id) const

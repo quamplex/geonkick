@@ -36,17 +36,18 @@ gkick_audio_output_create(struct gkick_audio_output **audio_output, int sample_r
                 gkick_log_error("can't allocate memory");
                 return GEONKICK_ERROR;
         }
-        (*audio_output)->play         = false;
-        (*audio_output)->start_play   = false;
-	(*audio_output)->enabled      = true;
-        (*audio_output)->muted        = false;
-        (*audio_output)->solo         = false;
-        (*audio_output)->channel      = 0;
-        (*audio_output)->playing_key  = GEONKICK_ANY_KEY;
-        (*audio_output)->midi_channel = GEONKICK_ANY_MIDI_CHANNEL;
-        (*audio_output)->sample_rate  = sample_rate;
+
+        (*audio_output)->play          = false;
+        (*audio_output)->start_play    = false;
+        (*audio_output)->enabled       = true;
+        (*audio_output)->muted         = false;
+        (*audio_output)->solo          = false;
+        (*audio_output)->channel       = 0;
+        (*audio_output)->playing_key   = GEONKICK_ANY_KEY;
+        (*audio_output)->midi_channel  = GEONKICK_ANY_MIDI_CHANNEL;
+        (*audio_output)->sample_rate   = sample_rate;
         (*audio_output)->playback_mode = GEONKICK_PLAYBACK_FULL_LENGTH;
-        (*audio_output)->choke_group  = GKICK_CHOKE_GROUP_OFF;
+        (*audio_output)->choke_group   = GKICK_CHOKE_GROUP_OFF;
 
         gkick_humanizer_init(&(*audio_output)->velocity_humanizer);
         gkick_humanizer_init(&(*audio_output)->timing_humanizer);
@@ -119,23 +120,34 @@ gkick_audio_output_key_pressed(struct gkick_audio_output *audio_output,
                 return GEONKICK_OK;
 
         if (key->state == GKICK_KEY_STATE_PRESSED) {
-                const enum geonkick_playback_mode mode =
-                        gkick_audio_output_get_playback_mode(audio_output);
+                enum geonkick_playback_mode mode;
+                mode = gkick_audio_output_get_playback_mode(audio_output);
+
                 audio_output->key = *key;
+
 #ifndef GEONKICK_BASIC_VERSION
                 gkick_instrument_humanize_key(audio_output, &audio_output->key);
 #endif // GEONKICK_BASIC_VERSION
+
                 if (mode == GEONKICK_PLAYBACK_CUT) {
+                        /**
+                         * Fade out and clear all the rest of the ring buffer until
+                         * the start of the fade out position.
+                         */
                         size_t fade_frames = (size_t)audio_output->sample_rate / 20;
                         if (fade_frames == 0)
                                 fade_frames = 1;
                         ring_buffer_fade_out(audio_output->ring_buffer, fade_frames);
                 }
+
                 atomic_store_explicit(&audio_output->play,
                                       true,
                                       memory_order_relaxed);
+
                 ring_buffer_turnoff_decay(audio_output->ring_buffer);
                 gkick_audio_output_swap_buffers(audio_output);
+
+                ring_buffer_turnoff_decay(audio_output->ring_buffer);
                 if (mode != GEONKICK_PLAYBACK_NOTE_OFF) {
                         // Add all the buffer.
                         gkick_audio_add_playing_buffer_to_ring(audio_output, SIZE_MAX);
@@ -318,8 +330,7 @@ void gkick_audio_output_get_data(struct gkick_audio_output *audio_output,
                                  gkick_real *leveler,
                                  size_t size)
 {
-        if (gkick_audio_output_get_playback_mode(audio_output)
-            == GEONKICK_PLAYBACK_NOTE_OFF)
+        if (gkick_audio_output_get_playback_mode(audio_output) == GEONKICK_PLAYBACK_NOTE_OFF)
                 gkick_audio_add_playing_buffer_to_ring(audio_output, size);
 
         *leveler = ring_buffer_get_cur_data(audio_output->ring_buffer);
@@ -334,25 +345,12 @@ void gkick_audio_output_get_data(struct gkick_audio_output *audio_output,
         ring_buffer_next(audio_output->ring_buffer, size);
 }
 
-void gkick_audio_output_enable_note_off(struct gkick_audio_output *audio_output,
-                                 bool enable)
-{
-        gkick_audio_output_set_playback_mode(audio_output,
-                                             enable ? GEONKICK_PLAYBACK_NOTE_OFF
-                                             : GEONKICK_PLAYBACK_FULL_LENGTH);
-}
-
-bool gkick_audio_output_note_off(struct gkick_audio_output *audio_output)
-{
-        return gkick_audio_output_get_playback_mode(audio_output)
-                == GEONKICK_PLAYBACK_NOTE_OFF;
-}
-
 void gkick_audio_output_set_playback_mode(struct gkick_audio_output *audio_output,
                                           enum geonkick_playback_mode mode)
 {
         if (mode < GEONKICK_PLAYBACK_FULL_LENGTH || mode > GEONKICK_PLAYBACK_CUT)
                 return;
+
         atomic_store_explicit(&audio_output->playback_mode, mode, memory_order_relaxed);
 }
 
