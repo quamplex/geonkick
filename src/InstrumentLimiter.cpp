@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "limiter.h"
+#include "InstrumentLimiter.h"
 #include "geonkick_slider.h"
 #include "DspProxy.h"
 
@@ -29,7 +29,7 @@
 
 RK_DECLARE_IMAGE_RC(meter_scale);
 
-Limiter::Limiter(DspProxy *dsp, GeonkickWidget *parent)
+InstrumentLimiter::InstrumentLimiter(DspProxy *dsp, GeonkickWidget *parent)
         : GeonkickWidget(parent)
         , dspProxy{dsp}
         , faderSlider{new GeonkickSlider(this, GeonkickSlider::Orientation::Vertical)}
@@ -49,7 +49,7 @@ Limiter::Limiter(DspProxy *dsp, GeonkickWidget *parent)
         levelerValueTimer->start();
 }
 
-void Limiter::paintWidget(RkPaintEvent *event)
+void InstrumentLimiter::paintWidget(RkPaintEvent *event)
 {
         RK_UNUSED(event);
         RkImage img(width(), height());
@@ -70,42 +70,42 @@ void Limiter::paintWidget(RkPaintEvent *event)
         paint.drawImage(img, 0, 0);
 }
 
-void Limiter::onUpdateMeterTimeout()
+void InstrumentLimiter::onUpdateMeterTimeout()
 {
         int val = getMeterValue() - 1;
         if (val > -1)
                 onSetMeterValue(val);
 }
 
-int Limiter::getFaderValue(void) const
+int InstrumentLimiter::getFaderValue(void) const
 {
         return faderSlider->getValue();
 }
 
-int Limiter::getMeterValue() const
+int InstrumentLimiter::getMeterValue() const
 {
         return meterValue;
 }
 
-void Limiter::onSetFaderValue(int val)
+void InstrumentLimiter::onSetFaderValue(int val)
 {
         faderSlider->onSetValue(val, toMeterValue(1.0));
 }
 
-void Limiter::onUpdateMeter()
+void InstrumentLimiter::onUpdateMeter()
 {
         int value = toMeterValue(std::fabs(dspProxy->getLimiterLevelerValue()));
         if (meterValue < value)
                 onSetMeterValue(value);
 }
 
-void Limiter::onSetMeterValue(int val)
+void InstrumentLimiter::onSetMeterValue(int val)
 {
         meterValue = val;
         update();
 }
 
-void Limiter::onUpdateLimiter()
+void InstrumentLimiter::onUpdateLimiter()
 {
         double val = dspProxy->limiterValue();
         if (val < 1e-3)
@@ -114,7 +114,7 @@ void Limiter::onUpdateLimiter()
                 onSetFaderValue(toMeterValue(val));
 }
 
-int Limiter::toMeterValue(double val) const
+int InstrumentLimiter::toMeterValue(double val) const
 {
         if (val < 1e-3)
                 return 0;
@@ -127,7 +127,7 @@ int Limiter::toMeterValue(double val) const
         return value;
 }
 
-void Limiter::onSetLimiterValue(int val)
+void InstrumentLimiter::onSetLimiterValue(int val)
 {
         double k = 70.0 / (1 - 0.07);
         double b = 20.0 - k;

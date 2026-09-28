@@ -21,8 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef GEONKICK_LIMITER_H
-#define GEONKICK_LIMITER_H
+#ifndef GEONKICK_INSTRUMENT_LIMITER_H
+#define GEONKICK_INSTRUMENT_LIMITER_H
 
 #include "geonkick_widget.h"
 
@@ -33,10 +33,10 @@ class GeonkickLevel;
 class DspProxy;
 class RkTimer;
 
-class Limiter: public GeonkickWidget
+class InstrumentLimiter: public GeonkickWidget
 {
  public:
-        Limiter(DspProxy *dsp, GeonkickWidget *parent);
+        InstrumentLimiter(DspProxy *dsp, GeonkickWidget *parent);
         int getFaderValue(void) const;
         int getMeterValue() const;
 
@@ -64,4 +64,4 @@ class Limiter: public GeonkickWidget
         RkImage scaleImage;
 };
 
-#endif // GEONKICK_LIMITER_H
+#endif // GEONKICK_INSTRUMENT_LIMITER_H

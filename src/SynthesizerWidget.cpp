@@ -33,7 +33,7 @@
 #include "general_group_box.h"
 #include "LayersView.h"
 #include "AppInfoWidget.h"
-//#include "Limiter.h"
+#include "InstrumentLimiter.h"
 #include "kit_model.h"
 #include "LayersModel.h"
 #ifndef GEONKICK_SINGLE
@@ -53,10 +53,10 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
 
         // Limiter
-        //auto limiterWidget = new Limiter(geonkickModel->getDspProxy(), this);
-        //limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8,
-        //                           envelopeWidget->y());
-        //RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
+        auto limiterWidget = new InstrumentLimiter(geonkickModel->getDspProxy(), this);
+        limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8,
+                                   envelopeWidget->y());
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
 
         auto controlsYPos = envelopeWidget->y() +  envelopeWidget->height();
         const auto& oscillators = geonkickModel->getOscillatorModels();

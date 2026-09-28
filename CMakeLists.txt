@@ -143,6 +143,7 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/TopBar.h
   ${GKICK_COMMON_DIR}/Sidebar.h
   ${GKICK_COMMON_DIR}/SynthesizerWidget.h
+  ${GKICK_COMMON_DIR}/InstrumentLimiter.h
   ${GKICK_COMMON_DIR}/InstrumentModel.h
   ${GKICK_COMMON_DIR}/kit_model.h
   ${GKICK_COMMON_DIR}/InstrumentView.h
@@ -225,6 +226,7 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/TopBar.cpp
   ${GKICK_COMMON_DIR}/Sidebar.cpp
   ${GKICK_COMMON_DIR}/SynthesizerWidget.cpp
+  ${GKICK_COMMON_DIR}/InstrumentLimiter.cpp
   ${GKICK_COMMON_DIR}/InstrumentModel.cpp
   ${GKICK_COMMON_DIR}/kit_model.cpp
   ${GKICK_COMMON_DIR}/InstrumentView.cpp
