@@ -1,9 +1,24 @@
 ## [3.8.0]
 
-### Improvements
+### Features
 
 - Add UI scale options for 1.25x and 1.75x in the Settings dialog.
-- Add Cut playback mode, which replaces the current sound when a new note is played.
+- Instrument playbackmodes: FULL, NOTE OFF, and CUT
+- Support input notes for envelope points
+- Instrument choke groups
+
+### Improvements
+
+- Update UI of the topbar (change "Controls" -> "Synth" tab)
+- Update UI of the Kit
+- Update layers mixer (enabling layes and selection of current layer done from this UI)
+- New presets from @tonilink
+
+### Fixes
+
+- Fix compiling with new version of LV2
+- fix bezie button (set its correct state when loading first time the UI)
+
 
 ## [3.7.0]
 
