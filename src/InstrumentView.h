@@ -69,9 +69,6 @@ class KitPercussionView: public GeonkickWidget
         void setNameWidth(int width);
         void setKeyWidth(int width);
         void mouseButtonPressEvent(RkMouseEvent *event) override;
-        void mouseDoubleClickEvent(RkMouseEvent *event) override;
-        void hoverEvent(RkHoverEvent *event) override;
-        void updatePercussionName();
         void remove();
         void showMidiPopup();
         void setKey(int key);
@@ -86,7 +83,6 @@ class KitPercussionView: public GeonkickWidget
         PercussionModel *instrumentModel;
         RkLabel *nameLabel;
         BufferView *waveformPreview;
-        RkLineEdit *editPercussion;
         RkSpinBox *midiChannelSpinBox;
         RkSpinBox *outputChannelSpinBox;
         RkSpinBox *keySpinBox;
@@ -98,6 +94,7 @@ class KitPercussionView: public GeonkickWidget
         RkSpinBox *chokeGroupSpinbox;
         PercussionLimiter *instrumentLimiter;
         int padding;
+        bool updatingControls;
 };
 
 #endif // KIT_WIDGET_H

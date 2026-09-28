@@ -71,18 +71,103 @@ protected:
         {
                 event->setAccepted(false);
         }
+
+        void mouseDoubleClickEvent(RkMouseEvent *event) override
+        {
+                event->setAccepted(false);
+        }
 };
 
 class InstrumentNameLabel : public RkLabel
 {
 public:
-        using RkLabel::RkLabel;
+        InstrumentNameLabel(GeonkickWidget *parent, PercussionModel *model)
+                : RkLabel(parent, model->name())
+                , instrumentModel{model}
+                , edit{nullptr}
+                , finishingEdit{false}
+        {
+                setSize(125, 20);
+
+                edit = new RkLineEdit(this);
+                edit->setSize(size());
+                edit->setPosition({0, 0});
+                edit->hide();
+
+                RK_ACT_BIND(edit, editingFinished, RK_ACT_ARGS(),
+                            this, finishEditing());
+                RK_ACT_BINDL(edit, escapePressed, RK_ACT_ARGS(),
+                             [this]() {
+                                     finishingEdit = true;
+                                     edit->setText(instrumentModel->name());
+                                     edit->hide();
+                                     finishingEdit = false;
+                             });
+                RK_ACT_BIND(instrumentModel,
+                            nameUpdated,
+                            RK_ACT_ARGS(std::string name),
+                            this,
+                            setText(name));
+                RK_ACT_BINDL(this, doubleClicked, RK_ACT_ARGS(),
+                             [this]() { beginEditing(); });
+        }
+
+        RK_DECL_ACT(doubleClicked,
+                    doubleClicked(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
 
 protected:
         void mouseButtonPressEvent(RkMouseEvent *event) override
         {
                 event->setAccepted(false);
         }
+
+        void mouseDoubleClickEvent(RkMouseEvent *event) override
+        {
+                if (event->button() == RkMouseEvent::ButtonType::Left) {
+                        action doubleClicked();
+                        event->setAccepted();
+                } else {
+                        event->setAccepted(false);
+                }
+        }
+
+        void hoverEvent(RkHoverEvent *event) override
+        {
+                setTextColor(event->isHover() ? RkColor(240, 240, 240)
+                                              : RkColor(180, 180, 180));
+                update();
+        }
+
+private:
+        void beginEditing()
+        {
+                edit->setBackgroundColor({44, 44, 44});
+                edit->setTextColor(textColor());
+                edit->setCursorColor(textColor());
+                edit->setText(instrumentModel->name());
+                edit->moveCursorToEnd();
+                edit->show();
+                edit->setFocus();
+        }
+
+        void finishEditing()
+        {
+                if (finishingEdit)
+                        return;
+
+                finishingEdit = true;
+                const auto name = edit->text();
+                if (name.empty() || !instrumentModel->setName(name))
+                        edit->setText(instrumentModel->name());
+                edit->hide();
+                finishingEdit = false;
+        }
+
+        PercussionModel *instrumentModel;
+        RkLineEdit *edit;
+        bool finishingEdit;
 };
 
 } // namespace
@@ -128,7 +213,6 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , instrumentModel{model}
         , nameLabel{nullptr}
         , waveformPreview{nullptr}
-        , editPercussion{nullptr}
         , midiChannelSpinBox{nullptr}
         , outputChannelSpinBox{nullptr}
         , keySpinBox{nullptr}
@@ -140,6 +224,7 @@ KitPercussionView::KitPercussionView(KitWidget *parent,
         , chokeGroupSpinbox{nullptr}
         , instrumentLimiter{nullptr}
         , padding{8}
+        , updatingControls{false}
 {
         setSize(parent->width(), 40);
 
@@ -175,13 +260,12 @@ void KitPercussionView::createView()
         instrumentContainer->addWidget(playButton);
 
         // Insturment name
-        instrumentContainer->addSpace(3);
-        nameLabel = new InstrumentNameLabel(this, instrumentModel->name());
+        instrumentContainer->addSpace(8);
+        nameLabel = new InstrumentNameLabel(this, instrumentModel);
         auto font = nameLabel->font();
         font.setWeight(RkFont::Weight::Bold);
         nameLabel->setFont(font);
         nameLabel->setTextColor({180, 180, 180});
-        nameLabel->setSize(140, 20);
         nameLabel->setBackgroundColor(background());
         instrumentContainer->addWidget(nameLabel);
 
@@ -432,6 +516,7 @@ void KitPercussionView::createChokeGroupControl(RkContainer *container)
 
 void KitPercussionView::updateView()
 {
+        updatingControls = true;
         auto backgorundColor = instrumentModel->isSelected() ? RkColor(55, 55, 55) : RkColor(50, 50, 50);
         setBackgroundColor(backgorundColor);
 
@@ -474,15 +559,23 @@ void KitPercussionView::updateView()
         keySpinBox->addItem("-");
         for (int semitone = 0; semitone < 12; semitone++)
                 keySpinBox->addItem(std::string(semitoneToNote(semitone)));
-        keySpinBox->setCurrentIndex(midiKeySemitone(instrumentModel->key()) + 1);
 
         // Midi key octave
         keyOctaveSpinBox->clear();
         keyOctaveSpinBox->addItem("-");
         for (int oct = 0; oct < 9; oct++)
                 keyOctaveSpinBox->addItem(std::to_string(oct));
-        keyOctaveSpinBox->setCurrentIndex(midiKeyOctave(instrumentModel->key()) + 1);
 
+        const auto key = instrumentModel->key();
+        if (key == GeonkickTypes::geonkickAnyKey) {
+                keySpinBox->setCurrentIndex(0);
+                keyOctaveSpinBox->setCurrentIndex(0);
+        } else {
+                keySpinBox->setCurrentIndex(midiKeySemitone(key) + 1);
+                keyOctaveSpinBox->setCurrentIndex(midiKeyOctave(key) + 1);
+        }
+
+        updatingControls = false;
         update();
 }
 
@@ -507,7 +600,6 @@ void KitPercussionView::setModel(PercussionModel *model)
         RK_ACT_BIND(soloButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, solo(toggled));
         RK_ACT_BIND(instrumentLimiter, valueUpdated, RK_ACT_ARGS(int val), instrumentModel, setLimiter(val));
 
-        RK_ACT_BIND(instrumentModel, nameUpdated, RK_ACT_ARGS(std::string name), this, update());
         RK_ACT_BIND(instrumentModel, keyUpdated, RK_ACT_ARGS(KeyIndex index), this, updateView());
         RK_ACT_BIND(instrumentModel, channelUpdated, RK_ACT_ARGS(int val), this, update());
         RK_ACT_BIND(instrumentModel, limiterUpdated, RK_ACT_ARGS(int val),
@@ -550,51 +642,7 @@ void KitPercussionView::mouseButtonPressEvent(RkMouseEvent *event)
             && event->button() != RkMouseEvent::ButtonType::WheelDown)
                 return;
 
-        updatePercussionName();
         setFocus(true);
-}
-
-void KitPercussionView::mouseDoubleClickEvent(RkMouseEvent *event)
-{
-        /*        if (event->button() == RkMouseEvent::ButtonType::WheelUp
-            || event->button() == RkMouseEvent::ButtonType::WheelDown) {
-                mouseButtonPressEvent(event);
-                return;
-        }
-
-        if (event->button() == RkMouseEvent::ButtonType::Left && event->x() < nameWidth) {
-                if (editPercussion == nullptr) {
-                        editPercussion = new RkLineEdit(this);
-                        editPercussion->setSize({nameWidth, height()});
-                        RK_ACT_BIND(editPercussion, editingFinished, RK_ACT_ARGS(),
-                                    this, updatePercussionName());
-                }
-                editPercussion->setText(instrumentModel->name());
-                editPercussion->moveCursorToFront();
-                editPercussion->show();
-                editPercussion->setFocus();
-                }*/
-}
-
-void KitPercussionView::hoverEvent(RkHoverEvent *event)
-{
-        /*        if (!event->isHover())
-                setBackgroundColor({50, 50, 50});
-        else
-                setBackgroundColor({55, 55, 55});
-                update();*/
-}
-
-void KitPercussionView::updatePercussionName()
-{
-        if (editPercussion) {
-		auto name = editPercussion->text();
-		if (!name.empty()) {
-			instrumentModel->setName(name);
-			editPercussion->close();
-                        editPercussion = nullptr;
-		}
-	}
 }
 
 void KitPercussionView::updateLeveler()
@@ -607,11 +655,45 @@ void KitPercussionView::updateLeveler()
 
 void KitPercussionView::setKey(int semitone)
 {
-        //        if ()
+        if (updatingControls)
+                return;
+        if (semitone < 0) {
+                instrumentModel->setKey(GeonkickTypes::geonkickAnyKey);
+                return;
+        }
+
+        const auto currentKey = instrumentModel->key();
+        const auto octave = (currentKey == GeonkickTypes::geonkickAnyKey)
+                ? 4 : midiKeyOctave(currentKey);
+        const auto key = (octave + 1) * 12 + semitone;
+        if (semitone > 11 || key < 21 || key > 108) {
+                updateView();
+                return;
+        }
+
+        instrumentModel->setKey(static_cast<GeonkickTypes::MidiKey>(key));
 }
 
 void KitPercussionView::setKeyOctave(int oct)
 {
+        if (updatingControls)
+                return;
+
+        if (oct < 0) {
+                instrumentModel->setKey(GeonkickTypes::geonkickAnyKey);
+                return;
+        }
+
+        const auto currentKey = instrumentModel->key();
+        const auto semitone = currentKey == GeonkickTypes::geonkickAnyKey
+                ? 0 : midiKeySemitone(currentKey);
+        const auto key = (oct + 1) * 12 + semitone;
+        if (oct > 8 || key < 21 || key > 108) {
+                updateView();
+                return;
+        }
+
+        instrumentModel->setKey(static_cast<GeonkickTypes::MidiKey>(key));
 }
 
 void KitPercussionView::updatePlaymodeButton()

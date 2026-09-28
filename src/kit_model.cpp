@@ -315,6 +315,7 @@ void KitModel::addNewPercussion()
         auto model = new PercussionModel(this, newId);
         instrumentsList.push_back(model);
         action instrumentAdded(model);
+        action modelUpdated();
 }
 
 void KitModel::copyPercussion(PercussionIndex index)
@@ -335,6 +336,7 @@ void KitModel::copyPercussion(PercussionIndex index)
                 auto model = new PercussionModel(this, newId);
                 instrumentsList.push_back(model);
                 action instrumentAdded(model);
+                action modelUpdated();
         }
 }
 
@@ -343,49 +345,49 @@ void KitModel::removePercussion(PercussionIndex index)
         if (!isValidIndex(index) || instrumentsList.size() < 2)
                 return;
 
-        for (auto it = instrumentsList.begin(); it != instrumentsList.end(); ++it) {
-                if ((*it)->index() == index && dspProxy->enablePercussion(instrumentId(index), false)) {
-                        action instrumentRemoved(index);
-                        bool notify = (*it)->isSelected();
-                        delete *it;
-                        instrumentsList.erase(it);
-                        dspProxy->removeOrderedPercussionId(instrumentId(index));
-                        if (notify) {
-                                dspProxy->setCurrentPercussion(instrumentId(0));
-                                action selectPercussion(0);
-                        }
-                        break;
-                }
-        }
+        const auto id = instrumentId(index);
+        auto model = instrumentsList[index];
+        const bool wasSelected = model->isSelected();
+        const auto replacementIndex = index > 0 ? index - 1 : 0;
+        if (!dspProxy->enablePercussion(id, false))
+                return;
+
+        action instrumentRemoved(index);
+        delete model;
+        instrumentsList.erase(instrumentsList.begin() + index);
+        dspProxy->removeOrderedPercussionId(id);
+        if (wasSelected)
+                selectPercussion(replacementIndex);
 
         for (const auto & per: instrumentsList)
                 action per->modelUpdated();
+        action modelUpdated();
 }
 
 void KitModel::moveUpSelectedPercussion()
 {
-        /*        auto currentIndex = getIndex(dspProxy->currentPercussion()) - 1;
-        if (isValidIndex(currentIndex) && isValidIndex(nextIndex)) {
-                bool res = dspProxy->moveOrdrepedPercussionId(dspProxy->currentPercussion(), -1);
-                if (res) {
-                        instrumentsList[currentIndex]->setId(instrumentId(currentIndex));
-                        instrumentsList[nextIndex]->setId(instrumentId(nextIndex));
-                        selectPercussion(nextIndex);
-                }
-                }*/
+        const auto index = selectedPercussion();
+        if (!isValidIndex(index) || index == 0)
+                return;
+
+        if (!dspProxy->moveOrdrepedPercussionId(instrumentId(index), -1))
+                return;
+
+        std::swap(instrumentsList[index], instrumentsList[index - 1]);
+        action modelUpdated();
 }
 
 void KitModel::moveDownSelectedPercussion()
 {
-        /*        auto currentIndex = getIndex(dspProxy->currentPercussion()) + 1;
-        if (isValidIndex(currentIndex) && isValidIndex(nextIndex)) {
-                bool res = dspProxy->moveOrdrepedPercussionId(dspProxy->currentPercussion(), 1);
-                if (res) {
-                        instrumentsList[currentIndex]->setId(instrumentId(currentIndex));
-                        instrumentsList[nextIndex]->setId(instrumentId(nextIndex));
-                        selectPercussion(nextIndex);
-                }
-                }*/
+        const auto index = selectedPercussion();
+        if (!isValidIndex(index) || static_cast<size_t>(index + 1) >= instrumentsList.size())
+                return;
+
+        if (!dspProxy->moveOrdrepedPercussionId(instrumentId(index), 1))
+                return;
+
+        std::swap(instrumentsList[index], instrumentsList[index + 1]);
+        action modelUpdated();
 }
 
 size_t KitModel::instrumentNumber() const

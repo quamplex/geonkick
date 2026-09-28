@@ -128,7 +128,8 @@ GeonkickWidget* KitWidget::createTopMenu()
                             RkButton::State::PressedHover);
         removeButton->setImage(RK_RC_IMAGE(remove_per_button_on),
                             RkButton::State::Pressed);
-        //RK_ACT_BIND(removeButton, pressed, RK_ACT_ARGS(), kitModel, removeNewPercussion());
+        RK_ACT_BIND(removeButton, pressed, RK_ACT_ARGS(),
+                    kitModel, removePercussion(kitModel->selectedPercussion()));
         topContainer->addWidget(removeButton);
         removeButton->show();
 
@@ -144,7 +145,8 @@ GeonkickWidget* KitWidget::createTopMenu()
                             RkButton::State::PressedHover);
         duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_on),
                             RkButton::State::Pressed);
-        //RK_ACT_BIND(duplicateButton, pressed, RK_ACT_ARGS(), kitModel, duplicateNewPercussion());
+        RK_ACT_BIND(duplicateButton, pressed, RK_ACT_ARGS(),
+                    kitModel, copyPercussion(kitModel->selectedPercussion()));
         topContainer->addWidget(duplicateButton);
         duplicateButton->show();
 
@@ -160,7 +162,8 @@ GeonkickWidget* KitWidget::createTopMenu()
                             RkButton::State::PressedHover);
         moveupButton->setImage(RK_RC_IMAGE(move_up_per_button_on),
                             RkButton::State::Pressed);
-        //        RK_ACT_BIND(moveupButton, pressed, RK_ACT_ARGS(), kitModel, moveSelectedPercussion(false));
+        RK_ACT_BIND(moveupButton, pressed, RK_ACT_ARGS(),
+                    kitModel, moveUpSelectedPercussion());
         topContainer->addWidget(moveupButton);
         moveupButton->show();
 
@@ -176,7 +179,8 @@ GeonkickWidget* KitWidget::createTopMenu()
                             RkButton::State::PressedHover);
         movedownButton->setImage(RK_RC_IMAGE(move_down_per_button_on),
                             RkButton::State::Pressed);
-        //        RK_ACT_BIND(movedownButton, toggled, RK_ACT_ARGS(bool b), kitModel, moveSelectedPercussion(true));
+        RK_ACT_BIND(movedownButton, pressed, RK_ACT_ARGS(),
+                    kitModel, moveDownSelectedPercussion());
         topContainer->addWidget(movedownButton);
         movedownButton->show();
 
@@ -276,4 +280,3 @@ void KitWidget::onUpdateLevelers()
         for (const auto &per: instrumentViewList)
                 per->updateLeveler();
 }
-
