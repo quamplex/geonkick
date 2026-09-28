@@ -26,6 +26,7 @@
 
 #include "geonkick_widget.h"
 #include "geonkick_slider.h"
+#include "RkSpinBox.h"
 
 class PercussionLimiter : public GeonkickSlider {
   public:
@@ -41,7 +42,6 @@ class PercussionLimiter : public GeonkickSlider {
 };
 
 class RkLineEdit;
-class RkSpinBox;
 class RkButton;
 class PercussionModel;
 class RkProgressBar;
@@ -50,6 +50,24 @@ class GeonkickButton;
 class RkLabel;
 class BufferView;
 class RkContainer;
+
+class KitMidiKeySpinBox : public RkSpinBox
+{
+public:
+        explicit KitMidiKeySpinBox(RkWidget *parent);
+        void updateValueLabel();
+
+        RK_DECL_ACT(valueAreaClicked,
+                    valueAreaClicked(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
+
+protected:
+        void resizeEvent(RkResizeEvent *event) override;
+
+private:
+        RkLabel *valueLabel;
+};
 
 class KitPercussionView: public GeonkickWidget
 {
@@ -70,7 +88,7 @@ class KitPercussionView: public GeonkickWidget
         void setKeyWidth(int width);
         void mouseButtonPressEvent(RkMouseEvent *event) override;
         void remove();
-        void showMidiPopup();
+        void showMidiPopup(RkWidget *anchor);
         void setKey(int key);
         void setKeyOctave(int oct);
 
@@ -85,8 +103,8 @@ class KitPercussionView: public GeonkickWidget
         BufferView *waveformPreview;
         RkSpinBox *midiChannelSpinBox;
         RkSpinBox *outputChannelSpinBox;
-        RkSpinBox *keySpinBox;
-        RkSpinBox *keyOctaveSpinBox;
+        KitMidiKeySpinBox *keySpinBox;
+        KitMidiKeySpinBox *keyOctaveSpinBox;
         RkButton *playButton;
         RkButton *muteButton;
         RkButton *soloButton;

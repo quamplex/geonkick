@@ -24,6 +24,7 @@
 #include "KitWidget.h"
 #include "InstrumentView.h"
 #include "InstrumentModel.h"
+#include "Sidebar.h"
 #include "geonkick_slider.h"
 #include "MidiKeyWidget.h"
 #include "geonkick_button.h"
@@ -75,6 +76,26 @@ protected:
         void mouseDoubleClickEvent(RkMouseEvent *event) override
         {
                 event->setAccepted(false);
+        }
+};
+
+class MidiValueLabel : public RkLabel
+{
+public:
+        using RkLabel::RkLabel;
+
+        RK_DECL_ACT(clicked,
+                    clicked(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
+
+protected:
+        void mouseButtonPressEvent(RkMouseEvent *event) override
+        {
+                if (event->button() == RkMouseEvent::ButtonType::Left) {
+                        action clicked();
+                        event->setAccepted();
+                }
         }
 };
 
@@ -171,6 +192,41 @@ private:
 };
 
 } // namespace
+
+KitMidiKeySpinBox::KitMidiKeySpinBox(RkWidget *parent)
+        : RkSpinBox(parent)
+        , valueLabel{nullptr}
+{
+        auto midiValueLabel = new MidiValueLabel(this);
+        valueLabel = midiValueLabel;
+        label()->hide();
+        valueLabel->show();
+        RK_ACT_BIND(midiValueLabel, clicked, RK_ACT_ARGS(),
+                    this, valueAreaClicked());
+        RK_ACT_BIND(this,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    updateValueLabel());
+        updateValueLabel();
+}
+
+void KitMidiKeySpinBox::updateValueLabel()
+{
+        valueLabel->setText(label()->text());
+        valueLabel->setTextColor(textColor());
+        valueLabel->setBackgroundColor(background());
+        valueLabel->setFont(font());
+        valueLabel->setAlignment(label()->alignment());
+        valueLabel->setSize(label()->size());
+        valueLabel->setPosition(label()->position());
+}
+
+void KitMidiKeySpinBox::resizeEvent(RkResizeEvent *event)
+{
+        RkSpinBox::resizeEvent(event);
+        updateValueLabel();
+}
 
 PercussionLimiter::PercussionLimiter(GeonkickWidget *parent)
         : GeonkickSlider(parent)
@@ -314,7 +370,7 @@ void KitPercussionView::createView()
         instrumentContainer->addSpace(10);
 
         // Midi key spinbox
-        keySpinBox = new RkSpinBox(this);
+        keySpinBox = new KitMidiKeySpinBox(this);
         keySpinBox->setSize(38, 30);
         keySpinBox->setTextColor({160, 160, 160});
         keySpinBox->setBackgroundColor({44, 44, 44});
@@ -344,10 +400,15 @@ void KitPercussionView::createView()
                     RK_ACT_ARGS(int index),
                     this,
                     setKey(index - 1));
+        RK_ACT_BIND(keySpinBox,
+                    valueAreaClicked,
+                    RK_ACT_ARGS(),
+                    this,
+                    showMidiPopup(keySpinBox));
         instrumentContainer->addWidget(keySpinBox);
 
         // Midi key octave spinbox
-        keyOctaveSpinBox = new RkSpinBox(this);
+        keyOctaveSpinBox = new KitMidiKeySpinBox(this);
         keyOctaveSpinBox->setSize(33, 30);
         keyOctaveSpinBox->setTextColor({220, 220, 220});
         keyOctaveSpinBox->setBackgroundColor({44, 44, 44});
@@ -377,6 +438,11 @@ void KitPercussionView::createView()
                     RK_ACT_ARGS(int index),
                     this,
                     setKeyOctave(index - 1));
+        RK_ACT_BIND(keyOctaveSpinBox,
+                    valueAreaClicked,
+                    RK_ACT_ARGS(),
+                    this,
+                    showMidiPopup(keyOctaveSpinBox));
         instrumentContainer->addWidget(keyOctaveSpinBox);
 
 
@@ -628,6 +694,34 @@ void KitPercussionView::remove()
 {
         if (getModel())
                 getModel()->remove();
+}
+
+void KitPercussionView::showMidiPopup(RkWidget *anchor)
+{
+        auto topWidget = dynamic_cast<GeonkickWidget*>(getTopWidget());
+        if (!topWidget || !anchor)
+                return;
+
+        auto popup = new MidiKeyWidget(topWidget, instrumentModel);
+        int usableWidth = topWidget->width();
+        for (auto child : topWidget->children()) {
+                auto sidebar = dynamic_cast<Sidebar*>(child);
+                if (sidebar && sidebar->isVisible())
+                        usableWidth = std::min(usableWidth, sidebar->x());
+        }
+
+        const auto anchorPosition = topWidget->mapToLocal(anchor->mapToGlobal({0, 0}));
+        int x = anchorPosition.x();
+        int y = anchorPosition.y() + anchor->height();
+        if (x + popup->width() > usableWidth)
+                x = usableWidth - popup->width() - 8;
+        if (y + popup->height() > topWidget->height())
+                y = anchorPosition.y() - popup->height();
+
+        x = std::clamp(x, 0, std::max(0, usableWidth - popup->width() - 8));
+        y = std::clamp(y, 0, std::max(0, topWidget->height() - popup->height()));
+        popup->setPosition(x, y);
+        popup->show();
 }
 
 void KitPercussionView::mouseButtonPressEvent(RkMouseEvent *event)
