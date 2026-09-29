@@ -65,11 +65,17 @@ namespace {
 class InstrumentWaveformPreview : public BufferView
 {
 public:
-        using BufferView::BufferView;
+        InstrumentWaveformPreview(GeonkickWidget *parent, PercussionModel *model)
+                : BufferView(parent, model->data())
+                , instrumentModel{model}
+        {
+        }
 
 protected:
         void mouseButtonPressEvent(RkMouseEvent *event) override
         {
+                if (event->button() == RkMouseEvent::ButtonType::Left)
+                        instrumentModel->play();
                 event->setAccepted(false);
         }
 
@@ -77,6 +83,9 @@ protected:
         {
                 event->setAccepted(false);
         }
+
+private:
+        PercussionModel *instrumentModel;
 };
 
 class InstrumentNameLabel : public RkLabel
@@ -281,7 +290,7 @@ void KitPercussionView::createView()
 
         // Waveform preview
         instrumentContainer->addSpace(10);
-        waveformPreview = new InstrumentWaveformPreview(this, instrumentModel->data());
+        waveformPreview = new InstrumentWaveformPreview(this, instrumentModel);
         waveformPreview->setSize(140, height() - 10);
         instrumentContainer->addWidget(waveformPreview);
         instrumentContainer->addSpace(20);
