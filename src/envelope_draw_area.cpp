@@ -92,9 +92,9 @@ void EnvelopeWidgetDrawingArea::paintWidget([[maybe_unused]] RkPaintEvent *event
         pen.setWidth(1);
         painter.setPen(pen);
 #ifndef GEONKICK_BASIC_VERSION
-        painter.drawText(50 + 140, height() - 12, getEnvStateText());
+        painter.drawText(90, height() - 12, getEnvStateText());
 #else
-        painter.drawText(50 + 50, height() - 12, getEnvStateText());
+        painter.drawText(0, height() - 12, getEnvStateText());
 #endif // GEONKICK_BASIC_VERSION
         pen.setColor({20, 20, 20, 255});
         painter.setPen(pen);
@@ -107,21 +107,22 @@ void EnvelopeWidgetDrawingArea::paintWidget([[maybe_unused]] RkPaintEvent *event
 std::string EnvelopeWidgetDrawingArea::getEnvStateText() const
 {
         std::string str;
+        std::string layer;
 #ifndef GEONKICK_BASIC_VERSION
-        str = "L" + std::to_string(static_cast<int>(dspProxy->layer()) + 1) + " / ";
+        layer = "L" + std::to_string(static_cast<int>(dspProxy->layer()) + 1) + " / ";
 #endif // GEONKICK_SINGLE_VERSION
         switch(currentEnvelope->category()) {
         case Envelope::Category::Oscillator1:
-                str += "OSC1";
+                str += layer + "OSC1";
                 break;
         case Envelope::Category::Oscillator2:
-                str += "OSC2";
+                str += layer + "OSC2";
                 break;
         case Envelope::Category::Oscillator3:
-                str += "OSC3";
+                str += layer + "OSC3";
                 break;
         case Envelope::Category::InstrumentGlobal:
-                str += "GEN";
+                str += "GLOB";
                 break;
         default:
                 break;
@@ -143,10 +144,16 @@ std::string EnvelopeWidgetDrawingArea::getEnvStateText() const
                 str += "DIST / VOL";
                 break;
         case Envelope::Type::FilterCutOff:
-                str += "CFENV";
+                str += "FILT / CFENV";
                 break;
         case Envelope::Type::FilterQFactor:
-                str += "QENV";
+                str += "FILT /QENV";
+                break;
+        case Envelope::Type::PitchShift:
+                str += "PSHIFT";
+                break;
+        case Envelope::Type::NoiseDensity:
+                str += "NDENSITY";
                 break;
         default:
                 break;
