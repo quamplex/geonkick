@@ -214,9 +214,8 @@ GeonkickWidget* KitWidget::createTopMenu()
         label->show();
         topContainer->addWidget(label);
 
-        // Choke group
-        topContainer->addSpace(24);
-        label = new RkLabel(topMenu, "Choke");
+        topContainer->addSpace(14);
+        label = new RkLabel(topMenu, "Play mode");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
@@ -224,12 +223,22 @@ GeonkickWidget* KitWidget::createTopMenu()
         label->show();
         topContainer->addWidget(label);
 
-        // Output channel
-        topContainer->addSpace(180);
-        label = new RkLabel(topMenu, "Output ch.");
+        // Choke group
+        topContainer->addSpace(6);
+        label = new RkLabel(topMenu, "Choke");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({54, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
+        label->show();
+        topContainer->addWidget(label);
+
+        // Output channel
+        topContainer->addSpace(187);
+        label = new RkLabel(topMenu, "Output ch.");
+        label->setTextColor(textColor());
+        label->setBackgroundColor(background());
+        label->setSize({50, 20});
         label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
