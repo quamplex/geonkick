@@ -185,11 +185,12 @@ GeonkickWidget* KitWidget::createTopMenu()
         movedownButton->show();
 
         // Midi channel
-        topContainer->addSpace(205);
+        topContainer->addSpace(193);
         auto label = new RkLabel(topMenu, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
 
@@ -199,24 +200,27 @@ GeonkickWidget* KitWidget::createTopMenu()
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({30, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
 
         // Choke group
-        topContainer->addSpace(63);
+        topContainer->addSpace(99);
         label = new RkLabel(topMenu, "Choke");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({50, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
 
         // Output channel
-        topContainer->addSpace(185);
+        topContainer->addSpace(180);
         label = new RkLabel(topMenu, "Output ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
         label->setSize({54, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
 
