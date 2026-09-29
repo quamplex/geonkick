@@ -26,6 +26,7 @@
 
 #include "geonkick_widget.h"
 
+#include "RkColor.h"
 #include "RkImage.h"
 
 class BufferView : public GeonkickWidget {
@@ -33,6 +34,7 @@ class BufferView : public GeonkickWidget {
         BufferView(GeonkickWidget* parent, const std::vector<float> &data = std::vector<float>());
         virtual ~BufferView() = default;
         void setData(const std::vector<float> &data);
+        void setGraphColor(const RkColor &color);
         const std::vector<float>& getData() const;
         RK_DECL_ACT(graphPressed, graphPressed(), RK_ARG_TYPE(), RK_ARG_VAL());
 
@@ -43,6 +45,7 @@ class BufferView : public GeonkickWidget {
 
   private:
      std::vector<float> bufferData;
+     RkColor graphColor;
      bool updateGraph;
      std::unique_ptr<RkImage> waveformImage;
 };

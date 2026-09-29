@@ -69,6 +69,7 @@ public:
                 : BufferView(parent, model->data())
                 , instrumentModel{model}
         {
+                setGraphColor({76, 170, 92, 210});
         }
 
 protected:
@@ -81,6 +82,8 @@ protected:
 
         void mouseDoubleClickEvent(RkMouseEvent *event) override
         {
+                if (event->button() == RkMouseEvent::ButtonType::Left)
+                        instrumentModel->play();
                 event->setAccepted(false);
         }
 
@@ -211,17 +214,32 @@ int PercussionLimiter::getLeveler() const
 
 void PercussionLimiter::paintWidget(RkPaintEvent *event)
 {
-        GeonkickSlider::paintWidget(event);
+        RK_UNUSED(event);
         RkPainter painter(this);
-        double value = (static_cast<double>(levelerValue) / 100) * (width() - 2);
-        RkColor color(40, 200, 40);
-        if (levelerValue > 0) {
-                if (getOrientation() == GeonkickSlider::Orientation::Horizontal) {
-                        painter.fillRect(RkRect(1, 2, value, height() - 4), color);
-                } else {
-                        painter.fillRect(RkRect(height() - 2 - value, 2,
-                                                width() - 4, value), color);
-                }
+        painter.fillRect(rect(), RkColor(37, 37, 37));
+        painter.setPen(RkPen(RkColor(32, 32, 32)));
+        painter.drawRect({0, 0, width() - 1, height() - 1});
+
+        if (getOrientation() == GeonkickSlider::Orientation::Horizontal) {
+                const auto limiterWidth =
+                        static_cast<double>(getValue()) / 100 * (width() - 2);
+                const auto levelerWidth =
+                        static_cast<double>(levelerValue) / 100 * (width() - 2);
+                painter.fillRect(RkRect(1, 1, limiterWidth, height() - 2),
+                                 RkColor(78, 82, 84));
+                painter.fillRect(RkRect(1, 1, levelerWidth, height() - 2),
+                                 RkColor(112, 151, 105));
+        } else {
+                const auto limiterHeight =
+                        static_cast<double>(getValue()) / 100 * (height() - 2);
+                const auto levelerHeight =
+                        static_cast<double>(levelerValue) / 100 * (height() - 2);
+                painter.fillRect(RkRect(1, height() - 1 - limiterHeight,
+                                        width() - 2, limiterHeight),
+                                 RkColor(78, 82, 84));
+                painter.fillRect(RkRect(1, height() - 1 - levelerHeight,
+                                        width() - 2, levelerHeight),
+                                 RkColor(112, 151, 105));
         }
 }
 

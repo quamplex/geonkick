@@ -29,6 +29,7 @@
 BufferView::BufferView(GeonkickWidget* parent, const std::vector<float> &data)
         : GeonkickWidget(parent)
         , bufferData{data}
+        , graphColor{59, 130, 4, 150}
         , updateGraph{true}
         , waveformImage{nullptr}
 {
@@ -38,6 +39,13 @@ BufferView::BufferView(GeonkickWidget* parent, const std::vector<float> &data)
 void BufferView::setData(const std::vector<float> &data)
 {
         bufferData = data;
+        updateGraph = true;
+        update();
+}
+
+void BufferView::setGraphColor(const RkColor &color)
+{
+        graphColor = color;
         updateGraph = true;
         update();
 }
@@ -81,7 +89,7 @@ void BufferView::drawGraph()
         }
 
         RkPen pen = painter.pen();
-        pen.setColor({59, 130, 4, 150});
+        pen.setColor(graphColor);
         pen.setWidth(1);
         painter.setPen(pen);
         painter.drawPolyline(graphPoints);
