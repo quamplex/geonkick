@@ -100,6 +100,7 @@ class KitModel : public RkObject {
         unsigned int numberOfChokeGroups(PercussionIndex index) const;
         bool setChokeGroup(PercussionIndex index, int group);
         int getChokeGroup(PercussionIndex index) const;
+        void updateInstrumentWaveform(size_t id);
         OscillatorModel* getCurrentLayerOscillator(OscillatorModel::Type type) const;
         bool loadPreset(const Preset &preset, PercussionIndex index);
         bool loadPreset(const Preset &preset);

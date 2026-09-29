@@ -1192,16 +1192,29 @@ void DspProxy::updateKickBuffer(std::vector<gkick_real> &&buffer,
                                 size_t id)
 {
         GEONKICK_LOG_DEBUG("id: " << id);
+
         std::lock_guard<std::mutex> lock(dspMutex);
-        if (id < numberOfInstruments()) {
-                GEONKICK_LOG_DEBUG("kickBuffers[id] = buffer" << id);
-                kickBuffers[id] = std::move(buffer);
+        if (id >= kickBuffers.size())
+                return;
+
+        GEONKICK_LOG_DEBUG("kickBuffers[id] = buffer" << id);
+        kickBuffers[id] = std::move(buffer);
+
+        if (!eventQueue) {
+                GEONKICK_LOG_DEBUG("no event queue");
+                return;
         }
-        if (eventQueue && id == currentPercussion()) {
+
+        if (id == currentPercussion()) {
                 auto act = std::make_unique<RkAction>();
                 act->setCallback([this](void){ kickUpdated(); });
                 eventQueue->postAction(std::move(act));
-                GEONKICK_LOG_DEBUG("waveform Updated");
+                GEONKICK_LOG_DEBUG("current waveform Updated, id: " << id);
+        } else {
+                auto act = std::make_unique<RkAction>();
+                act->setCallback([this, id](void){ instrumentBufferUpdated(id); });
+                eventQueue->postAction(std::move(act));
+                GEONKICK_LOG_DEBUG("current waveform Updated for id: " << id);
         }
 }
 

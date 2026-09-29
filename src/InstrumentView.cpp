@@ -542,7 +542,7 @@ void KitPercussionView::updateView()
         nameLabel->setBackgroundColor(backgorundColor);
         nameLabel->setText(instrumentModel->name());
 
-        waveformPreview->setData(instrumentModel->data());
+        updateWaveformPreview();
         waveformPreview->setBackgroundColor(backgorundColor);
 
         instrumentLimiter->onSetValue(instrumentModel->limiter(), 55.0 * 100.0 / 75);
@@ -629,7 +629,11 @@ void KitPercussionView::setModel(PercussionModel *model)
                     RK_ACT_ARGS(DspProxy::PlaybackMode mode),
                     this,
                     updateView());
-        RK_ACT_BIND(instrumentModel, waveformUpdated, RK_ACT_ARGS(), this, updateView());
+        RK_ACT_BIND(instrumentModel,
+                    waveformUpdated,
+                    RK_ACT_ARGS(),
+                    this,
+                    updateWaveformPreview());
 
         updateView();
 }
@@ -760,4 +764,9 @@ void KitPercussionView::onPlaybackModePressed()
         const auto nextMode = (static_cast<int>(mode) + 1) % 3;
         instrumentModel->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(nextMode));
         updatePlaymodeButton();
+}
+
+void KitPercussionView::updateWaveformPreview()
+{
+        waveformPreview->setData(instrumentModel->data());
 }

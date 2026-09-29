@@ -346,6 +346,10 @@ class DspProxy : public RkObject {
               instrumentUpdated(int id),
               RK_ARG_TYPE(int),
               RK_ARG_VAL(id));
+  RK_DECL_ACT(instrumentBufferUpdated,
+              instrumentBufferUpdated(size_t id),
+              RK_ARG_TYPE(size_t),
+              RK_ARG_VAL(id));
 
   void setSettings(const std::string &key, const std::string &value);
   std::string getSettings(const std::string &key) const;
