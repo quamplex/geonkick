@@ -36,6 +36,7 @@ class PresetNavigator;
 class RkSpinBox;
 class RkLineEdit;
 class KitModel;
+class PercussionModel;
 
 class TopBar : public GeonkickWidget
 {
@@ -55,6 +56,7 @@ class TopBar : public GeonkickWidget
         void addSeparator(RkContainer *mainLayout, int width = 5);
         void createMainMenu(RkContainer *layout);
         void updatePlaymodeButton();
+        void bindInstrumentChannelUpdates(PercussionModel *model);
 
         GeonkickModel *geonkickModel;
         KitModel *kitModel;
@@ -66,6 +68,7 @@ class TopBar : public GeonkickWidget
         GeonkickButton *synthButton;
         GeonkickButton *midiKeyButton;
         RkSpinBox *midiChannelSpinBox;
+        RkSpinBox *outputChannelSpinBox;
         GeonkickButton *playbackModeButton;
 #ifndef GEONKICK_SINGLE
         GeonkickButton *kitButton;

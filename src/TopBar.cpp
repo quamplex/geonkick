@@ -61,6 +61,35 @@ RK_DECLARE_IMAGE_RC(topmenu_kit_off);
 RK_DECLARE_IMAGE_RC(topmenu_settings_active);
 RK_DECLARE_IMAGE_RC(topmenu_settings_hover);
 RK_DECLARE_IMAGE_RC(topmenu_settings_off);
+RK_DECLARE_IMAGE_RC(control_arrow_up);
+RK_DECLARE_IMAGE_RC(control_arrow_up_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_up_pressed);
+RK_DECLARE_IMAGE_RC(control_arrow_down);
+RK_DECLARE_IMAGE_RC(control_arrow_down_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_down_pressed);
+
+namespace {
+void configureChannelSpinBox(RkSpinBox *spinBox)
+{
+        spinBox->setCustomControls();
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up),
+                                       RkButton::State::Unpressed);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::UnpressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::PressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_pressed),
+                                       RkButton::State::Pressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down),
+                                         RkButton::State::Unpressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::UnpressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::PressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_pressed),
+        RkButton::State::Pressed);
+}
+}
 
 TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
@@ -71,6 +100,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         , synthButton{nullptr}
         , midiKeyButton{nullptr}
         , midiChannelSpinBox{nullptr}
+        , outputChannelSpinBox{nullptr}
         , playbackModeButton{nullptr}
 #ifndef GEONKICK_SINGLE
         , kitButton{nullptr}
@@ -136,29 +166,22 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         // Instrument name
         addSeparator(mainLayout);
         mainLayout->addWidget(createInstrumentNameLabel());
+        addSeparator(mainLayout, 4);
 
-        // Midi channel
-        addSeparator(mainLayout);
-        midiChannelSpinBox = new RkSpinBox(this);
-        midiChannelSpinBox->setBackgroundColor({44, 44, 44});
-        midiChannelSpinBox->setTextColor({180, 180, 180});
-        midiChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
-        midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->setSize(50, 20);
-        midiChannelSpinBox->show();
-        mainLayout->addWidget(midiChannelSpinBox);
-        RK_ACT_BINDL(midiChannelSpinBox,
-                    currentIndexChanged,
-                    RK_ACT_ARGS(int index),
-                     [=, this](int index) {
-                             auto *currentIntrument = kitModel->currentPercussion();
-                             currentIntrument->setMidiChannel(index - 1);
-                     });
+        auto labelFont = font();
+        labelFont.setSize(10);
 
-        // Midi Key
+        // MIDI key
         mainLayout->addSpace(3);
+        auto midiKeyLabel = new RkLabel(this, "Key:");
+        midiKeyLabel->setTextColor({150, 150, 150});
+        midiKeyLabel->setBackgroundColor(background());
+        midiKeyLabel->setFont(labelFont);
+        midiKeyLabel->setAlignment(Rk::Alignment::AlignRight);
+        midiKeyLabel->setSize(22, 20);
+        midiKeyLabel->show();
+        mainLayout->addWidget(midiKeyLabel);
+        mainLayout->addSpace(4);
         midiKeyButton = new GeonkickButton(this);
         midiKeyButton->setTextColor({200, 200, 200});
         midiKeyButton->setType(RkButton::ButtonType::ButtonUncheckable);
@@ -175,8 +198,65 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                     showMidiPopup());
         mainLayout->addWidget(midiKeyButton);
 
+        // Output channel
+        auto outputChannelLabel = new RkLabel(this, "Out:");
+        outputChannelLabel->setTextColor({150, 150, 150});
+        outputChannelLabel->setBackgroundColor(background());
+        outputChannelLabel->setFont(labelFont);
+        outputChannelLabel->setAlignment(Rk::Alignment::AlignRight);
+        outputChannelLabel->setSize(30, 20);
+        outputChannelLabel->show();
+        mainLayout->addWidget(outputChannelLabel);
+        mainLayout->addSpace(4);
+        outputChannelSpinBox = new RkSpinBox(this);
+        outputChannelSpinBox->setBackgroundColor({44, 44, 44});
+        outputChannelSpinBox->setTextColor({180, 180, 180});
+        outputChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
+        outputChannelSpinBox->upControl()->setTextColor({100, 100, 100});
+        outputChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
+        outputChannelSpinBox->downControl()->setTextColor({100, 100, 100});
+        outputChannelSpinBox->setSize(54, 23);
+        configureChannelSpinBox(outputChannelSpinBox);
+        outputChannelSpinBox->show();
+        RK_ACT_BINDL(outputChannelSpinBox,
+                     currentIndexChanged,
+                     RK_ARG_ARGS(int index),
+                     [=, this](int index) {
+                             kitModel->currentPercussion()->setChannel(index);
+                     });
+        mainLayout->addWidget(outputChannelSpinBox);
+
+        // MIDI channel
+        auto midiChannelLabel = new RkLabel(this, "MIDI:");
+        midiChannelLabel->setTextColor({150, 150, 150});
+        midiChannelLabel->setBackgroundColor(background());
+        midiChannelLabel->setFont(labelFont);
+        midiChannelLabel->setAlignment(Rk::Alignment::AlignRight);
+        midiChannelLabel->setSize(34, 20);
+        midiChannelLabel->show();
+        mainLayout->addWidget(midiChannelLabel);
+        mainLayout->addSpace(4);
+        midiChannelSpinBox = new RkSpinBox(this);
+        midiChannelSpinBox->setBackgroundColor({44, 44, 44});
+        midiChannelSpinBox->setTextColor({180, 180, 180});
+        midiChannelSpinBox->upControl()->setBackgroundColor({50, 47, 47});
+        midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
+        midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
+        midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
+        midiChannelSpinBox->setSize(54, 23);
+        configureChannelSpinBox(midiChannelSpinBox);
+        midiChannelSpinBox->show();
+        mainLayout->addWidget(midiChannelSpinBox);
+        RK_ACT_BINDL(midiChannelSpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                     [=, this](int index) {
+                             auto *currentIntrument = kitModel->currentPercussion();
+                             currentIntrument->setMidiChannel(index - 1);
+                     });
+
         // Playback mode button
-        mainLayout->addSpace(3);
+        mainLayout->addSpace(6);
         playbackModeButton = new GeonkickButton(this);
         playbackModeButton->setType(RkButton::ButtonType::ButtonPush);
         playbackModeButton->setSize(56, 20);
@@ -223,6 +303,13 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                                      updateGui();
                      } );
 
+        RK_ACT_BIND(kitModel,
+                    instrumentAdded,
+                    RK_ACT_ARGS(PercussionModel *model),
+                    this,
+                    bindInstrumentChannelUpdates(model));
+        for (auto *model: kitModel->instrumentModels())
+                bindInstrumentChannelUpdates(model);
         updateGui();
 }
 
@@ -328,7 +415,33 @@ void TopBar::updateGui()
         for (size_t i = 0; i < nMidiChannels; i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);
+        outputChannelSpinBox->clear();
+        for (size_t i = 0; i < instrumentModel->numberOfChannels(); i++)
+                outputChannelSpinBox->addItem(std::to_string(i + 1));
+        outputChannelSpinBox->setCurrentIndex(instrumentModel->channel());
+
         updatePlaymodeButton();
+}
+
+void TopBar::bindInstrumentChannelUpdates(PercussionModel *model)
+{
+        RK_ACT_BINDL(model,
+                     channelUpdated,
+                     RK_ARG_TYPE(int),
+                     [=, this](int index) {
+                             if (model->isSelected()
+                                 && outputChannelSpinBox->currentIndex() != index)
+                                     outputChannelSpinBox->setCurrentIndex(index);
+                     });
+        RK_ACT_BINDL(model,
+                     midiChannelUpdated,
+                     RK_ARG_TYPE(int),
+                     [=, this](int index) {
+                             const auto spinBoxIndex = index + 1;
+                             if (model->isSelected()
+                                 && midiChannelSpinBox->currentIndex() != spinBoxIndex)
+                                     midiChannelSpinBox->setCurrentIndex(spinBoxIndex);
+                     });
 }
 
 void TopBar::updatePlaymodeButton()

@@ -75,27 +75,40 @@ void RkSpinBox::RkSpinBoxImpl::init()
 
 void RkSpinBox::RkSpinBoxImpl::updateControls()
 {
-        const int padding = 4;
-
-        RkSize controlsSize = RkSize(inf_ptr->width() / 4, inf_ptr->height() / 2);
-        if (controlsSize.isEmpty())
+        const auto width = inf_ptr->width();
+        const auto height = inf_ptr->height();
+        if (width <= 0 || height <= 0)
                 return;
+
+        constexpr int horizontalPadding = 4;
+        constexpr int verticalPadding = 2;
+        constexpr int controlSpacing = 1;
 
         auto controlsRight = controlsPosition == ControlsPosition::PositionRight;
 
         if (!customControls) {
-                upButton->setSize(controlsSize);
-                downButton->setSize(controlsSize);
+                const auto controlWidth = width / 4;
+                const auto h = (height - 2 * verticalPadding - controlSpacing) / 2;
+                const auto controlHeight = std::max(1, h);
+                upButton->setSize(controlWidth, controlHeight);
+                downButton->setSize(controlWidth, controlHeight);
         }
-        displayLabel->setSize(inf_ptr->width() - upButton->width() - padding,
-                              inf_ptr->height() - 2 * padding);
 
-        auto controlPosX = controlsRight ? (inf_ptr->width() - upButton->width() - padding) : padding;
-        upButton->setPosition(controlPosX, padding);
-        downButton->setPosition(controlPosX, inf_ptr->height() - downButton->height() - padding);
+        const auto controlsHeight = upButton->height() + controlSpacing + downButton->height();
+        const auto controlPosY = std::max(0, (height - controlsHeight) / 2);
+        const auto controlPosX = controlsRight
+                                 ? (width - upButton->width() - horizontalPadding)
+                                 : horizontalPadding;
 
-        auto labelPosX = controlsRight ? 0 : padding + upButton->width();
-        displayLabel->setPosition(labelPosX, padding);
+        upButton->setPosition(controlPosX, controlPosY);
+        downButton->setPosition(controlPosX, controlPosY
+                                             + upButton->height()
+                                             + controlSpacing);
+
+        const auto labelPosX = controlsRight ? 0 : horizontalPadding + upButton->width();
+        displayLabel->setSize(width - upButton->width() - horizontalPadding,
+                              height - 2 * verticalPadding);
+        displayLabel->setPosition(labelPosX, verticalPadding);
 
         displayLabel->setTextColor(inf_ptr->textColor());
         displayLabel->setBackgroundColor(inf_ptr->background());
@@ -107,6 +120,7 @@ void RkSpinBox::RkSpinBoxImpl::updateControls()
                 RkPainter painter(&img);
                 painter.fillRect(RkRect(1, 1, img.width() - 1, img.height()),
                                  upButton->background());
+
                 auto pen = painter.pen();
                 pen.setColor(upButton->textColor());
                 painter.setPen(pen);

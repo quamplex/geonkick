@@ -30,12 +30,12 @@
 #include "RkButton.h"
 #include "RkEvent.h"
 
-RK_DECLARE_IMAGE_RC(presetnav_next);
-RK_DECLARE_IMAGE_RC(presetnav_next_hover);
-RK_DECLARE_IMAGE_RC(presetnav_next_pressed);
-RK_DECLARE_IMAGE_RC(presetnav_previous);
-RK_DECLARE_IMAGE_RC(presetnav_previous_hover);
-RK_DECLARE_IMAGE_RC(presetnav_previous_pressed);
+RK_DECLARE_IMAGE_RC(control_arrow_down);
+RK_DECLARE_IMAGE_RC(control_arrow_down_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_down_pressed);
+RK_DECLARE_IMAGE_RC(control_arrow_up);
+RK_DECLARE_IMAGE_RC(control_arrow_up_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_up_pressed);
 
 PresetNameLabel::PresetNameLabel(RkWidget* parent)
         : RkLabel(parent)
@@ -79,11 +79,11 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         previousButton->setType(RkButton::ButtonType::ButtonPush);
         previousButton->setSize(height() / 2 - 2, height() / 2 - 2);
         previousButton->setBackgroundColor({44, 44, 44});
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up)),
                                  RkButton::State::Unpressed);
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous_hover)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up_hover)),
                                  RkButton::State::UnpressedHover);
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous_pressed)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up_pressed)),
                                  RkButton::State::Pressed);
         previousButton->show();
         controlsLayout->addWidget(previousButton);
@@ -93,11 +93,11 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         nextButton->setType(RkButton::ButtonType::ButtonPush);
         nextButton->setSize(height() / 2 - 2, height() / 2 - 2);
         nextButton->setBackgroundColor({44, 44, 44});
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down)),
                              RkButton::State::Unpressed);
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next_hover)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down_hover)),
                              RkButton::State::UnpressedHover);
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next_pressed)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down_pressed)),
                              RkButton::State::Pressed);
         nextButton->show();
         controlsLayout->addWidget(nextButton);
@@ -138,11 +138,11 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         previousButton->setType(RkButton::ButtonType::ButtonPush);
         previousButton->setSize(height() / 2 - 2, height() / 2 - 2);
         previousButton->setBackgroundColor({44, 44, 44});
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up)),
                                  RkButton::State::Unpressed);
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous_hover)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up_hover)),
                                  RkButton::State::UnpressedHover);
-        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_previous_pressed)),
+        previousButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_up_pressed)),
                                  RkButton::State::Pressed);
         previousButton->show();
         controlsLayout->addWidget(previousButton);
@@ -151,11 +151,11 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         nextButton->setType(RkButton::ButtonType::ButtonPush);
         nextButton->setSize(height() / 2 - 2, height() / 2 - 2);
         nextButton->setBackgroundColor({44, 44, 44});
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down)),
                              RkButton::State::Unpressed);
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next_hover)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down_hover)),
                              RkButton::State::UnpressedHover);
-        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(presetnav_next_pressed)),
+        nextButton->setImage(RkImage({9, 9}, RK_IMAGE_RC(control_arrow_down_pressed)),
                              RkButton::State::Pressed);
         nextButton->show();
         controlsLayout->addWidget(nextButton);
@@ -198,5 +198,4 @@ void PresetNavigator::updateView()
                 return;
         presetName->setText(preset->name());
 }
-
 

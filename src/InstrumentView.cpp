@@ -601,7 +601,7 @@ void KitPercussionView::updateView()
         // Midi channel
         auto nMidiChannels = instrumentModel->numberOfMidiChannels();
         midiChannelSpinBox->clear();
-        midiChannelSpinBox->addItem("--");
+        midiChannelSpinBox->addItem("Any");
         for (size_t i = 0; i < nMidiChannels; i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
         midiChannelSpinBox->setCurrentIndex(instrumentModel->midiChannel() + 1);

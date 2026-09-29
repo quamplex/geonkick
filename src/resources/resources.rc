@@ -48,12 +48,12 @@ topmenu_settings_off.png
 
 # === Preset Navigator ==
 presetnav_bk.png
-presetnav_next.png
-presetnav_previous.png
-presetnav_next_hover.png
-presetnav_previous_hover.png
-presetnav_next_pressed.png
-presetnav_previous_pressed.png
+control_arrow_down.png
+control_arrow_up.png
+control_arrow_down_hover.png
+control_arrow_up_hover.png
+control_arrow_down_pressed.png
+control_arrow_up_pressed.png
 
 # === Envelopes Menu ===
 
