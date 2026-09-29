@@ -43,15 +43,20 @@ gkick_mixer_key_pressed(struct gkick_mixer *mixer,
 	if (note->note_number < 0 || note->note_number > 127)
 		return GEONKICK_ERROR;
 
-        // Find the group of the note being trigered.
+        /**
+         * Find the group of the playing key and only
+         * for the pressing key events.
+         */
         unsigned char triggered_group = 0;
-        for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS; i++) {
-                struct gkick_audio_output *instr = mixer->audio_outputs[i];
-                if (instr->enabled
-                    && (instr->playing_key == note->note_number
-                        || instr->playing_key == GEONKICK_ANY_KEY)) {
-                        triggered_group = atomic_load_explicit(&instr->choke_group, memory_order_relaxed);
-                        break;
+        if (note->state == GKICK_KEY_STATE_PRESSED) {
+                for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS; i++) {
+                        struct gkick_audio_output *instr = mixer->audio_outputs[i];
+                        if (instr->enabled && (instr->playing_key == note->note_number
+                                               || instr->playing_key == GEONKICK_ANY_KEY)) {
+                                triggered_group = atomic_load_explicit(&instr->choke_group,
+                                                                       memory_order_relaxed);
+                                break;
+                        }
                 }
         }
 
