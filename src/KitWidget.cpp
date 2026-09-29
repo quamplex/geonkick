@@ -194,18 +194,28 @@ GeonkickWidget* KitWidget::createTopMenu()
         label->show();
         topContainer->addWidget(label);
 
-        // Midi key
-        topContainer->addSpace(30);
-        label = new RkLabel(topMenu, "Key");
+        // MIDI key note
+        topContainer->addSpace(10);
+        label = new RkLabel(topMenu, "Note");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
-        label->setSize({30, 20});
+        label->setSize({50, 20});
+        label->setAlignment(Rk::Alignment::AlignCenter);
+        label->show();
+        topContainer->addWidget(label);
+
+        // MIDI key octave
+        topContainer->addSpace(5);
+        label = new RkLabel(topMenu, "Oct");
+        label->setTextColor(textColor());
+        label->setBackgroundColor(background());
+        label->setSize({50, 20});
         label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
 
         // Choke group
-        topContainer->addSpace(99);
+        topContainer->addSpace(24);
         label = new RkLabel(topMenu, "Choke");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());

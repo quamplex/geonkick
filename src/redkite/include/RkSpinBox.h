@@ -57,6 +57,10 @@ public:
                     currentIndexChanged(int index),
                     RK_ARG_TYPE(size_t),
                     RK_ARG_VAL(index));
+        RK_DECL_ACT(valueAreaClicked,
+                    valueAreaClicked(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
 
 protected:
         RK_DECLARE_IMPL_PTR(RkSpinBox);

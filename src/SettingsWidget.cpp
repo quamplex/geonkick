@@ -33,6 +33,12 @@
 
 RK_DECLARE_IMAGE_RC(close_button);
 RK_DECLARE_IMAGE_RC(close_button_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_up);
+RK_DECLARE_IMAGE_RC(control_arrow_up_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_up_pressed);
+RK_DECLARE_IMAGE_RC(control_arrow_down);
+RK_DECLARE_IMAGE_RC(control_arrow_down_hover);
+RK_DECLARE_IMAGE_RC(control_arrow_down_pressed);
 
 SettingsCheckBox::SettingsCheckBox(GeonkickWidget *parent, const RkSize &size)
         : GeonkickButton(parent)
@@ -133,7 +139,8 @@ void SettingsWidget::createMidiChannelSettings(RkContainer *container)
         midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
         midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
         midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->setSize({50, 20});
+        midiChannelSpinBox->setSize({54, 23});
+        setupChannelSpinBoxControls(midiChannelSpinBox);
         midiChannelSpinBox->addItem("Any");
         for (size_t i = 0; i < dspProxy->numberOfMidiChannels(); i++)
                 midiChannelSpinBox->addItem(std::to_string(i + 1));
@@ -151,6 +158,35 @@ void SettingsWidget::createMidiChannelSettings(RkContainer *container)
         horizontalContainer->addSpace(3);
         horizontalContainer->addWidget(midiChannelSpinBox);
         container->addContainer(horizontalContainer);
+}
+
+void SettingsWidget::setupChannelSpinBoxControls(RkSpinBox *spinBox)
+{
+        spinBox->setCustomControls();
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up),
+                                       RkButton::State::Unpressed);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::UnpressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::PressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_pressed),
+                                       RkButton::State::Pressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down),
+                                         RkButton::State::Unpressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::UnpressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::PressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_pressed),
+                                         RkButton::State::Pressed);
+
+        const auto arrowX = spinBox->width() - 11;
+        spinBox->upControl()->setSize(9, 9);
+        spinBox->upControl()->setPosition(arrowX, 2);
+        spinBox->downControl()->setSize(9, 9);
+        spinBox->downControl()->setPosition(arrowX, spinBox->height() - 11);
+        spinBox->label()->setSize(arrowX - 2, spinBox->height() - 8);
+        spinBox->label()->setPosition(0, 4);
 }
 
 void SettingsWidget::createScaleGUISettings(RkContainer *container)
@@ -300,5 +336,4 @@ void SettingsWidget::createShowSidebarSettings(RkContainer *container)
                      });
         container->addContainer(hoziontalContainer);
 }
-
 

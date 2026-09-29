@@ -33,6 +33,15 @@ SpinBoxLabel::SpinBoxLabel(RkWidget* parent)
 {
 }
 
+void SpinBoxLabel::mouseButtonPressEvent(RkMouseEvent *event)
+{
+        if (event->button() == RkMouseEvent::ButtonType::Left) {
+                if (auto spinBox = dynamic_cast<RkSpinBox*>(parentWidget()))
+                        action spinBox->valueAreaClicked();
+                event->setAccepted();
+        }
+}
+
 void SpinBoxLabel::wheelEvent(RkWheelEvent *event)
 {
         auto tempEvent = std::make_unique<RkWheelEvent>();

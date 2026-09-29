@@ -79,26 +79,6 @@ protected:
         }
 };
 
-class MidiValueLabel : public RkLabel
-{
-public:
-        using RkLabel::RkLabel;
-
-        RK_DECL_ACT(clicked,
-                    clicked(),
-                    RK_ARG_TYPE(),
-                    RK_ARG_VAL());
-
-protected:
-        void mouseButtonPressEvent(RkMouseEvent *event) override
-        {
-                if (event->button() == RkMouseEvent::ButtonType::Left) {
-                        action clicked();
-                        event->setAccepted();
-                }
-        }
-};
-
 class InstrumentNameLabel : public RkLabel
 {
 public:
@@ -192,41 +172,6 @@ private:
 };
 
 } // namespace
-
-KitMidiKeySpinBox::KitMidiKeySpinBox(RkWidget *parent)
-        : RkSpinBox(parent)
-        , valueLabel{nullptr}
-{
-        auto midiValueLabel = new MidiValueLabel(this);
-        valueLabel = midiValueLabel;
-        label()->hide();
-        valueLabel->show();
-        RK_ACT_BIND(midiValueLabel, clicked, RK_ACT_ARGS(),
-                    this, valueAreaClicked());
-        RK_ACT_BIND(this,
-                    currentIndexChanged,
-                    RK_ACT_ARGS(int index),
-                    this,
-                    updateValueLabel());
-        updateValueLabel();
-}
-
-void KitMidiKeySpinBox::updateValueLabel()
-{
-        valueLabel->setText(label()->text());
-        valueLabel->setTextColor(textColor());
-        valueLabel->setBackgroundColor(background());
-        valueLabel->setFont(font());
-        valueLabel->setAlignment(label()->alignment());
-        valueLabel->setSize(label()->size());
-        valueLabel->setPosition(label()->position());
-}
-
-void KitMidiKeySpinBox::resizeEvent(RkResizeEvent *event)
-{
-        RkSpinBox::resizeEvent(event);
-        updateValueLabel();
-}
 
 PercussionLimiter::PercussionLimiter(GeonkickWidget *parent)
         : GeonkickSlider(parent)
@@ -370,11 +315,11 @@ void KitPercussionView::createView()
         instrumentContainer->addSpace(10);
 
         // Midi key spinbox
-        keySpinBox = new KitMidiKeySpinBox(this);
-        keySpinBox->setSize(38, 30);
+        keySpinBox = new RkSpinBox(this);
+        keySpinBox->setSize(50, 30);
         keySpinBox->setTextColor({160, 160, 160});
         keySpinBox->setBackgroundColor({44, 44, 44});
-        keySpinBox->label()->setAlignment(Rk::Alignment::AlignRight);
+        keySpinBox->label()->setAlignment(Rk::Alignment::AlignCenter);
         keySpinBox->label()->setTextColor({160, 160, 160});
         keySpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
                                           RkButton::State::Unpressed);
@@ -393,7 +338,6 @@ void KitPercussionView::createView()
         keySpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
                                             RkButton::State::Pressed);
         keySpinBox->setCustomControls(true);
-        keySpinBox->setControlsPosition(RkSpinBox::ControlsPosition::PositionLeft);
         keySpinBox->show();
         RK_ACT_BIND(keySpinBox,
                     currentIndexChanged,
@@ -408,12 +352,13 @@ void KitPercussionView::createView()
         instrumentContainer->addWidget(keySpinBox);
 
         // Midi key octave spinbox
-        keyOctaveSpinBox = new KitMidiKeySpinBox(this);
-        keyOctaveSpinBox->setSize(33, 30);
-        keyOctaveSpinBox->setTextColor({220, 220, 220});
+        instrumentContainer->addSpace(5);
+        keyOctaveSpinBox = new RkSpinBox(this);
+        keyOctaveSpinBox->setSize(50, 30);
+        keyOctaveSpinBox->setTextColor({160, 160, 160});
         keyOctaveSpinBox->setBackgroundColor({44, 44, 44});
-        keyOctaveSpinBox->label()->setAlignment(Rk::Alignment::AlignLeft);
-        keySpinBox->label()->setTextColor({160, 160, 160});
+        keyOctaveSpinBox->label()->setAlignment(Rk::Alignment::AlignCenter);
+        keyOctaveSpinBox->label()->setTextColor({160, 160, 160});
         keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up),
                                                 RkButton::State::Unpressed);
         keyOctaveSpinBox->upControl()->setImage(RK_RC_IMAGE(instr_key_up_hover),
@@ -431,7 +376,6 @@ void KitPercussionView::createView()
         keyOctaveSpinBox->downControl()->setImage(RK_RC_IMAGE(instr_key_down_on),
                                                 RkButton::State::Pressed);
         keyOctaveSpinBox->setCustomControls(true);
-        keyOctaveSpinBox->label()->setBackgroundColor({0, 111, 111});
         keyOctaveSpinBox->show();
         RK_ACT_BIND(keyOctaveSpinBox,
                     currentIndexChanged,

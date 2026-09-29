@@ -68,29 +68,6 @@ RK_DECLARE_IMAGE_RC(control_arrow_down);
 RK_DECLARE_IMAGE_RC(control_arrow_down_hover);
 RK_DECLARE_IMAGE_RC(control_arrow_down_pressed);
 
-namespace {
-void configureChannelSpinBox(RkSpinBox *spinBox)
-{
-        spinBox->setCustomControls();
-        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up),
-                                       RkButton::State::Unpressed);
-        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
-                                       RkButton::State::UnpressedHover);
-        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
-                                       RkButton::State::PressedHover);
-        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_pressed),
-                                       RkButton::State::Pressed);
-        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down),
-                                         RkButton::State::Unpressed);
-        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
-                                         RkButton::State::UnpressedHover);
-        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
-                                         RkButton::State::PressedHover);
-        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_pressed),
-        RkButton::State::Pressed);
-}
-}
-
 TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , geonkickModel{model}
@@ -216,7 +193,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         outputChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
         outputChannelSpinBox->downControl()->setTextColor({100, 100, 100});
         outputChannelSpinBox->setSize(54, 23);
-        configureChannelSpinBox(outputChannelSpinBox);
+        setupChannelSpinBoxControls(outputChannelSpinBox);
         outputChannelSpinBox->show();
         RK_ACT_BINDL(outputChannelSpinBox,
                      currentIndexChanged,
@@ -244,7 +221,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
         midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
         midiChannelSpinBox->setSize(54, 23);
-        configureChannelSpinBox(midiChannelSpinBox);
+        setupChannelSpinBoxControls(midiChannelSpinBox);
         midiChannelSpinBox->show();
         mainLayout->addWidget(midiChannelSpinBox);
         RK_ACT_BINDL(midiChannelSpinBox,
@@ -311,6 +288,35 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         for (auto *model: kitModel->instrumentModels())
                 bindInstrumentChannelUpdates(model);
         updateGui();
+}
+
+void TopBar::setupChannelSpinBoxControls(RkSpinBox *spinBox)
+{
+        spinBox->setCustomControls();
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up),
+                                       RkButton::State::Unpressed);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::UnpressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_hover),
+                                       RkButton::State::PressedHover);
+        spinBox->upControl()->setImage(RK_RC_IMAGE(control_arrow_up_pressed),
+                                       RkButton::State::Pressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down),
+                                         RkButton::State::Unpressed);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::UnpressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_hover),
+                                         RkButton::State::PressedHover);
+        spinBox->downControl()->setImage(RK_RC_IMAGE(control_arrow_down_pressed),
+                                         RkButton::State::Pressed);
+
+        const auto arrowX = spinBox->width() - 11;
+        spinBox->upControl()->setSize(9, 9);
+        spinBox->upControl()->setPosition(arrowX, 2);
+        spinBox->downControl()->setSize(9, 9);
+        spinBox->downControl()->setPosition(arrowX, spinBox->height() - 11);
+        spinBox->label()->setSize(arrowX - 2, spinBox->height() - 8);
+        spinBox->label()->setPosition(0, 4);
 }
 
 void TopBar::addSeparator(RkContainer *mainLayout, int width)

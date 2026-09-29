@@ -55,6 +55,7 @@ class TopBar : public GeonkickWidget
  private:
         void addSeparator(RkContainer *mainLayout, int width = 5);
         void createMainMenu(RkContainer *layout);
+        void setupChannelSpinBoxControls(RkSpinBox *spinBox);
         void updatePlaymodeButton();
         void bindInstrumentChannelUpdates(PercussionModel *model);
 

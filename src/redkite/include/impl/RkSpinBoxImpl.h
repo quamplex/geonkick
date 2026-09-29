@@ -36,6 +36,7 @@ class SpinBoxLabel: public RkLabel
 public:
         SpinBoxLabel(RkWidget* parent);
 protected:
+        void mouseButtonPressEvent(RkMouseEvent *event) override;
         void wheelEvent(RkWheelEvent *event) override;
 };
 

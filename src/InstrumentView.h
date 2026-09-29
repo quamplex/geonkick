@@ -51,24 +51,6 @@ class RkLabel;
 class BufferView;
 class RkContainer;
 
-class KitMidiKeySpinBox : public RkSpinBox
-{
-public:
-        explicit KitMidiKeySpinBox(RkWidget *parent);
-        void updateValueLabel();
-
-        RK_DECL_ACT(valueAreaClicked,
-                    valueAreaClicked(),
-                    RK_ARG_TYPE(),
-                    RK_ARG_VAL());
-
-protected:
-        void resizeEvent(RkResizeEvent *event) override;
-
-private:
-        RkLabel *valueLabel;
-};
-
 class KitPercussionView: public GeonkickWidget
 {
  public:
@@ -103,8 +85,8 @@ class KitPercussionView: public GeonkickWidget
         BufferView *waveformPreview;
         RkSpinBox *midiChannelSpinBox;
         RkSpinBox *outputChannelSpinBox;
-        KitMidiKeySpinBox *keySpinBox;
-        KitMidiKeySpinBox *keyOctaveSpinBox;
+        RkSpinBox *keySpinBox;
+        RkSpinBox *keyOctaveSpinBox;
         RkButton *playButton;
         RkButton *muteButton;
         RkButton *soloButton;

@@ -29,6 +29,7 @@
 
 class DspProxy;
 class RkContainer;
+class RkSpinBox;
 
 class SettingsCheckBox: public GeonkickButton {
 public:
@@ -45,6 +46,8 @@ class SettingsWidget: public GeonkickWidget {
         void createShowSidebarSettings(RkContainer *container);
 
  private:
+        void setupChannelSpinBoxControls(RkSpinBox *spinBox);
+
         DspProxy *dspProxy;
 };
 
