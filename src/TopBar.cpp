@@ -195,12 +195,11 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         outputChannelSpinBox->setSize(54, 23);
         setupChannelSpinBoxControls(outputChannelSpinBox);
         outputChannelSpinBox->show();
-        RK_ACT_BINDL(outputChannelSpinBox,
-                     currentIndexChanged,
-                     RK_ARG_ARGS(int index),
-                     [=, this](int index) {
-                             kitModel->currentPercussion()->setChannel(index);
-                     });
+        RK_ACT_BIND(outputChannelSpinBox,
+                    currentIndexChanged,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    onOutputChannelChanged(index));
         mainLayout->addWidget(outputChannelSpinBox);
 
         // MIDI channel
@@ -224,13 +223,11 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         setupChannelSpinBoxControls(midiChannelSpinBox);
         midiChannelSpinBox->show();
         mainLayout->addWidget(midiChannelSpinBox);
-        RK_ACT_BINDL(midiChannelSpinBox,
+        RK_ACT_BIND(midiChannelSpinBox,
                     currentIndexChanged,
                     RK_ACT_ARGS(int index),
-                     [=, this](int index) {
-                             auto *currentIntrument = kitModel->currentPercussion();
-                             currentIntrument->setMidiChannel(index - 1);
-                     });
+                    this,
+                    onMidiChannelChanged(index));
 
         // Playback mode button
         mainLayout->addSpace(6);
@@ -240,15 +237,11 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         playbackModeButton->setBackgroundColor({42, 42, 42});
         playbackModeButton->setTextColor({200, 200, 200});
         mainLayout->addWidget(playbackModeButton);
-        RK_ACT_BINDL(playbackModeButton,
-                     pressed,
-                     RK_ACT_ARGS(),
-                     [=, this]() {
-                             auto instrument = kitModel->currentPercussion();
-                             const auto mode = (static_cast<int>(instrument->playbackMode()) + 1) % 3;
-                             instrument->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(mode));
-                             updatePlaymodeButton();
-                     } );
+        RK_ACT_BIND(playbackModeButton,
+                    pressed,
+                    RK_ACT_ARGS(),
+                    this,
+                    onPlaybackModePressed());
 
         // Tune instrument
         addSeparator(mainLayout);
@@ -272,13 +265,11 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
                     modelUpdated,
                     RK_ACT_ARGS(),
                     this, updateGui());
-        RK_ACT_BINDL(kitModel,
-                     instrumentUpdated,
-                     RK_ACT_ARGS(PercussionModel* model),
-                     [=, this](PercussionModel* model) {
-                             if (model->isSelected())
-                                     updateGui();
-                     } );
+        RK_ACT_BIND(kitModel,
+                    instrumentUpdated,
+                    RK_ACT_ARGS(PercussionModel* model),
+                    this,
+                    onInstrumentUpdated(model));
 
         RK_ACT_BIND(kitModel,
                     instrumentAdded,
@@ -380,17 +371,16 @@ RkWidget* TopBar::createInstrumentNameLabel()
         instrumentName->setCursorColor({180, 180, 180});
         instrumentName->setSize(100, 20);
         instrumentName->show();
-        RK_ACT_BINDL(instrumentName, editingFinished, RK_ACT_ARGS(),
-                     [=, this]() {
-                             auto currentInstrument = kitModel->currentPercussion();
-                             if (!currentInstrument->setName(instrumentName->text()))
-                                     instrumentName->setText(currentInstrument->name());
-                     });
-        RK_ACT_BINDL(instrumentName, escapePressed, RK_ACT_ARGS(),
-                     [=, this]() {
-                             auto currentInstrument = kitModel->currentPercussion();
-                             instrumentName->setText(currentInstrument->name());
-                     });
+        RK_ACT_BIND(instrumentName,
+                    editingFinished,
+                    RK_ACT_ARGS(),
+                    this,
+                    onInstrumentNameEditingFinished());
+        RK_ACT_BIND(instrumentName,
+                    escapePressed,
+                    RK_ACT_ARGS(),
+                    this,
+                    onInstrumentNameEscapePressed());
 
         return instrumentName;
 }
@@ -431,23 +421,65 @@ void TopBar::updateGui()
 
 void TopBar::bindInstrumentChannelUpdates(PercussionModel *model)
 {
-        RK_ACT_BINDL(model,
-                     channelUpdated,
-                     RK_ARG_TYPE(int),
-                     [=, this](int index) {
-                             if (model->isSelected()
-                                 && outputChannelSpinBox->currentIndex() != index)
-                                     outputChannelSpinBox->setCurrentIndex(index);
-                     });
-        RK_ACT_BINDL(model,
-                     midiChannelUpdated,
-                     RK_ARG_TYPE(int),
-                     [=, this](int index) {
-                             const auto spinBoxIndex = index + 1;
-                             if (model->isSelected()
-                                 && midiChannelSpinBox->currentIndex() != spinBoxIndex)
-                                     midiChannelSpinBox->setCurrentIndex(spinBoxIndex);
-                     });
+        RK_ACT_BIND(model,
+                    channelUpdated,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    onInstrumentChannelUpdated(model, index));
+        RK_ACT_BIND(model,
+                    midiChannelUpdated,
+                    RK_ACT_ARGS(int index),
+                    this,
+                    onInstrumentMidiChannelUpdated(model, index));
+}
+
+void TopBar::onOutputChannelChanged(int index)
+{
+        kitModel->currentPercussion()->setChannel(index);
+}
+
+void TopBar::onMidiChannelChanged(int index)
+{
+        kitModel->currentPercussion()->setMidiChannel(index - 1);
+}
+
+void TopBar::onPlaybackModePressed()
+{
+        auto instrument = kitModel->currentPercussion();
+        const auto mode = (static_cast<int>(instrument->playbackMode()) + 1) % 3;
+        instrument->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(mode));
+        updatePlaymodeButton();
+}
+
+void TopBar::onInstrumentNameEditingFinished()
+{
+        auto currentInstrument = kitModel->currentPercussion();
+        if (!currentInstrument->setName(instrumentName->text()))
+                instrumentName->setText(currentInstrument->name());
+}
+
+void TopBar::onInstrumentNameEscapePressed()
+{
+        instrumentName->setText(kitModel->currentPercussion()->name());
+}
+
+void TopBar::onInstrumentUpdated(PercussionModel *model)
+{
+        if (model->isSelected())
+                updateGui();
+}
+
+void TopBar::onInstrumentChannelUpdated(PercussionModel *model, int index)
+{
+        if (model->isSelected() && outputChannelSpinBox->currentIndex() != index)
+                outputChannelSpinBox->setCurrentIndex(index);
+}
+
+void TopBar::onInstrumentMidiChannelUpdated(PercussionModel *model, int index)
+{
+        const auto spinBoxIndex = index + 1;
+        if (model->isSelected() && midiChannelSpinBox->currentIndex() != spinBoxIndex)
+                midiChannelSpinBox->setCurrentIndex(spinBoxIndex);
 }
 
 void TopBar::updatePlaymodeButton()

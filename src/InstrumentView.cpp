@@ -97,20 +97,21 @@ public:
 
                 RK_ACT_BIND(edit, editingFinished, RK_ACT_ARGS(),
                             this, finishEditing());
-                RK_ACT_BINDL(edit, escapePressed, RK_ACT_ARGS(),
-                             [this]() {
-                                     finishingEdit = true;
-                                     edit->setText(instrumentModel->name());
-                                     edit->hide();
-                                     finishingEdit = false;
-                             });
+                RK_ACT_BIND(edit,
+                            escapePressed,
+                            RK_ACT_ARGS(),
+                            this,
+                            cancelEditing());
                 RK_ACT_BIND(instrumentModel,
                             nameUpdated,
                             RK_ACT_ARGS(std::string name),
                             this,
                             setText(name));
-                RK_ACT_BINDL(this, doubleClicked, RK_ACT_ARGS(),
-                             [this]() { beginEditing(); });
+                RK_ACT_BIND(this,
+                            doubleClicked,
+                            RK_ACT_ARGS(),
+                            this,
+                            beginEditing());
         }
 
         RK_DECL_ACT(doubleClicked,
@@ -162,6 +163,14 @@ private:
                 const auto name = edit->text();
                 if (name.empty() || !instrumentModel->setName(name))
                         edit->setText(instrumentModel->name());
+                edit->hide();
+                finishingEdit = false;
+        }
+
+        void cancelEditing()
+        {
+                finishingEdit = true;
+                edit->setText(instrumentModel->name());
                 edit->hide();
                 finishingEdit = false;
         }
@@ -597,15 +606,11 @@ void KitPercussionView::setModel(PercussionModel *model)
         instrumentModel = model;
 
         RK_ACT_BIND(playButton, pressed, RK_ACT_ARGS(), instrumentModel, play());
-        RK_ACT_BINDL(playbackModeButton,
-                     pressed,
-                     RK_ACT_ARGS(),
-                     [this]() {
-                             const auto mode = instrumentModel->playbackMode();
-                             const auto nextMode = (static_cast<int>(mode) + 1) % 3;
-                             instrumentModel->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(nextMode));
-                             updatePlaymodeButton();
-                     });
+        RK_ACT_BIND(playbackModeButton,
+                    pressed,
+                    RK_ACT_ARGS(),
+                    this,
+                    onPlaybackModePressed());
         RK_ACT_BIND(muteButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, mute(toggled));
         RK_ACT_BIND(soloButton, toggled, RK_ACT_ARGS(bool toggled), instrumentModel, solo(toggled));
         RK_ACT_BIND(instrumentLimiter, valueUpdated, RK_ACT_ARGS(int val), instrumentModel, setLimiter(val));
@@ -747,4 +752,12 @@ void KitPercussionView::updatePlaymodeButton()
                 playbackModeButton->setText("CUT");
                 break;
         }
+}
+
+void KitPercussionView::onPlaybackModePressed()
+{
+        const auto mode = instrumentModel->playbackMode();
+        const auto nextMode = (static_cast<int>(mode) + 1) % 3;
+        instrumentModel->setPlaybackMode(static_cast<DspProxy::PlaybackMode>(nextMode));
+        updatePlaymodeButton();
 }

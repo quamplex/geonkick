@@ -77,6 +77,7 @@ class KitPercussionView: public GeonkickWidget
  private:
         void createOutputChannelControl(RkContainer *container);
         void createChokeGroupControl(RkContainer *container);
+        void onPlaybackModePressed();
         void updatePlaymodeButton();
 
         KitWidget *parentView;

@@ -57,6 +57,14 @@ class TopBar : public GeonkickWidget
         void createMainMenu(RkContainer *layout);
         void setupChannelSpinBoxControls(RkSpinBox *spinBox);
         void updatePlaymodeButton();
+        void onOutputChannelChanged(int index);
+        void onMidiChannelChanged(int index);
+        void onPlaybackModePressed();
+        void onInstrumentNameEditingFinished();
+        void onInstrumentNameEscapePressed();
+        void onInstrumentUpdated(PercussionModel *model);
+        void onInstrumentChannelUpdated(PercussionModel *model, int index);
+        void onInstrumentMidiChannelUpdated(PercussionModel *model, int index);
         void bindInstrumentChannelUpdates(PercussionModel *model);
 
         GeonkickModel *geonkickModel;
