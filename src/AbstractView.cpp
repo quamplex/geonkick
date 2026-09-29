@@ -29,10 +29,8 @@ AbstractView::AbstractView(GeonkickWidget* parent, AbstractModel *model)
         , viewModel{model}
 {
         if (viewModel) {
-                RK_ACT_BINDL(viewModel, aboutToBeDeleted, RK_ACT_ARGS(RkObject *),
-                             [=, this](RkObject *obj) {
-                                     viewModel = nullptr;
-                             });
+                RK_ACT_BIND(viewModel, aboutToBeDeleted, RK_ACT_ARGS(RkObject *object),
+                            this, onViewModelAboutToBeDeleted(object));
         }
         show();
 }
@@ -45,16 +43,19 @@ void AbstractView::setModel(AbstractModel *model)
         if (viewModel)
                 unbindModel();
         viewModel = model;
-        RK_ACT_BINDL(viewModel, aboutToBeDeleted, RK_ACT_ARGS(RkObject *),
-                     [=, this](RkObject *obj) {
-                             viewModel = nullptr;
-                     });
+        RK_ACT_BIND(viewModel, aboutToBeDeleted, RK_ACT_ARGS(RkObject *object),
+                    this, onViewModelAboutToBeDeleted(object));
         bindModel();
         updateView();
+}
+
+void AbstractView::onViewModelAboutToBeDeleted(RkObject *object)
+{
+        if (object == viewModel)
+                viewModel = nullptr;
 }
 
 AbstractModel* AbstractView::getModel() const
 {
         return viewModel;
 }
-

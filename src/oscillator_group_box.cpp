@@ -107,15 +107,19 @@ OscillatorGroupBox::OscillatorGroupBox(GeonkickWidget *parent, OscillatorModel *
         createEvelopeGroupBox();
         createEffects();
 
-        RK_ACT_BINDL(oscillator,
-                     functionUpdated,
-                     RK_ACT_ARGS(OscillatorModel::FunctionType func),
-                     [=,this](OscillatorModel::FunctionType func) {
-                             if (func == OscillatorModel::FunctionType::Sample)
-                                     setWaveFunction(OscillatorModel::FunctionType::Sample);
-                             ;});
+        RK_ACT_BIND(oscillator,
+                    functionUpdated,
+                    RK_ACT_ARGS(OscillatorModel::FunctionType function),
+                    this,
+                    onOscillatorFunctionUpdated(function));
 
         updateGui();
+}
+
+void OscillatorGroupBox::onOscillatorFunctionUpdated(OscillatorModel::FunctionType function)
+{
+        if (function == OscillatorModel::FunctionType::Sample)
+                setWaveFunction(OscillatorModel::FunctionType::Sample);
 }
 
 void OscillatorGroupBox::createWaveFunctionGroupBox()

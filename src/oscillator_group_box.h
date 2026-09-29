@@ -59,6 +59,8 @@ class OscillatorGroupBox: public GeonkickGroupBox
         void updateAmpltudeEnvelopeBox();
 
  private:
+        void onOscillatorFunctionUpdated(OscillatorModel::FunctionType function);
+
         OscillatorModel *oscillator;
         GeonkickButton *oscillatorCheckbox;
         GeonkickButton *fmCheckbox;

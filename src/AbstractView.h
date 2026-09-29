@@ -41,6 +41,8 @@ class AbstractView: public GeonkickWidget {
         virtual void unbindModel() = 0;
 
  private:
+        void onViewModelAboutToBeDeleted(RkObject *object);
+
         AbstractModel* viewModel;
 };
 
