@@ -6,13 +6,13 @@ set(GKICK_PRESETS
   TimeKit.tar.xz
   UnfaTutorial.tar.xz
   HaraldReveryKicks.tar.xz
-  SPKickPresetsVol1.tar.xz)
+  SPKickPresetsVol1.tar.xz
+  ToniLinkTechnoKicks.tar.xz)
 
-message(STATUS "GKICK_PRESETS ${GKICK_PRESETS}") 
+message(STATUS "GKICK_PRESETS ${GKICK_PRESETS}")
 
 foreach(compressedFolder ${GKICK_PRESETS})
   message(STATUS "uncompress file ${compressedFolder}")
-  
   get_filename_component(presetsFolder ${compressedFolder} NAME_WE)
   set(outputDir "${CMAKE_BINARY_DIR}/presets/${presetsFolder}")
 

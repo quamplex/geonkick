@@ -66,12 +66,6 @@ show_freq_env_hover.png
 show_filter_env_active.png
 show_filter_env.png
 show_filter_env_hover.png
-layer1_env_active.png
-layer1_env.png
-layer2_env_active.png
-layer2_env.png
-layer3_env_active.png
-layer3_env.png
 bezier_mode_button.png
 bezier_mode_button_on.png
 bezier_mode_button_hover.png
@@ -79,8 +73,6 @@ show_general_envelopes_button_active.png
 show_general_envelopes_button.png
 show_noise_envelopes_button_active.png
 show_noise_envelopes_button.png
-
-# === Controls Area ===
 
 # === Oscillator ===
 
