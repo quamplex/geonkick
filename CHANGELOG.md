@@ -2,16 +2,16 @@
 
 ### Features
 
-- Add UI scale options for 1.25x and 1.75x in the Settings dialog.
 - Instrument playback modes: FULL, NOTE OFF, and CUT
-- Support input notes for envelope points
 - Instrument choke groups
+- Support input notes for envelope points
+- Add UI scale options for 1.25x and 1.75x in the Settings dialog.
 
 ### Improvements
 
-- Update UI of the topbar (change "Controls" -> "Synth" tab)
-- Update UI of the Kit tab
+- Update UI of the kit
 - Update layers mixer (enabling layes and selection of current layer done from this UI)
+- Update UI of the topbar (change "Controls" -> "Synth" tab)
 - New presets from @tonilink
 
 ### Fixes

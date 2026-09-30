@@ -60,6 +60,7 @@ Source code repository:
      - Ogg
      - SFZ
 * Load & Save presets in JSON format
+* Playmode: full, note off, cut, choke groups
 * Preset & Sample browser
 * Standalone
 * Pitch to note
