@@ -31,6 +31,13 @@ struct gkick_oscillator
         osc = (struct gkick_oscillator*)calloc(1, sizeof(struct gkick_oscillator));
         if (osc == NULL)
                 return NULL;
+        osc->mutex_init_ok = false;
+        if (pthread_mutex_init(&osc->lock, NULL) != 0) {
+                gkick_log_error("can't init oscillator mutex");
+                gkick_osc_free(&osc);
+                return NULL;
+        }
+        osc->mutex_init_ok = true;
         osc->state = GEONKICK_OSC_STATE_ENABLED;
         osc->func = GEONKICK_OSC_FUNC_SINE;
         osc->initial_phase = 0.0f;
@@ -84,6 +91,8 @@ gkick_osc_free(struct gkick_oscillator **osc)
                 gkick_buffer_free(&(*osc)->sample);
         }
 
+        if ((*osc)->mutex_init_ok)
+                pthread_mutex_destroy(&(*osc)->lock);
         free(*osc);
         *osc = NULL;
 }

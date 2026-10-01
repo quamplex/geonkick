@@ -38,6 +38,13 @@ gkick_synth_new(struct gkick_synth **synth, int sample_rate)
 		return GEONKICK_ERROR_MEM_ALLOC;
 	}
 	memset(*synth, 0, sizeof(struct gkick_synth));
+        (*synth)->mutex_init_ok = false;
+        if (pthread_mutex_init(&(*synth)->lock, NULL) != 0) {
+                gkick_log_error("can't init synthesizer mutex");
+                gkick_synth_free(synth);
+                return GEONKICK_ERROR;
+        }
+        (*synth)->mutex_init_ok = true;
 	(*synth)->sample_rate = sample_rate;
         (*synth)->length = 0.3f;
 	(*synth)->oscillators_number = GKICK_OSC_GROUPS_NUMBER * GKICK_OSC_GROUP_SIZE;
@@ -118,7 +125,8 @@ void gkick_synth_free(struct gkick_synth **synth)
                         }
                 }
 
-                pthread_mutex_destroy(&(*synth)->lock);
+                if ((*synth)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*synth)->lock);
                 free(*synth);
                 *synth = NULL;
         }

@@ -83,6 +83,7 @@ struct gkick_oscillator {
         struct gkick_filter *filter;
         bool distortion_enabled;
         struct gkick_distortion *distortion;
+        bool mutex_init_ok;
 	pthread_mutex_t lock;
 };
 

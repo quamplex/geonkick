@@ -47,11 +47,13 @@ geonkick_create(struct geonkick **kick, int sample_rate)
         (*kick)->synthesis_on = false;
         (*kick)->per_index = 0;
 
+	(*kick)->mutex_init_ok = false;
 	if (pthread_mutex_init(&(*kick)->lock, NULL) != 0) {
-                gkick_log_error("error on init mutex");
-                geonkick_free(kick);
-                return GEONKICK_ERROR;
+	        gkick_log_error("error on init mutex");
+	        geonkick_free(kick);
+	        return GEONKICK_ERROR;
 	}
+	(*kick)->mutex_init_ok = true;
 
 	if (gkick_audio_create(&(*kick)->audio, sample_rate) != GEONKICK_OK) {
                 gkick_log_warning("can't create audio");
@@ -107,7 +109,8 @@ void geonkick_free(struct geonkick **kick)
                 for (size_t i = 0; i < GEONKICK_MAX_INSTRUMENTS; i++)
                         gkick_synth_free(&((*kick)->synths[i]));
                 gkick_audio_free(&((*kick)->audio));
-		pthread_mutex_destroy(&(*kick)->lock);
+                if ((*kick)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*kick)->lock);
                 free(*kick);
         }
 }

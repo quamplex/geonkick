@@ -36,6 +36,7 @@ struct gkick_jack {
         jack_client_t *client;
         jack_nframes_t sample_rate;
         struct gkick_mixer *mixer;
+        bool mutex_init_ok;
         pthread_mutex_t lock;
 };
 

@@ -87,6 +87,7 @@ struct gkick_synth {
         void (*buffer_callback) (void*, gkick_real *buff,
                                  size_t size, size_t id);
         void *callback_args;
+        bool mutex_init_ok;
         pthread_mutex_t lock;
 };
 

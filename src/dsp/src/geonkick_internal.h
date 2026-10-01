@@ -61,6 +61,7 @@ struct geonkick {
          * will not trigger the synthesis.
          */
         atomic_bool synthesis_on;
+        bool mutex_init_ok;
         pthread_mutex_t lock;
         struct gkick_worker *worker;
 };

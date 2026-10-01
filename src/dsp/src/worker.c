@@ -46,16 +46,29 @@ geonkick_worker_create()
                 return GEONKICK_OK;
 
         geonkick_worker = (struct gkick_worker*)calloc(1, sizeof(struct gkick_worker));
-	if (geonkick_worker == NULL)
+	if (geonkick_worker == NULL) {
+                gkick_log_error("can't allocate memory for worker");
 		return GEONKICK_ERROR_MEM_ALLOC;
+        }
 
-	geonkick_worker->running = false;
+        geonkick_worker->running           = false;
         geonkick_worker->process_completed = false;
+
+        if (pthread_mutex_init(&geonkick_worker->lock, NULL) != 0) {
+                gkick_log_error("can't init worker mutex");
+                free(geonkick_worker);
+                geonkick_worker = NULL;
+                return GEONKICK_ERROR;
+        }
+
         if (pthread_cond_init(&geonkick_worker->condition_var, NULL) != 0) {
+                pthread_mutex_destroy(&geonkick_worker->lock);
                 gkick_log_error("can't init worker condition variable");
 		return GEONKICK_ERROR;
 	}
+
 	geonkick_worker->cond_var_initilized = true;
+
 	return GEONKICK_OK;
 }
 
@@ -64,16 +77,20 @@ geonkick_worker_start()
 {
         if (!geonkick_worker)
                 return GEONKICK_ERROR;
+
         if (geonkick_worker->running)
                 return GEONKICK_OK;
+
         geonkick_worker->running = true;
         geonkick_worker->process_completed = false;
+
         if (pthread_create(&geonkick_worker->thread, NULL,
                            &geonkick_worker_thread, NULL) != 0) {
                 gkick_log_error("can't create worker thread");
                 geonkick_worker->running = false;
                 return GEONKICK_ERROR;
         }
+
         return GEONKICK_OK;
 }
 
@@ -81,6 +98,7 @@ void geonkick_worker_destroy()
 {
 	if (geonkick_worker->running)
 		geonkick_worker->running = false;
+
         pthread_mutex_lock(&geonkick_worker->lock);
         pthread_cond_signal(&geonkick_worker->condition_var);
         pthread_mutex_unlock(&geonkick_worker->lock);
@@ -92,7 +110,9 @@ void geonkick_worker_destroy()
 		pthread_cond_destroy(&geonkick_worker->condition_var);
 	geonkick_worker->cond_var_initilized = false;
 	pthread_mutex_unlock(&geonkick_worker->lock);
+
         free(geonkick_worker);
+
         geonkick_worker = NULL;
 }
 

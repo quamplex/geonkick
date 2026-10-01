@@ -37,6 +37,7 @@ gkick_audio_output_create(struct gkick_audio_output **audio_output, int sample_r
                 return GEONKICK_ERROR;
         }
 
+        (*audio_output)->mutex_init_ok = false;
         (*audio_output)->play          = false;
         (*audio_output)->start_play    = false;
         (*audio_output)->enabled       = true;
@@ -97,6 +98,8 @@ gkick_audio_output_create(struct gkick_audio_output **audio_output, int sample_r
                 return GEONKICK_ERROR;
 	}
 
+        (*audio_output)->mutex_init_ok = true;
+
         return GEONKICK_OK;
 }
 
@@ -106,7 +109,8 @@ void gkick_audio_output_free(struct gkick_audio_output **audio_output)
                 gkick_buffer_free(&(*audio_output)->playing_buffer);
                 gkick_buffer_free(&(*audio_output)->updated_buffer);
                 ring_buffer_free(&(*audio_output)->ring_buffer);
-                pthread_mutex_destroy(&(*audio_output)->lock);
+                if ((*audio_output)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*audio_output)->lock);
                 free(*audio_output);
                 *audio_output = NULL;
         }

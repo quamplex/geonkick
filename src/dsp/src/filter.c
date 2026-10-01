@@ -36,6 +36,7 @@ gkick_filter_new(struct gkick_filter **filter, int sample_rate)
                 gkick_log_error("can't allocate memory");
                 return GEONKICK_ERROR_MEM_ALLOC;
         }
+        (*filter)->mutex_init_ok = false;
         (*filter)->type = GEONKICK_FILTER_LOW_PASS;
         (*filter)->queue_empty = true;
         (*filter)->sample_rate = sample_rate;
@@ -71,6 +72,7 @@ gkick_filter_new(struct gkick_filter **filter, int sample_rate)
                 gkick_filter_free(filter);
                 return GEONKICK_ERROR;
 	}
+        (*filter)->mutex_init_ok = true;
 
         (*filter)->cutoff_freq = GEONKICK_DEFAULT_FILTER_CUTOFF_FREQ;
         (*filter)->factor      = GEONKICK_DEFAULT_FILTER_FACTOR;
@@ -103,7 +105,8 @@ void gkick_filter_free(struct gkick_filter **filter)
         if (filter != NULL && *filter != NULL) {
                 gkick_envelope_destroy((*filter)->cutoff_env);
 		gkick_envelope_destroy((*filter)->q_env);
-                pthread_mutex_destroy(&(*filter)->lock);
+                if ((*filter)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*filter)->lock);
                 free(*filter);
                 *filter = NULL;
         }

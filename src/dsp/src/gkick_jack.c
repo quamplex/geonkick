@@ -240,11 +240,13 @@ gkick_create_jack(struct gkick_jack **jack)
         *jack = (struct gkick_jack*)calloc(1, sizeof(struct gkick_jack));
         if (*jack == NULL)
                 return GEONKICK_ERROR;
+        (*jack)->mutex_init_ok = false;
         if (pthread_mutex_init(&(*jack)->lock, NULL) != 0) {
                 gkick_log_error("error on init mutex");
                 gkick_jack_free(jack);
                 return GEONKICK_ERROR;
         }
+        (*jack)->mutex_init_ok = true;
 
         (*jack)->client = jack_client_open(GEONKICK_NAME,
                                            JackNoStartServer,
@@ -326,6 +328,8 @@ gkick_jack_free(struct gkick_jack **jack)
                         jack_client_close((*jack)->client);
                 }
 
+                if ((*jack)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*jack)->lock);
                 free(*jack);
                 *jack = NULL;
         }

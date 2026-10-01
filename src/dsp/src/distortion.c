@@ -37,6 +37,7 @@ gkick_distortion_new(struct gkick_distortion **distortion, int sample_rate)
                 gkick_log_error("can't allocate memory");
                 return GEONKICK_ERROR;
         }
+        (*distortion)->mutex_init_ok = false;
 	(*distortion)->drive_env   = NULL;
         (*distortion)->volume_env  = NULL;
 	(*distortion)->drive       = 1.0f;
@@ -83,6 +84,8 @@ gkick_distortion_new(struct gkick_distortion **distortion, int sample_rate)
                 return GEONKICK_ERROR;
 	}
 
+        (*distortion)->mutex_init_ok = true;
+
         return GEONKICK_OK;
 }
 
@@ -94,7 +97,8 @@ gkick_distortion_free(struct gkick_distortion **distortion)
 			gkick_envelope_destroy((*distortion)->drive_env);
                 if ((*distortion)->volume_env != NULL)
                         gkick_envelope_destroy((*distortion)->volume_env);
-                pthread_mutex_destroy(&(*distortion)->lock);
+                if ((*distortion)->mutex_init_ok)
+                        pthread_mutex_destroy(&(*distortion)->lock);
                 free(*distortion);
                 *distortion = NULL;
         }

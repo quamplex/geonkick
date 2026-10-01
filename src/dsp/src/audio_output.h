@@ -114,6 +114,7 @@ struct gkick_audio_output
         /* Contains the paramteres for humanizer. */
         struct gkick_humanizer_params humanizer_params;
 
+        bool mutex_init_ok;
         pthread_mutex_t lock;
 
         /* Velocity humanizer */
