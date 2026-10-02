@@ -50,6 +50,12 @@ void PresetNameLabel::wheelEvent(RkWheelEvent *event)
                 action previousPreset();
 }
 
+void PresetNameLabel::mouseButtonPressEvent(RkMouseEvent *event)
+{
+        if (event->button() == RkMouseEvent::ButtonType::Left)
+                action reloadPreset();
+}
+
 PresetNavigator::PresetNavigator(GeonkickWidget *parent,
                                  PresetBrowserModel* model)
         : GeonkickWidget(parent)
@@ -122,6 +128,10 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
                     RK_ACT_ARGS(), presetsModel, selectPreviousFolder());
         RK_ACT_BIND(presetFolderName, nextPreset,
                     RK_ACT_ARGS(), presetsModel, selectNextFolder());
+        RK_ACT_BIND(presetName, reloadPreset,
+                    RK_ACT_ARGS(), presetsModel, reloadCurrentPreset());
+        RK_ACT_BIND(presetFolderName, reloadPreset,
+                    RK_ACT_ARGS(), presetsModel, reloadCurrentPreset());
 
         // Preset name
         presetName->setSize(width() / 2 - 13, height() - 2);
@@ -198,4 +208,3 @@ void PresetNavigator::updateView()
                 return;
         presetName->setText(preset->name());
 }
-

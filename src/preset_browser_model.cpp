@@ -217,6 +217,17 @@ bool PresetBrowserModel::setPreset(Preset* preset)
         return true;
 }
 
+void PresetBrowserModel::reloadCurrentPreset()
+{
+        auto preset = currentSelectedPreset();
+        if (!preset && currentSelectedFolder())
+                preset = currentSelectedFolder()->preset(0);
+        if (preset && setPreset(preset)) {
+                selectedPreset = preset;
+                action presetSelected(preset);
+        }
+}
+
 PresetFolder* PresetBrowserModel::currentSelectedFolder() const
 {
         return selectedFolder;

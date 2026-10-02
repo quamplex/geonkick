@@ -42,8 +42,13 @@ public:
                     nextPreset(),
                     RK_ARG_TYPE(),
                     RK_ARG_VAL());
+        RK_DECL_ACT(reloadPreset,
+                    reloadPreset(),
+                    RK_ARG_TYPE(),
+                    RK_ARG_VAL());
 protected:
         void wheelEvent(RkWheelEvent *event) override;
+        void mouseButtonPressEvent(RkMouseEvent *event) override;
 };
 
 class PresetNavigator: public GeonkickWidget

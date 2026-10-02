@@ -57,6 +57,7 @@ class PresetBrowserModel : public RkObject {
         void selectNextFolder();
         void selectPreviousPreset();
         void selectNextPreset();
+        void reloadCurrentPreset();
         RK_DECL_ACT(folderSelected,
                     folderSelected(PresetFolder* folder),
                     RK_ARG_TYPE(PresetFolder*),
