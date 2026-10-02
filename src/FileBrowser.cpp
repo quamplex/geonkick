@@ -57,6 +57,7 @@ FileBrowser::FileBrowser(GeonkickWidget *parent,
                          bool saveAction)
         : GeonkickWidget(parent)
         , mainContainer{nullptr}
+        , menuContainer{nullptr}
         , bookmarkDirectoryButton{nullptr}
         , pathHistory{new PathHistory(this)}
         , pathBookmarksModel{new PathBookmarksModel(this, name)}
@@ -85,13 +86,13 @@ void FileBrowser::createUi()
         mainContainer->setSize(size());
         mainContainer->addSpace(8);
 
-        auto topContainer = new RkContainer(this);
-        topContainer->setSize({mainContainer->width(), 16});
-        mainContainer->addContainer(topContainer);
+        menuContainer = new RkContainer(this);
+        menuContainer->setSize({mainContainer->width(), 16});
+        mainContainer->addContainer(menuContainer);
         mainContainer->addSpace(5);
 
         // Create top menu.
-        createTopMenu(topContainer);
+        createTopMenu(menuContainer);
 
         // Create bookmarsk bar.
         bookmarksView = new PathBookmarksView(this, pathBookmarksModel);
@@ -165,9 +166,9 @@ void FileBrowser::createUi()
 
         pathHistory->goTo(filesView->getCurrentPath());
 
-        createNewDirectoryControls(topContainer);
-        createBookmarkDirectoryControls(topContainer);
-        createSaveControls(topContainer);
+        createNewDirectoryControls(menuContainer);
+        createBookmarkDirectoryControls(menuContainer);
+        createSaveControls(menuContainer);
 
         updateBookmarkButton(filesView->getCurrentPath());
         updateView();
@@ -355,6 +356,11 @@ bool FileBrowser::createDirectory(const fs::path &dir)
 PathBookmarksModel* FileBrowser::getBookmarks() const
 {
         return pathBookmarksModel;
+}
+
+RkContainer* FileBrowser::getMenu() const
+{
+        return menuContainer;
 }
 
 void FileBrowser::updateBookmarkButton(const fs::path &path)

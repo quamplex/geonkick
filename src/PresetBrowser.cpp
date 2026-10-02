@@ -30,12 +30,19 @@
 #include "DesktopPaths.h"
 #include "PathBookmarksModel.h"
 #include "FilesView.h"
+#include "geonkick_button.h"
 
 #include "RkContainer.h"
+
+RK_DECLARE_IMAGE_RC(lock16x16);
+RK_DECLARE_IMAGE_RC(lock16x16_hover);
+RK_DECLARE_IMAGE_RC(lock16x16_on);
 
 PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
         : GeonkickWidget(parent)
         , kitModel{model}
+        , fileBrowser{nullptr}
+        , lockSettings{nullptr}
 {
         setSize(306, parent->height() - 30);
 
@@ -43,7 +50,22 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
         mainLayout->setSize(size());
 
         // Preset Folders
-        auto fileBrowser = new FileBrowser(this, "Presets Folders", true);
+        fileBrowser = new FileBrowser(this, "Presets Folders", true);
+        lockSettings = new GeonkickButton(fileBrowser);
+        lockSettings->setCheckable(true);
+        lockSettings->setSize(16, 16);
+        lockSettings->setImage(RK_RC_IMAGE(lock16x16), RkButton::State::Unpressed);
+        lockSettings->setImage(RK_RC_IMAGE(lock16x16_hover), RkButton::State::UnpressedHover);
+        lockSettings->setImage(RK_RC_IMAGE(lock16x16_on), RkButton::State::Pressed);
+        lockSettings->setImage(RK_RC_IMAGE(lock16x16_hover), RkButton::State::PressedHover);
+        lockSettings->setPressed(GeonkickConfig(false).keepInstrumentSettings());
+        RK_ACT_BIND(lockSettings,
+                    toggled,
+                    RK_ACT_ARGS(bool enabled),
+                    this,
+                    setKeepInstrumentSettings(enabled));
+        fileBrowser->getMenu()->addSpace(3);
+        fileBrowser->getMenu()->addWidget(lockSettings);
         fileBrowser->setSize({width(), height() / 2 + 17});
         fileBrowser->setCurrentDirectoy(GeonkickConfig().getPresetCurrentPath());
         fileBrowser->getBookmarks()->addPath(DesktopPaths().getFactoryPresetsPath());
@@ -88,8 +110,8 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
         RK_ACT_BIND(filesView,
                     fileSelected,
                     RK_ACT_ARGS(const fs::path &file),
-                    kitModel,
-                    loadPreset(file));
+                    this,
+                    loadPresetFile(file));
         RK_ACT_BIND(filesView,
                     onCreateFile,
                     RK_ACT_ARGS(const fs::path &filePath),
@@ -105,6 +127,19 @@ void PresetBrowser::savePresetFile(const fs::path &filePath)
                 kitModel->savePreset(filePath.string());
         else
                 kitModel->save(filePath.string());
+}
+
+void PresetBrowser::loadPresetFile(const fs::path &filePath)
+{
+        kitModel->loadPreset(Preset(filePath),
+                             kitModel->selectedPercussion(),
+                             lockSettings->isPressed());
+}
+
+void PresetBrowser::setKeepInstrumentSettings(bool enabled)
+{
+        GeonkickConfig config;
+        config.setKeepInstrumentSettings(enabled);
 }
 
 void PresetBrowser::setPresetCurrentPath(const fs::path &path)

@@ -548,7 +548,9 @@ OscillatorModel* KitModel::getCurrentLayerOscillator(OscillatorModel::Type type)
         return geonkickModel->getOscillatorModels()[static_cast<int>(type)];
 }
 
-bool KitModel::loadPreset(const Preset &preset, PercussionIndex index)
+bool KitModel::loadPreset(const Preset &preset,
+                          PercussionIndex index,
+                          bool keepInstrumentSettings)
 {
         const auto extension = Geonkick::toLower(preset.path().extension().string());
         if (extension == ".gkit")
@@ -567,6 +569,19 @@ bool KitModel::loadPreset(const Preset &preset, PercussionIndex index)
                 GEONKICK_LOG_ERROR("can't open preset");
                 return false;
         } else {
+                if (keepInstrumentSettings) {
+                        const auto currentState = dspProxy->getPercussionState(instrumentId(index));
+                        if (currentState) {
+                                state->setPlayingKey(currentState->getPlayingKey());
+                                state->setMidiChannel(currentState->getMidiChannel());
+                                state->setChannel(currentState->getChannel());
+                                state->setChokeGroup(currentState->getChokeGroup());
+                                state->setPlaybackMode(currentState->getPlaybackMode());
+                                state->enable(currentState->isEnabled());
+                                state->setMute(currentState->isMuted());
+                                state->setSolo(currentState->isSolo());
+                        }
+                }
                 state->setId(instrumentId(index));
                 dspProxy->setPercussionState(state);
                 dspProxy->notifyUpdateGui();

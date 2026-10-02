@@ -53,6 +53,7 @@ class FileBrowser: public GeonkickWidget {
         void setHomeDirectory(const fs::path &path);
         bool createDirectory(const fs::path &dir);
         PathBookmarksModel* getBookmarks() const;
+        RkContainer* getMenu() const;
 
         RK_DECL_ACT(currentPathChanged,
                     currentPathChanged(const fs::path &path),
@@ -94,6 +95,7 @@ class FileBrowser: public GeonkickWidget {
 
  private:
         RkContainer *mainContainer;
+        RkContainer *menuContainer;
         GeonkickButton *bookmarkDirectoryButton;
         PathHistory* pathHistory;
         PathBookmarksModel* pathBookmarksModel;

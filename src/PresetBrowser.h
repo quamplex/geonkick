@@ -28,8 +28,10 @@
 #include "DspProxy.h"
 
 class RkContainer;
+class FileBrowser;
 class KitModel;
 class GeonkickConfig;
+class GeonkickButton;
 
 class PresetBrowser: public GeonkickWidget {
  public:
@@ -38,8 +40,12 @@ class PresetBrowser: public GeonkickWidget {
  private:
         void setPresetCurrentPath(const fs::path &path);
         void savePresetFile(const fs::path &filePath);
+        void loadPresetFile(const fs::path &filePath);
+        void setKeepInstrumentSettings(bool enabled);
 
         KitModel *kitModel;
+        FileBrowser *fileBrowser;
+        GeonkickButton *lockSettings;
 };
 
 #endif // GEONKICK_PRESET_BROWSER_H
