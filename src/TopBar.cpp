@@ -44,6 +44,9 @@ RK_DECLARE_IMAGE_RC(logo);
 RK_DECLARE_IMAGE_RC(play);
 RK_DECLARE_IMAGE_RC(play_pressed);
 RK_DECLARE_IMAGE_RC(play_hover);
+RK_DECLARE_IMAGE_RC(reset);
+RK_DECLARE_IMAGE_RC(reset_hover);
+RK_DECLARE_IMAGE_RC(reset_active);
 RK_DECLARE_IMAGE_RC(tune_checkbox_on);
 RK_DECLARE_IMAGE_RC(tune_checkbox_off);
 RK_DECLARE_IMAGE_RC(tune_checkbox_hover);
@@ -192,7 +195,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         outputChannelSpinBox->upControl()->setTextColor({100, 100, 100});
         outputChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
         outputChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        outputChannelSpinBox->setSize(54, 23);
+        outputChannelSpinBox->setSize(43, 23);
         setupChannelSpinBoxControls(outputChannelSpinBox);
         outputChannelSpinBox->show();
         RK_ACT_BIND(outputChannelSpinBox,
@@ -219,7 +222,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         midiChannelSpinBox->upControl()->setTextColor({100, 100, 100});
         midiChannelSpinBox->downControl()->setBackgroundColor({50, 47, 47});
         midiChannelSpinBox->downControl()->setTextColor({100, 100, 100});
-        midiChannelSpinBox->setSize(54, 23);
+        midiChannelSpinBox->setSize(43, 23);
         setupChannelSpinBoxControls(midiChannelSpinBox);
         midiChannelSpinBox->show();
         mainLayout->addWidget(midiChannelSpinBox);
@@ -233,7 +236,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         mainLayout->addSpace(6);
         playbackModeButton = new GeonkickButton(this);
         playbackModeButton->setType(RkButton::ButtonType::ButtonPush);
-        playbackModeButton->setSize(56, 20);
+        playbackModeButton->setSize(40, 20);
         playbackModeButton->setBackgroundColor({42, 42, 42});
         playbackModeButton->setTextColor({200, 200, 200});
         mainLayout->addWidget(playbackModeButton);
@@ -359,8 +362,22 @@ void TopBar::createMainMenu(RkContainer *layout)
                     viewState(), setMainView(ViewState::View::Kit));
         RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
                     kitButton, setPressed(view == ViewState::View::Kit));
-                    layout->addWidget(kitButton);
+        layout->addWidget(kitButton);
 #endif // GEONKICK_SINGLE
+
+        addSeparator(layout);
+        auto resetButton = new GeonkickButton(this);
+        resetButton->setType(RkButton::ButtonType::ButtonPush);
+        resetButton->setFixedSize(33, 18);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset)),
+                              RkButton::State::Unpressed);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_hover)),
+                              RkButton::State::UnpressedHover);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_active)),
+                              RkButton::State::Pressed);
+        resetButton->show();
+        RK_ACT_BIND(resetButton, pressed, RK_ACT_ARGS(), this, resetToDefault());
+        layout->addWidget(resetButton);
 }
 
 RkWidget* TopBar::createInstrumentNameLabel()

@@ -45,6 +45,7 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         : GeonkickWidget(parent)
         , geonkickModel{model}
 {
+
         setSize(size());
 
         // Wavefrom widget
@@ -84,32 +85,11 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), globalWidget, updateView());
-        RK_ACT_BIND(kitModel,
-                    instrumentSelected,
-                    RK_ACT_ARGS(PercussionModel *model),
-                    globalWidget,
-                    setModel(model));
-        RK_ACT_BIND(kitModel,
-                    instrumentUpdated,
-                    RK_ACT_ARGS(PercussionModel *model),
-                    globalWidget,
-                    setModel(model));
-        RK_ACT_BIND(kitModel,
-                    modelUpdated,
-                    RK_ACT_ARGS(),
-                    globalWidget,
-                    setModel(kitModel->currentPercussion()));
         globalWidget->show();
 
         controlsYPos = globalWidget->y() + globalWidget->height() + 4;
         auto layersWidget = new LayersView(this, geonkickModel->layers());
         layersWidget->setPosition(3 * (8 + 223), controlsYPos);
-        RK_ACT_BIND(geonkickModel->layers(),
-                    currentLayerChanged,
-                    RK_ACT_ARGS(size_t index),
-                    this,
-                    updateGui());
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());
@@ -117,8 +97,23 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), kitTabs, updateView());
 #endif // GEONKICK_SINGLE
 
+        RK_ACT_BIND(geonkickModel->layers(),
+                    currentLayerChanged,
+                    RK_ACT_ARGS(size_t index),
+                    this,
+                    updateGui());
         RK_ACT_BIND(geonkickModel->getDspProxy(),
                     stateChanged,
+                    RK_ACT_ARGS(),
+                    this,
+                    updateGui());
+        RK_ACT_BIND(kitModel,
+                    instrumentUpdated,
+                    RK_ACT_ARGS(PercussionModel *model),
+                    this,
+                    updateGui());
+        RK_ACT_BIND(kitModel,
+                    modelUpdated,
                     RK_ACT_ARGS(),
                     this,
                     updateGui());

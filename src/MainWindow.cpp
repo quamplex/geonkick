@@ -134,6 +134,7 @@ void MainWindow::createUi(void)
         topBar = new TopBar(this, geonkickModel);
         topBar->setX(10);
         topBar->show();
+        RK_ACT_BIND(topBar, resetToDefault, RK_ACT_ARGS(), this, resetToDefault());
 
         // Create Sidebar
         if (GeonkickConfig().isShowSidebar()) {
@@ -221,9 +222,6 @@ void MainWindow::resetToDefault()
         auto currId = dspProxy->currentPercussion();
         auto state = dspProxy->getDefaultPercussionState();
         state->setId(currId);
-        state->setName(dspProxy->getPercussionName(currId));
-        state->setPlayingKey(dspProxy->getPercussionPlayingKey(currId));
-        state->setChannel(dspProxy->getPercussionChannel(currId));
         dspProxy->setPercussionState(state);
         dspProxy->notifyPercussionUpdated(dspProxy->currentPercussion());
 }
