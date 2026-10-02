@@ -88,16 +88,17 @@ void DesktopPaths::loadPaths()
 		GEONKICK_LOG_ERROR("Failed to get data directory path.");
 	}
 	configPath = dataPath / std::filesystem::path("config");
+	userPresetsPath = dataPath / std::filesystem::path("presets");
 
 	const char* programDataPath = std::getenv("ProgramData");
 	if (programDataPath != nullptr) {
-		dataPath = programDataPath;
-		dataPath /= std::filesystem::path(GEONKICK_APP_NAME);
+		factoryPresetsPath = std::filesystem::path(programDataPath)
+                                     / std::filesystem::path(GEONKICK_APP_NAME)
+                                     / std::filesystem::path("presets");
 	} else {
 		GEONKICK_LOG_ERROR("Failed to get program data directory path.");
+                factoryPresetsPath = userPresetsPath;
 	}
-	userPresetsPath = dataPath / std::filesystem::path("presets");
-        factoryPresetsPath = userPresetsPath;
 
         loadDrivesList();
 }
