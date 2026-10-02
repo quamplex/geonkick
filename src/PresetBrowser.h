@@ -36,6 +36,9 @@ class PresetBrowser: public GeonkickWidget {
         PresetBrowser(GeonkickWidget *parent, KitModel* model);
 
  private:
+        void setPresetCurrentPath(const fs::path &path);
+        void savePresetFile(const fs::path &filePath);
+
         KitModel *kitModel;
 };
 

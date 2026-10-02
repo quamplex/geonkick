@@ -150,15 +150,9 @@ PercussionState::PercussionState()
 
 bool PercussionState::loadFile(const std::string &file)
 {
-        if (file.size() < 7) {
-                GEONKICK_LOG_ERROR("can't open preset.");
-                return false;
-        }
-
         std::filesystem::path filePath(file);
-        if (filePath.extension().empty()
-            || (filePath.extension() != ".gkick"
-            && filePath.extension() != ".GKICK")) {
+        if (Geonkick::toLower(filePath.extension().string()) != ".gkick"
+            || filePath.stem().empty()) {
                 GEONKICK_LOG_ERROR("can't open preset. Wrong file format.");
                 return false;
         }
@@ -1414,16 +1408,43 @@ std::string PercussionState::toBase64F(const std::vector<float> &data)
 
 bool PercussionState::save(const std::string &fileName)
 {
-        if (fileName.size() < 7) {
+        if (fileName.empty()) {
                 GEONKICK_LOG_ERROR("file name is wrong");
                 return false;
         }
 
         std::filesystem::path filePath(fileName);
-        if (filePath.extension().empty()
-            || (filePath.extension() != ".gkick"
-            && filePath.extension() != ".GKICK"))
+        if (Geonkick::toLower(filePath.extension().string()) != ".gkick")
                 filePath.replace_extension(".gkick");
+
+        if (filePath.stem().empty()) {
+                GEONKICK_LOG_ERROR("file name is wrong");
+                return false;
+        }
+
+        const auto instrumentJson = toJson();
+        rapidjson::Document document;
+        document.Parse(instrumentJson.c_str());
+        if (document.HasParseError() || !document.IsObject()) {
+                GEONKICK_LOG_ERROR("can't serialize instrument preset");
+                return false;
+        }
+
+        auto& allocator = document.GetAllocator();
+        document.AddMember("InstrumentAppVersion", GEONKICK_VERSION, allocator);
+        const auto name = filePath.stem().string();
+        document.AddMember("name",
+                           rapidjson::Value(name.c_str(), allocator),
+                           allocator);
+        document.AddMember("author",
+                           rapidjson::Value("Unknown", allocator),
+                           allocator);
+        document.AddMember("url",
+                           rapidjson::Value("", allocator),
+                           allocator);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+        document.Accept(writer);
 
         std::ofstream file;
         file.open(std::filesystem::absolute(filePath));
@@ -1431,7 +1452,7 @@ bool PercussionState::save(const std::string &fileName)
                 GEONKICK_LOG_ERROR("can't open file for saving: " << filePath);
                 return false;
         }
-        file << toJson();
+        file << buffer.GetString();
         file.close();
         return true;
 }

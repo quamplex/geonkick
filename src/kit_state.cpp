@@ -35,14 +35,9 @@ KitState::KitState()
 
 bool KitState::open(const std::string &fileName)
 {
-        if (fileName.size() < 6) {
-                GEONKICK_LOG_ERROR("can't open preset. File name empty or wrong format.");
-                return false;
-        }
-
         std::filesystem::path filePath(fileName);
         auto fileExt = Geonkick::toLower(filePath.extension().string());
-        if (filePath.extension().empty() || (fileExt != ".gkit" && fileExt != ".gkick")) {
+        if (fileExt != ".gkit" || filePath.stem().empty()) {
                 GEONKICK_LOG_ERROR("can't open kit. Wrong file format.");
                 return false;
         }
@@ -58,12 +53,12 @@ bool KitState::open(const std::string &fileName)
                              (std::istreambuf_iterator<char>()));
 
         sfile.close();
-        return fromJson(fileData, fileExt == ".gkick");
+        return fromJson(fileData);
 }
 
 bool KitState::save(const std::string &fileName)
 {
-        if (fileName.size() < 6) {
+        if (fileName.empty()) {
                 GEONKICK_LOG_ERROR("can't save kit. Wrong file name");
                 return false;
         }
@@ -73,6 +68,10 @@ bool KitState::save(const std::string &fileName)
             || Geonkick::toLower(filePath.extension().string()) != ".gkit") {
                 filePath.replace_extension(".gkit");
         }
+        if (filePath.stem().empty()) {
+                GEONKICK_LOG_ERROR("can't save kit. Wrong file name");
+                return false;
+        }
 
         std::ofstream file;
         file.open(std::filesystem::absolute(filePath));
@@ -80,9 +79,12 @@ bool KitState::save(const std::string &fileName)
                 GEONKICK_LOG_ERROR("can't open file for saving: " << filePath);
                 return false;
         }
+
         file << toJson();
         file.close();
+
         auto path = filePath.has_parent_path() ? filePath.parent_path() : filePath;
+
         return true;
 }
 
@@ -121,30 +123,18 @@ const std::vector<std::unique_ptr<PercussionState>>& KitState::instruments() con
         return instrumentsList;
 }
 
- bool KitState::fromJson(const std::string &jsonData, bool oldPreset)
+bool KitState::fromJson(const std::string &jsonData)
 {
         instrumentsList.clear();
         rapidjson::Document document;
         document.Parse(jsonData.c_str());
         if (!document.IsObject())
                 return false;
-        return fromJsonObject(document, oldPreset);
+        return fromJsonObject(document);
 }
 
- bool KitState::fromJsonObject(const rapidjson::Value &obj, bool oldPreset)
+bool KitState::fromJsonObject(const rapidjson::Value &obj)
 {
-        // For backward compatibility
-        if (oldPreset) {
-                auto state = std::make_unique<PercussionState>();
-                if (!state->loadObject(obj))
-                        return false;
-#ifdef GEONKICK_SINGLE
-                state->setId(0);
-#endif // GEONKICK_SINGLE
-                addPercussion(std::move(state));
-                return true;
-        }
-
         bool isOk = false;
         for (const auto &m: obj.GetObject()) {
                 if (m.name == "KitAppVersion" && m.value.IsInt())

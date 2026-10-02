@@ -313,6 +313,26 @@ bool KitModel::save(const std::string &file)
         return true;
 }
 
+bool KitModel::savePreset(const std::string &file)
+{
+        const auto index = selectedPercussion();
+        if (!isValidIndex(index)) {
+                GEONKICK_LOG_ERROR("can't save instrument preset: no instrument is selected");
+                return false;
+        }
+
+        auto state = dspProxy->getPercussionState(instrumentId(index));
+        if (!state || !state->save(file)) {
+                GEONKICK_LOG_ERROR("can't save instrument preset");
+                return false;
+        }
+
+        const auto filePath = std::filesystem::path(file);
+        const auto path = filePath.has_parent_path() ? filePath.parent_path() : filePath;
+        dspProxy->setCurrentWorkingPath("SavePreset", path);
+        return true;
+}
+
 void KitModel::addNewPercussion()
 {
         int newId = dspProxy->getUnusedPercussion();
@@ -530,15 +550,24 @@ OscillatorModel* KitModel::getCurrentLayerOscillator(OscillatorModel::Type type)
 
 bool KitModel::loadPreset(const Preset &preset, PercussionIndex index)
 {
+        const auto extension = Geonkick::toLower(preset.path().extension().string());
+        if (extension == ".gkit")
+                return open(preset.path().string());
+
+        if (extension != ".gkick") {
+                GEONKICK_LOG_ERROR("can't open preset: unsupported file format");
+                return false;
+        }
+
         if (!isValidIndex(index))
                 return false;
 
         auto state = dspProxy->getDefaultPercussionState();
-        if (!state->loadFile(preset.path().string())) {
+        if (!state || !state->loadFile(preset.path().string())) {
                 GEONKICK_LOG_ERROR("can't open preset");
                 return false;
         } else {
-                state->setId(dspProxy->currentPercussion());
+                state->setId(instrumentId(index));
                 dspProxy->setPercussionState(state);
                 dspProxy->notifyUpdateGui();
                 dspProxy->notifyPercussionUpdated(state->getId());
@@ -548,5 +577,8 @@ bool KitModel::loadPreset(const Preset &preset, PercussionIndex index)
 
 bool KitModel::loadPreset(const Preset &preset)
 {
-        return open(preset.path().string());
+        const auto extension = Geonkick::toLower(preset.path().extension().string());
+        if (extension == ".gkit")
+                return open(preset.path().string());
+        return loadPreset(preset, selectedPercussion());
 }

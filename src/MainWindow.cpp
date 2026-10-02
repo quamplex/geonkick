@@ -153,40 +153,41 @@ void MainWindow::createUi(void)
 
 void MainWindow::openPreset(const std::string &fileName)
 {
-        if (fileName.size() < 7) {
+        if (fileName.empty()) {
                 RK_LOG_ERROR("Open Preset: "
                              << "Can't open preset. File name "
-                             << "empty or wrong format. Format example: 'mykick.gkick'");
+                             << "empty or wrong format. Format example: 'mykick.gkick' or 'mykit.gkit'");
                 return;
         }
 
         std::filesystem::path filePath(fileName);
-        if (filePath.extension().empty()
-            || !std::filesystem::is_regular_file(filePath)
-            || (filePath.extension() != ".gkick"
-            && filePath.extension() != ".GKICK")) {
-                RK_LOG_ERROR("Open Preset: " << "Can't open preset. Wrong file format.");
+        const auto extension = Geonkick::toLower(filePath.extension().string());
+        if ((extension != ".gkit" && extension != ".gkick")
+            || filePath.stem().empty()) {
+                RK_LOG_ERROR("Open Preset: " << "Can't open preset. Wrong file name or format.");
+                return;
+        }
+        if (!std::filesystem::is_regular_file(filePath)) {
+                RK_LOG_ERROR("Open Preset: " << "Can't open preset. File does not exist.");
                 return;
         }
 
-        std::ifstream file;
-        file.open(std::filesystem::absolute(filePath));
-        if (!file.is_open()) {
+        if (extension == ".gkit") {
+                geonkickModel->getKitModel()->open(fileName);
+                return;
+        }
+
+        auto state = dspProxy->getDefaultPercussionState();
+        if (!state->loadFile(fileName)) {
                 RK_LOG_ERROR("Open Preset" + std::string(" - ") + std::string(GEONKICK_NAME)
                              << ". Can't open preset.");
                 return;
         }
-
-        std::string fileData((std::istreambuf_iterator<char>(file)),
-                             (std::istreambuf_iterator<char>()));
-        auto state = dspProxy->getDefaultPercussionState();
-        state->loadData(fileData);
         if (state->getName().empty() || state->getName() == "Default")
                 state->setName(filePath.stem().string());
         state->setId(dspProxy->currentPercussion());
         dspProxy->setPercussionState(state);
         action dspProxy->instrumentUpdated(state->getId());
-        file.close();
         dspProxy->setCurrentWorkingPath("OpenPreset",
                                            filePath.has_parent_path() ? filePath.parent_path().string() : filePath.string());
 }

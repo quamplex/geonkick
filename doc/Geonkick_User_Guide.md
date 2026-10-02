@@ -252,8 +252,12 @@ In Geonkick's Kit UI, instruments and channels are distinct entities. An instrum
 
 ### Geonkick Preset
 
-Geonkick is a preset in JSON format with the file extension "*.gkit" and includes a single or multiple instruments.
-Users can save and open this preset from **Preset Browser**.
+Geonkick supports two JSON preset formats:
+
+- **Instrument presets** use the "*.gkick" extension and contain one instrument, along with preset metadata such as its name, author, and URL. Loading one replaces only the currently selected instrument. When saved inside a kit, the instrument's preset metadata is not retained; the kit's metadata applies to the complete preset.
+- **Kit presets** use the "*.gkit" extension and contain one or more instruments, along with kit-level metadata such as its name, author, and URL.
+
+Both formats can be opened and saved from the **Preset Browser**. Enter a filename ending in "*.gkick" to save the selected instrument, or "*.gkit" to save the whole kit.
 
 ### Sidebar
 

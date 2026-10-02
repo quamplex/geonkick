@@ -579,10 +579,9 @@ void FilesView::createEditPathControl(FilesView::FileActions act)
 
 bool FilesView::hasValidExtension(const fs::path file) const
 {
-        auto ext = file.extension().string();
-        return !ext.empty() &&
-                std::ranges::any_of(fileFilters, [&](const std::string& validExt) {
-                        return ext == validExt;
-                });
+        const auto ext = Geonkick::toLower(file.extension().string());
+        return !ext.empty()
+                && std::ranges::any_of(fileFilters, [&](const std::string& validExt) {
+                           return ext == Geonkick::toLower(validExt);
+                   });
 }
-

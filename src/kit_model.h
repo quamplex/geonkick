@@ -51,6 +51,7 @@ class KitModel : public RkObject {
         bool isValidIndex(PercussionIndex index);
         bool open(const std::string &file);
         bool save(const std::string &file);
+        bool savePreset(const std::string &file);
         void selectPercussion(PercussionIndex index);
         bool isPercussionSelected(PercussionIndex index) const;
         PercussionIndex selectedPercussion() const;

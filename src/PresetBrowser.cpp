@@ -55,17 +55,16 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
         auto filesView = new FilesView(this);
         filesView->showFolders(false);
         filesView->setSize({width(), height() / 2});
-        filesView->setFilters({".gkit", /* for backward compatibility */ ".gkick"});
+        filesView->setFilters({".gkit", ".gkick"});
         filesView->setCurrentPath(GeonkickConfig().getPresetCurrentPath());
         filesView->show();
         mainLayout->addWidget(filesView);
 
-        RK_ACT_BINDL(fileBrowser,
-                     currentPathChanged,
-                     RK_ACT_ARGS(const fs::path &path),
-                     [=,this](const fs::path &path) {
-                             GeonkickConfig().setPresetCurrentPath(path);
-                     });
+        RK_ACT_BIND(fileBrowser,
+                    currentPathChanged,
+                    RK_ACT_ARGS(const fs::path &path),
+                    this,
+                    setPresetCurrentPath(path));
         RK_ACT_BIND(fileBrowser,
                     currentPathChanged,
                     RK_ACT_ARGS(const fs::path &path),
@@ -86,7 +85,6 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
                     RK_ACT_ARGS(),
                     filesView,
                     createFile());
-
         RK_ACT_BIND(filesView,
                     fileSelected,
                     RK_ACT_ARGS(const fs::path &file),
@@ -95,8 +93,21 @@ PresetBrowser::PresetBrowser(GeonkickWidget *parent, KitModel* model)
         RK_ACT_BIND(filesView,
                     onCreateFile,
                     RK_ACT_ARGS(const fs::path &filePath),
-                    kitModel,
-                    save(filePath.string()));
+                    this,
+                    savePresetFile(filePath));
 
         show();
+}
+
+void PresetBrowser::savePresetFile(const fs::path &filePath)
+{
+        if (Geonkick::toLower(filePath.extension().string()) == ".gkick")
+                kitModel->savePreset(filePath.string());
+        else
+                kitModel->save(filePath.string());
+}
+
+void PresetBrowser::setPresetCurrentPath(const fs::path &path)
+{
+        GeonkickConfig().setPresetCurrentPath(path);
 }
