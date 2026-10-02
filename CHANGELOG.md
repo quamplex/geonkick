@@ -6,6 +6,9 @@
 - Instrument choke groups
 - Support input notes for envelope points
 - Add UI scale options for 1.25x and 1.75x in the Settings dialog.
+- Load instrument preset into the kit
+- Lock/unlock overwriting the current instrument key, output channel,
+  choke group and midi channel when loading an instrument preset
 
 ### Improvements
 
@@ -13,6 +16,7 @@
 - Update layers mixer (enabling layes and selection of current layer done from this UI)
 - Update UI of the topbar (change "Controls" -> "Synth" tab)
 - New presets from @tonilink
+- Revert back to support instrument presets and kit presets (*.gkick and *.gkit)
 
 ### Fixes
 
