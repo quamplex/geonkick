@@ -25,6 +25,7 @@
 - Fix compiling with new version of LV2
 - Fix bezie button (set its correct state when loading first time the UI)
 - Fix envelope path label for some envelope types and global
+- Some fixes to factory preset install paths
 
 ## [3.7.0]
 
