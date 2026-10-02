@@ -91,11 +91,7 @@ void EnvelopeWidgetDrawingArea::paintWidget([[maybe_unused]] RkPaintEvent *event
         pen.setColor({180, 180, 180, 200});
         pen.setWidth(1);
         painter.setPen(pen);
-#ifndef GEONKICK_BASIC_VERSION
         painter.drawText(90, height() - 12, getEnvStateText());
-#else
-        painter.drawText(0, height() - 12, getEnvStateText());
-#endif // GEONKICK_BASIC_VERSION
         pen.setColor({20, 20, 20, 255});
         painter.setPen(pen);
         painter.drawRect({0, 0, width() - 1, height() - 1});
