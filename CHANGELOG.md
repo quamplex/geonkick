@@ -9,6 +9,7 @@
 - Load instrument preset into the kit
 - Lock/unlock overwriting the current instrument key, output channel,
   choke group and midi channel when loading an instrument preset
+- Emphasize the kit preset in the preset browser with a "KIT" badge
 
 ### Improvements
 
