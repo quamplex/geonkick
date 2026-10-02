@@ -189,18 +189,32 @@ bool PresetBrowserModel::isSelected(size_t row, size_t column) const
 
 bool PresetBrowserModel::setPreset(Preset* preset)
 {
-        auto kit = std::make_unique<KitState>();
-        if (!kit->open(preset->path().string())) {
-                GEONKICK_LOG_ERROR("can't open kit: " << preset->path().string());
-                return false;
-        }
-
-        if (dspProxy->setKitState(kit)) {
+        const auto extension = Geonkick::toLower(preset->path().extension().string());
+        if (extension == ".gkit") {
+                auto kit = std::make_unique<KitState>();
+                if (!kit->open(preset->path().string())) {
+                        GEONKICK_LOG_ERROR("can't open kit: " << preset->path().string());
+                        return false;
+                }
+                if (!dspProxy->setKitState(kit))
+                        return false;
                 dspProxy->notifyKitUpdated();
                 dspProxy->notifyUpdateGui();
                 return true;
         }
-        return false;
+
+        auto state = dspProxy->getDefaultPercussionState();
+        if (!state || !state->loadFile(preset->path().string())) {
+                GEONKICK_LOG_ERROR("can't open preset: " << preset->path().string());
+                return false;
+        }
+
+        state->setId(dspProxy->currentPercussion());
+        dspProxy->setPercussionState(state);
+        dspProxy->notifyUpdateGui();
+        dspProxy->notifyPercussionUpdated(state->getId());
+
+        return true;
 }
 
 PresetFolder* PresetBrowserModel::currentSelectedFolder() const
