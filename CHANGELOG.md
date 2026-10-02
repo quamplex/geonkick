@@ -18,6 +18,7 @@
 - Update UI of the topbar (change "Controls" -> "Synth" tab)
 - New presets from @tonilink
 - Revert back to support instrument presets and kit presets (*.gkick and *.gkit)
+- Load current preset from the navigator if clicking on it
 
 ### Fixes
 
