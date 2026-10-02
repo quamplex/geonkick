@@ -87,9 +87,11 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);
         globalWidget->show();
 
+#ifndef GEONKICK_BASIC_VERSION
         controlsYPos = globalWidget->y() + globalWidget->height() + 4;
         auto layersWidget = new LayersView(this, geonkickModel->layers());
         layersWidget->setPosition(3 * (8 + 223), controlsYPos);
+#endif // GEONKICK_BASIC_VERSION
 
 #ifndef GEONKICK_SINGLE
         auto kitTabs = new KitTabs(this, geonkickModel->getKitModel());
