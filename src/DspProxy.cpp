@@ -1948,6 +1948,7 @@ void DspProxy::loadPresets()
         auto presetsPathSufix = std::filesystem::path(GEONKICK_APP_NAME) / "presets";
         std::filesystem::path presetsPath = getSettings("GEONKICK_CONFIG/USER_PRESETS_PATH");
         prestsPaths.insert(presetsPath.string());
+        prestsPaths.insert(DesktopPaths().getFactoryPresetsPath().string());
 
 #ifdef GEONKICK_DATA_DIR
         prestsPaths.insert((std::filesystem::path(GEONKICK_DATA_DIR) / presetsPathSufix).string());
