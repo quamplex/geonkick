@@ -209,6 +209,20 @@ bool PresetBrowserModel::setPreset(Preset* preset)
                 return false;
         }
 
+        if (GeonkickConfig(false).keepInstrumentSettings()) {
+                const auto currentState = dspProxy->getPercussionState(dspProxy->currentPercussion());
+                if (currentState) {
+                        state->setPlayingKey(currentState->getPlayingKey());
+                        state->setMidiChannel(currentState->getMidiChannel());
+                        state->setChannel(currentState->getChannel());
+                        state->setChokeGroup(currentState->getChokeGroup());
+                        state->setPlaybackMode(currentState->getPlaybackMode());
+                        state->enable(currentState->isEnabled());
+                        state->setMute(currentState->isMuted());
+                        state->setSolo(currentState->isSolo());
+                }
+        }
+
         state->setId(dspProxy->currentPercussion());
         dspProxy->setPercussionState(state);
         dspProxy->notifyUpdateGui();

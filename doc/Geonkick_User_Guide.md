@@ -279,6 +279,8 @@ Both the Preset and Sample browsers have a top menu with the following controls:
 The Preset Browser includes a list that shows the contents of the currently selected preset folder.
 When the user selects a path that contains presets, they will be displayed in the list.
 
+The lock button next to Save toggles **Keep instrument settings** when loading an instrument preset from either the Preset Browser or the preset navigator. When enabled, the preset does not change the instrument's MIDI key, MIDI channel, output channel, choke group, or play mode. The setting is off by default and its state is remembered between sessions. Kit presets still load as complete kits.
+
 #### Sample Browser
 
 The Sample Browser has additional controls in the bottom bar:
