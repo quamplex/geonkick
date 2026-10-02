@@ -277,6 +277,8 @@ void FilesView::paintWidget(RkPaintEvent *event)
               && (static_cast<decltype(visibleLines)>(index - offsetIndex) < visibleLines)) {
                 auto fileName = filesList[index].filename().string();
                 if (!fileName.empty()) {
+                        const bool isKitPreset = !std::filesystem::is_directory(filesList[index])
+                                && Geonkick::toLower(filesList[index].extension().string()) == ".gkit";
                         auto font = painter.font();
                         if (std::filesystem::is_directory(filesList[index]))
                                 font.setWeight(RkFont::Weight::Bold);
@@ -291,11 +293,35 @@ void FilesView::paintWidget(RkPaintEvent *event)
                         else
                                 painter.setPen(normalPen);
 
-                        RkRect textRect(10, lineYPos, width() - 40, lineHeight);
+                        constexpr int kitBadgeWidth = 26;
+                        constexpr int kitBadgeHeight = 16;
+                        const int kitBadgeX = width() - 40;
+                        RkRect textRect(10,
+                                        lineYPos,
+                                        isKitPreset ? kitBadgeX - 20 : width() - 40,
+                                        lineHeight);
                         fileName = truncateFileName(painter,
                                                     fileName,
                                                     textRect.width() - 25);
                         painter.drawText(textRect, fileName, Rk::Alignment::AlignLeft);
+
+                        if (isKitPreset) {
+                                auto tempPen = painter.pen();
+                                auto tempFont = painter.font();
+                                const RkRect badgeRect(kitBadgeX,
+                                                       lineYPos + (lineHeight - kitBadgeHeight) / 2,
+                                                       kitBadgeWidth,
+                                                       kitBadgeHeight);
+                                painter.fillRect(badgeRect, {67, 67, 67});
+                                painter.setPen(selectedFileIndex == index
+                                                       ? selectedPen
+                                                       : RkPen(RkColor(210, 210, 210)));
+                                font.setSize(10);
+                                painter.setFont(font);
+                                painter.drawText(badgeRect, "KIT");
+                                painter.setPen(tempPen);
+                                painter.setFont(tempFont);
+                        }
                         drawBookmarkIcon(painter, line, lineYPos);
                 }
                 lineYPos += lineHeight + lineSacing;
