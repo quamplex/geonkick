@@ -42,9 +42,6 @@ RK_DECLARE_IMAGE_RC(add_per_button_on);
 RK_DECLARE_IMAGE_RC(remove_per_button);
 RK_DECLARE_IMAGE_RC(remove_per_button_hover);
 RK_DECLARE_IMAGE_RC(remove_per_button_on);
-RK_DECLARE_IMAGE_RC(duplicate_per_button);
-RK_DECLARE_IMAGE_RC(duplicate_per_button_hover);
-RK_DECLARE_IMAGE_RC(duplicate_per_button_on);
 RK_DECLARE_IMAGE_RC(move_up_per_button);
 RK_DECLARE_IMAGE_RC(move_up_per_button_hover);
 RK_DECLARE_IMAGE_RC(move_up_per_button_on);
@@ -57,7 +54,6 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         , kitModel{model}
         , addButton{nullptr}
         , removeButton{nullptr}
-        , duplicateButton{nullptr}
         , moveupButton{nullptr}
         , movedownButton{nullptr}
         , instrumentsContainer{new RkContainer(this, Rk::Orientation::Vertical)}
@@ -134,23 +130,6 @@ GeonkickWidget* KitWidget::createTopMenu()
         removeButton->show();
 
         topContainer->addSpace(3);
-        duplicateButton = new RkButton(topMenu);
-        duplicateButton->setType(RkButton::ButtonType::ButtonPush);
-        duplicateButton->setBackgroundColor(background());
-        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button),
-                            RkButton::State::Unpressed);
-        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_hover),
-                            RkButton::State::UnpressedHover);
-        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_hover),
-                            RkButton::State::PressedHover);
-        duplicateButton->setImage(RK_RC_IMAGE(duplicate_per_button_on),
-                            RkButton::State::Pressed);
-        RK_ACT_BIND(duplicateButton, pressed, RK_ACT_ARGS(),
-                    kitModel, copyPercussion(kitModel->selectedPercussion()));
-        topContainer->addWidget(duplicateButton);
-        duplicateButton->show();
-
-        topContainer->addSpace(3);
         moveupButton = new RkButton(topMenu);
         moveupButton->setType(RkButton::ButtonType::ButtonPush);
         moveupButton->setBackgroundColor(background());
@@ -185,7 +164,7 @@ GeonkickWidget* KitWidget::createTopMenu()
         movedownButton->show();
 
         // Midi channel
-        topContainer->addSpace(193);
+        topContainer->addSpace(222);
         auto label = new RkLabel(topMenu, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
