@@ -138,8 +138,23 @@ GKickVstProcessor::process(Vst::ProcessData& data)
         if (data.numSamples < 1)
                 return kResultOk;
 
-        size_t nChannels = std::min(dspProxy->numberOfChannels(),
-                                    static_cast<decltype(nChannels)>(data.numOutputs));
+        if (!dspProxy)
+                return kResultFalse;
+
+        auto nChannels = dspProxy->numberOfChannels();
+        if (data.outputs == nullptr
+            || data.numOutputs != static_cast<decltype(data.numOutputs)>(nChannels))
+                return kResultFalse;
+
+        for (decltype(nChannels) ch = 0; ch < nChannels; ch++) {
+                auto& output = data.outputs[ch];
+                if (output.numChannels < 2
+                    || output.channelBuffers32 == nullptr
+                    || output.channelBuffers32[0] == nullptr
+                    || output.channelBuffers32[1] == nullptr)
+                        return kResultFalse;
+        }
+
         for (decltype(nChannels) ch = 0; ch < nChannels; ch++) {
                 channelsBuffers.data()[2 * ch]     = data.outputs[ch].channelBuffers32[0];
                 channelsBuffers.data()[2 * ch + 1] = data.outputs[ch].channelBuffers32[1];
