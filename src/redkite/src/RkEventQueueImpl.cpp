@@ -145,6 +145,9 @@ void RkEventQueue::RkEventQueueImpl::postEvent(RkObject *obj, std::unique_ptr<Rk
 {
         if (obj && event && objectExists(obj)) {
                 std::lock_guard<std::mutex> lock(eventsQueueMutex);
+                if (event->type() == RkEvent::Type::Paint
+                    && !pendingPaintEvents.insert(obj).second)
+                        return;
                 eventsQueue.push_back({obj, std::move(event)});
         }
 }
@@ -172,6 +175,7 @@ void RkEventQueue::RkEventQueueImpl::processEvents()
         {
                 std::lock_guard<std::mutex> lock(eventsQueueMutex);
                 queue = std::move(eventsQueue);
+                pendingPaintEvents.clear();
         }
 
         bool repaintSystemWindow = false;
