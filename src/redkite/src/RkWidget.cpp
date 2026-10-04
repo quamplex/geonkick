@@ -288,6 +288,8 @@ int RkWidget::x() const
 
 void RkWidget::setX(int x)
 {
+        if (impl_ptr->position().x() == x)
+                return;
         impl_ptr->setPosition(RkPoint(x, impl_ptr->position().y()));
         if (parentWidget())
                 parentWidget()->update();
@@ -300,6 +302,8 @@ int RkWidget::y() const
 
 void RkWidget::setY(int y)
 {
+        if (impl_ptr->position().y() == y)
+                return;
         impl_ptr->setPosition(RkPoint(impl_ptr->position().x(), y));
         if (parentWidget())
                 parentWidget()->update();
@@ -307,6 +311,8 @@ void RkWidget::setY(int y)
 
 void RkWidget::setPosition(int x, int y)
 {
+        if (impl_ptr->position() == RkPoint(x, y))
+                return;
         impl_ptr->setPosition(RkPoint(x, y));
         if (parentWidget())
                 parentWidget()->update();
@@ -314,6 +320,8 @@ void RkWidget::setPosition(int x, int y)
 
 void RkWidget::setPosition(const RkPoint &p)
 {
+        if (impl_ptr->position() == p)
+                return;
         impl_ptr->setPosition(p);
         if (parentWidget())
                 parentWidget()->update();
@@ -648,6 +656,9 @@ void RkWidget::setVisible(bool b)
         if (b && parentWidget() && !parentWidget()->isVisible())
                 return;
 
+        if (isVisible() == b)
+                return;
+
         impl_ptr->setVisible(b);
         if (!b)
                 eventQueue()->postEvent(this, std::make_unique<RkHideEvent>());
@@ -688,4 +699,3 @@ double RkWidget::scaleFactor() const
 {
         return RK_IMPL_PTR(this)->scaleFactor();
 }
-
