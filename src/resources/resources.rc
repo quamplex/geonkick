@@ -3,7 +3,6 @@ set(gkick_rc_png_files
 # === Common ===
 app_icon.png
 logo_about.png
-about.png
 add_button_16x16.png
 add_button_16x16_hover.png
 remove_button_16x16.png
@@ -123,8 +122,6 @@ wav32_radio_button.png
 wav32_radio_button_active.png
 ogg_radio_button.png
 ogg_radio_button_active.png
-mono_radio_button.png
-mono_radio_button_active.png
 stereo_radio_button.png
 stereo_radio_button_active.png
 meter_scale.png
@@ -176,16 +173,12 @@ density_env_button_hover.png
 density_env_button_active.png
 
 phase_label.png
-noise_groupbox_label.png
 noise_type_brownian_active.png
 noise_type_brownian_hover.png
 noise_type_brownian.png
 noise_type_white_active.png
 noise_type_white_hover.png
 noise_type_white.png
-save_active.png
-save.png
-save_hover.png
 
 wave_button_sine.png
 wave_button_sine_active.png
@@ -220,16 +213,12 @@ instr_key_up_on.png
 instr_key_down.png
 instr_key_down_hover.png
 instr_key_down_on.png
-kit_button.png
 add_per_button.png
 add_per_button_hover.png
 add_per_button_on.png
 remove_per_button.png
 remove_per_button_hover.png
 remove_per_button_on.png
-duplicate_per_button.png
-duplicate_per_button_hover.png
-duplicate_per_button_on.png
 move_up_per_button.png
 move_up_per_button_hover.png
 move_up_per_button_on.png
@@ -252,10 +241,9 @@ per_play_on.png
 remove_per_button.png
 remove_per_button_hover.png
 remove_per_button_on.png
-copy_per_button.png
-copy_per_button_hover.png
-copy_per_button_on.png
-presets_button.png
+copy_instr_button.png
+copy_instr_button_hover.png
+copy_instr_button_on.png
 next_page.png
 next_page_hover.png
 next_page_on.png
@@ -315,9 +303,7 @@ distortion_enable_active.png
 distortion_drive_env.png
 distortion_drive_env_hover.png
 distortion_drive_env_active.png
-distortion_goupbox_label.png
 distortion_groupbox_bk.png
-distortion_groupbox_label.png
 distortion_in_limiter.png
 distortion_volume_env.png
 distortion_volume_env_active.png
