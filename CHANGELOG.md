@@ -1,4 +1,4 @@
-## [3.8.0]
+## [3.9.0]
 
 ### Features
 
@@ -26,6 +26,7 @@
 - Fix bezie button (set its correct state when loading first time the UI)
 - Fix envelope path label for some envelope types and global
 - Some fixes to factory preset install paths
+- Fix performance for Redkite GUI toolkit (coalesce pending Paint events for the same object)
 
 ## [3.7.0]
 
