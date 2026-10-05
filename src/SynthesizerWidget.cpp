@@ -85,6 +85,22 @@ SynthesizerWidget::SynthesizerWidget(GeonkickWidget *parent,
         auto kitModel = geonkickModel->getKitModel();
         auto globalWidget = new GeneralGroupBox(this, kitModel->currentPercussion());
         globalWidget->setPosition(3 * (8 + 223), controlsYPos);
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), globalWidget, updateView());
+        RK_ACT_BIND(kitModel,
+                    instrumentSelected,
+                    RK_ACT_ARGS(PercussionModel *model),
+                    globalWidget,
+                    setModel(model));
+        RK_ACT_BIND(kitModel,
+                    instrumentUpdated,
+                    RK_ACT_ARGS(PercussionModel *model),
+                    globalWidget,
+                    setModel(model));
+        RK_ACT_BIND(kitModel,
+                    modelUpdated,
+                    RK_ACT_ARGS(),
+                    globalWidget,
+                    setModel(kitModel->currentPercussion()));
         globalWidget->show();
 
 #ifndef GEONKICK_BASIC_VERSION

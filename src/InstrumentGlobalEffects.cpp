@@ -67,6 +67,7 @@ void InstrumentGlobalEffects::bindModel()
         instrumentModel = static_cast<PercussionModel*>(getModel());
         if (!instrumentModel)
                 return;
+
         if (currentTabView) {
                 if (dynamic_cast<FilterView*>(currentTabView))
                         currentTabView->setModel(instrumentModel->getFilter());
@@ -102,7 +103,7 @@ void InstrumentGlobalEffects::createView()
         tabButtonsLayout->addWidget(filterTabButton);
         RK_ACT_BINDL(filterTabButton,
                      enabled,
-                    RK_ACT_ARGS(bool b),
+                     RK_ACT_ARGS(bool b),
                      [=,this](bool b){instrumentModel->getFilter()->enable(b);});
 
         // Distortion tab

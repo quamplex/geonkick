@@ -50,6 +50,7 @@ GeneralGroupBox::GeneralGroupBox(GeonkickWidget *parent, PercussionModel *model)
         setFixedSize(224, 262);
         createView();
         bindModel();
+        updateView();
 }
 
 void GeneralGroupBox::createView()
@@ -143,6 +144,22 @@ void GeneralGroupBox::bindModel()
                     RK_ACT_ARGS(double val),
                     model,
                     setAmplitude(val));
+        RK_ACT_BIND(model,
+                    lengthUpdated,
+                    RK_ACT_ARGS(double val),
+                    instrumentLengthKnob,
+                    setCurrentValue(val));
+        RK_ACT_BIND(model,
+                    amplitudeUpdated,
+                    RK_ACT_ARGS(double val),
+                    instrumentAmplitudeKnob,
+                    setCurrentValue(val));
+        RK_ACT_BIND(model,
+                    modelUpdated,
+                    RK_ACT_ARGS(),
+                    this,
+                    updateView());
+
         globalEffects->setModel(model);
 }
 
