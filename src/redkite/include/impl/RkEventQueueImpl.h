@@ -93,7 +93,7 @@ class RkEventQueue::RkEventQueueImpl {
         std::unordered_map<int, std::unique_ptr<RkShortcut>> shortcutsList;
         std::mutex eventsQueueMutex;
         std::vector<std::pair<RkObject*, std::unique_ptr<RkEvent>>> eventsQueue;
-        std::unordered_set<RkObject*> pendingPaintEvents;
+        std::unordered_map<RkObject*, RkEvent*> pendingPaintEvents;
         std::mutex actionsQueueMutex;
         std::vector<std::unique_ptr<RkAction>> actionsQueue;
         std::unordered_set<RkTimer*> timersList;
