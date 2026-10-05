@@ -219,6 +219,9 @@ add_per_button_on.png
 remove_per_button.png
 remove_per_button_hover.png
 remove_per_button_on.png
+reset_kit_button.png
+reset_kit_button_hover.png
+reset_kit_button_on.png
 move_up_per_button.png
 move_up_per_button_hover.png
 move_up_per_button_on.png
@@ -244,6 +247,13 @@ remove_per_button_on.png
 copy_instr_button.png
 copy_instr_button_hover.png
 copy_instr_button_on.png
+paste_instr_button.png
+paste_instr_button_hover.png
+paste_instr_button_on.png
+paste_instr_button_disabled.png
+duplicate_instr_button.png
+duplicate_instr_button_hover.png
+duplicate_instr_button_on.png
 next_page.png
 next_page_hover.png
 next_page_on.png

@@ -67,7 +67,10 @@ class KitModel : public RkObject {
         bool setPercussionName(PercussionIndex index, const std::string &name);
         std::string instrumentName(PercussionIndex index) const;
         void addNewPercussion();
+        void resetKit();
         void copyPercussion(PercussionIndex index);
+        void copySelectedPercussionToClipboard();
+        void pasteClipboardToSelectedPercussion();
         void removePercussion(PercussionIndex index);
         void moveUpSelectedPercussion();
         void moveDownSelectedPercussion();

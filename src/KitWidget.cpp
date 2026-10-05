@@ -42,6 +42,19 @@ RK_DECLARE_IMAGE_RC(add_per_button_on);
 RK_DECLARE_IMAGE_RC(remove_per_button);
 RK_DECLARE_IMAGE_RC(remove_per_button_hover);
 RK_DECLARE_IMAGE_RC(remove_per_button_on);
+RK_DECLARE_IMAGE_RC(reset_kit_button);
+RK_DECLARE_IMAGE_RC(reset_kit_button_hover);
+RK_DECLARE_IMAGE_RC(reset_kit_button_on);
+RK_DECLARE_IMAGE_RC(copy_instr_button);
+RK_DECLARE_IMAGE_RC(copy_instr_button_hover);
+RK_DECLARE_IMAGE_RC(copy_instr_button_on);
+RK_DECLARE_IMAGE_RC(paste_instr_button);
+RK_DECLARE_IMAGE_RC(paste_instr_button_hover);
+RK_DECLARE_IMAGE_RC(paste_instr_button_on);
+RK_DECLARE_IMAGE_RC(paste_instr_button_disabled);
+RK_DECLARE_IMAGE_RC(duplicate_instr_button);
+RK_DECLARE_IMAGE_RC(duplicate_instr_button_hover);
+RK_DECLARE_IMAGE_RC(duplicate_instr_button_on);
 RK_DECLARE_IMAGE_RC(move_up_per_button);
 RK_DECLARE_IMAGE_RC(move_up_per_button_hover);
 RK_DECLARE_IMAGE_RC(move_up_per_button_on);
@@ -54,6 +67,10 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         , kitModel{model}
         , addButton{nullptr}
         , removeButton{nullptr}
+        , resetButton{nullptr}
+        , copyButton{nullptr}
+        , pasteButton{nullptr}
+        , duplicateButton{nullptr}
         , moveupButton{nullptr}
         , movedownButton{nullptr}
         , instrumentsContainer{new RkContainer(this, Rk::Orientation::Vertical)}
@@ -75,6 +92,13 @@ KitWidget::KitWidget(GeonkickWidget *parent, KitModel *model)
         kitContainer->setSize(size());
 
         auto topMenu = createTopMenu();
+        RK_ACT_BIND(kitModel->getDspProxy(),
+                    clipboardUpdated,
+                    RK_ACT_ARGS(),
+                    pasteButton,
+                    setEnabled(kitModel->getDspProxy()->hasClipboardContents()));
+        pasteButton->setEnabled(kitModel->getDspProxy()->hasClipboardContents());
+        pasteButton->show();
 
         instrumentsContainer->setHiddenTakesPlace();
         instrumentsContainer->setHeight(kitContainer->height() - topMenu->height());
@@ -130,6 +154,50 @@ GeonkickWidget* KitWidget::createTopMenu()
         removeButton->show();
 
         topContainer->addSpace(3);
+        copyButton = new RkButton(topMenu);
+        copyButton->setType(RkButton::ButtonType::ButtonPush);
+        copyButton->setBackgroundColor(background());
+        copyButton->setImage(RK_RC_IMAGE(copy_instr_button), RkButton::State::Unpressed);
+        copyButton->setImage(RK_RC_IMAGE(copy_instr_button_hover), RkButton::State::UnpressedHover);
+        copyButton->setImage(RK_RC_IMAGE(copy_instr_button_hover), RkButton::State::PressedHover);
+        copyButton->setImage(RK_RC_IMAGE(copy_instr_button_on), RkButton::State::Pressed);
+        RK_ACT_BIND(copyButton, pressed, RK_ACT_ARGS(),
+                    kitModel, copySelectedPercussionToClipboard());
+        topContainer->addWidget(copyButton);
+        copyButton->show();
+
+        topContainer->addSpace(3);
+        pasteButton = new RkButton(topMenu);
+        pasteButton->setType(RkButton::ButtonType::ButtonPush);
+        pasteButton->setBackgroundColor(background());
+        pasteButton->setImage(RK_RC_IMAGE(paste_instr_button), RkButton::State::Unpressed);
+        pasteButton->setImage(RK_RC_IMAGE(paste_instr_button_hover), RkButton::State::UnpressedHover);
+        pasteButton->setImage(RK_RC_IMAGE(paste_instr_button_hover), RkButton::State::PressedHover);
+        pasteButton->setImage(RK_RC_IMAGE(paste_instr_button_on), RkButton::State::Pressed);
+        pasteButton->setImage(RK_RC_IMAGE(paste_instr_button_disabled), RkButton::State::Disabled);
+        RK_ACT_BIND(pasteButton, pressed, RK_ACT_ARGS(),
+                    kitModel, pasteClipboardToSelectedPercussion());
+        topContainer->addWidget(pasteButton);
+        pasteButton->show();
+
+        topContainer->addSpace(3);
+        duplicateButton = new RkButton(topMenu);
+        duplicateButton->setType(RkButton::ButtonType::ButtonPush);
+        duplicateButton->setBackgroundColor(background());
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_instr_button),
+                                  RkButton::State::Unpressed);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_instr_button_hover),
+                                  RkButton::State::UnpressedHover);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_instr_button_hover),
+                                  RkButton::State::PressedHover);
+        duplicateButton->setImage(RK_RC_IMAGE(duplicate_instr_button_on),
+                                  RkButton::State::Pressed);
+        RK_ACT_BIND(duplicateButton, pressed, RK_ACT_ARGS(),
+                    kitModel, copyPercussion(kitModel->selectedPercussion()));
+        topContainer->addWidget(duplicateButton);
+        duplicateButton->show();
+
+        topContainer->addSpace(3);
         moveupButton = new RkButton(topMenu);
         moveupButton->setType(RkButton::ButtonType::ButtonPush);
         moveupButton->setBackgroundColor(background());
@@ -164,7 +232,7 @@ GeonkickWidget* KitWidget::createTopMenu()
         movedownButton->show();
 
         // Midi channel
-        topContainer->addSpace(222);
+        topContainer->addSpace(130);
         auto label = new RkLabel(topMenu, "MIDI Ch.");
         label->setTextColor(textColor());
         label->setBackgroundColor(background());
@@ -221,6 +289,18 @@ GeonkickWidget* KitWidget::createTopMenu()
         label->setAlignment(Rk::Alignment::AlignCenter);
         label->show();
         topContainer->addWidget(label);
+
+        resetButton = new RkButton(topMenu);
+        resetButton->setType(RkButton::ButtonType::ButtonPush);
+        resetButton->setBackgroundColor(background());
+        resetButton->setImage(RK_RC_IMAGE(reset_kit_button), RkButton::State::Unpressed);
+        resetButton->setImage(RK_RC_IMAGE(reset_kit_button_hover), RkButton::State::UnpressedHover);
+        resetButton->setImage(RK_RC_IMAGE(reset_kit_button_hover), RkButton::State::PressedHover);
+        resetButton->setImage(RK_RC_IMAGE(reset_kit_button_on), RkButton::State::Pressed);
+        RK_ACT_BIND(resetButton, pressed, RK_ACT_ARGS(), kitModel, resetKit());
+        topContainer->addSpace(18, Rk::Alignment::AlignRight);
+        topContainer->addWidget(resetButton, Rk::Alignment::AlignRight);
+        resetButton->show();
 
         return topMenu;
 }

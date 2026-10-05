@@ -310,6 +310,7 @@ class DspProxy : public RkObject {
   std::string getPercussionName(int index) const;
   void copyToClipboard();
   void pasteFromClipboard();
+  bool hasClipboardContents() const;
   void setScaleFactor(double factor);
   double getScaleFactor() const;
   void waitPlayingReady();
@@ -350,6 +351,10 @@ class DspProxy : public RkObject {
               instrumentBufferUpdated(size_t id),
               RK_ARG_TYPE(size_t),
               RK_ARG_VAL(id));
+  RK_DECL_ACT(clipboardUpdated,
+              clipboardUpdated(),
+              RK_ARG_TYPE(),
+              RK_ARG_VAL());
 
   void setSettings(const std::string &key, const std::string &value);
   std::string getSettings(const std::string &key) const;

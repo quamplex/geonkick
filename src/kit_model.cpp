@@ -350,6 +350,22 @@ void KitModel::addNewPercussion()
         action modelUpdated();
 }
 
+void KitModel::resetKit()
+{
+        auto state = DspProxy::getDefaultKitState();
+        if (!dspProxy->setKitState(state)) {
+                GEONKICK_LOG_ERROR("can't reset kit state");
+                return;
+        }
+        if (!dspProxy->enablePercussion(0)) {
+                GEONKICK_LOG_ERROR("can't enable default percussion after resetting kit");
+                return;
+        }
+
+        loadModelData();
+        dspProxy->notifyUpdateGui();
+}
+
 void KitModel::copyPercussion(PercussionIndex index)
 {
         if (!isValidIndex(index))
@@ -370,6 +386,22 @@ void KitModel::copyPercussion(PercussionIndex index)
                 action instrumentAdded(model);
                 action modelUpdated();
         }
+}
+
+void KitModel::copySelectedPercussionToClipboard()
+{
+        if (!isValidIndex(selectedPercussion()))
+                return;
+        dspProxy->copyToClipboard();
+}
+
+void KitModel::pasteClipboardToSelectedPercussion()
+{
+        const auto index = selectedPercussion();
+        if (!isValidIndex(index))
+                return;
+        dspProxy->pasteFromClipboard();
+        dspProxy->notifyPercussionUpdated(instrumentId(index));
 }
 
 void KitModel::removePercussion(PercussionIndex index)

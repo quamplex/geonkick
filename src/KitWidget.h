@@ -57,6 +57,10 @@ class KitWidget: public GeonkickWidget
         KitModel *kitModel;
         RkButton *addButton;
         RkButton *removeButton;
+        RkButton *resetButton;
+        RkButton *copyButton;
+        RkButton *pasteButton;
+        RkButton *duplicateButton;
         RkButton *moveupButton;
         RkButton *movedownButton;
         RkContainer *instrumentsContainer;

@@ -1822,6 +1822,7 @@ std::string DspProxy::getKitUrl() const
 void DspProxy::copyToClipboard()
 {
         clipboardPercussion = getPercussionState();
+        action clipboardUpdated();
 }
 
 void DspProxy::pasteFromClipboard()
@@ -1837,7 +1838,14 @@ void DspProxy::pasteFromClipboard()
                 state->setMute(isPercussionMuted(currId));
                 state->setSolo(isPercussionSolo(currId));
                 setPercussionState(state);
+                clipboardPercussion.reset();
+                action clipboardUpdated();
         }
+}
+
+bool DspProxy::hasClipboardContents() const
+{
+        return clipboardPercussion != nullptr;
 }
 
 void DspProxy::notifyUpdateGraph()
