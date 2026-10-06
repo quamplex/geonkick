@@ -13,7 +13,7 @@
 
 ### Improvements
 
-- Update UI of the kit
+- New UI of the kit
 - Update layers mixer (enabling layes and selection of current layer done from this UI)
 - Update UI of the topbar (change "Controls" -> "Synth" tab)
 - New presets from @tonilink
@@ -25,6 +25,7 @@
 - Fix compiling with new version of LV2
 - Fix bezie button (set its correct state when loading first time the UI)
 - Fix envelope path label for some envelope types and global
+- Fix updating global controls
 - Some fixes to factory preset install paths
 - Fix performance for Redkite GUI toolkit (coalesce pending Paint events for the same object)
 
