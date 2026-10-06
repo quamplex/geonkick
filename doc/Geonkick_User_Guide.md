@@ -229,6 +229,9 @@ The instrument list has a maximum limit of 16 instruments and displays the instr
 - **"+" button (plus icon):** Adds a new instrument.
 - **"-" button (minus icon):** Removes the current instrument.
 - **Up/down arrow buttons:** Move the currently selected instrument up or down.
+- **Copy:** Copy instrument to clipboard.
+- **Paste:** Paste instrument from clipboard.
+- **Duplicate:** Duplicate an instrument (won't duplicate if there are already maximum number of instruments created)
 - **Left click:** Selects an instrument.
 - **Left double-click on the instrument name:** Edits the instrument name.
 - **Left double-click on the instrument waveform:** Plays the instrument.
@@ -241,6 +244,7 @@ The instrument list has a maximum limit of 16 instruments and displays the instr
 - **"M" button:** Mutes the current instrument.
 - **"S" button:** Solos the current instrument.
 - **Output channel:** Selects the audio output channel for the instrument.
+- **Reset:** Resets the kit, and adds only one default instrument
 
 #### Current Instrument
 
