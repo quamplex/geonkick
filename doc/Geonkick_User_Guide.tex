@@ -2,8 +2,8 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 %
-\documentclass[
-]{article}
+\documentclass[11pt]{article}
+\usepackage[margin=1in,headheight=22pt,headsep=20pt,footskip=30pt]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{iftex}
 \ifPDFTeX
@@ -37,6 +37,13 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\definecolor{GKBlue}{HTML}{18324B}
+\definecolor{GKAccent}{HTML}{D47736}
+\definecolor{GKInk}{HTML}{263238}
+\definecolor{GKMuted}{HTML}{61717D}
+\definecolor{GKLight}{HTML}{F1F4F6}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
@@ -61,29 +68,85 @@
 \urlstyle{same}
 \hypersetup{
   pdftitle={Geonkick User Guide},
-  hidelinks,
+  colorlinks=true,
+  linkcolor=GKBlue,
+  urlcolor=GKBlue,
+  citecolor=GKBlue,
   pdfcreator={LaTeX via pandoc}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em plus 0.1em minus 0.05em}
+\setlength{\emergencystretch}{4em}
+\setlength{\itemsep}{0.25em}
+\setlength{\topsep}{0.4em}
+\setcounter{tocdepth}{2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\bfseries\color{GKBlue}GEONKICK}
+\fancyhead[R]{\small\sffamily\color{GKMuted}USER GUIDE}
+\fancyfoot[C]{\small\sffamily\color{GKMuted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{GKAccent}\leaders\hrule height \headrulewidth\hfill}}
+
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{\z@}%
+  {-2.8ex plus -1ex minus -.2ex}{1.3ex plus .2ex}%
+  {\normalfont\Large\bfseries\sffamily\color{GKBlue}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{\z@}%
+  {-2.2ex plus -.8ex minus -.2ex}{0.9ex plus .2ex}%
+  {\normalfont\large\bfseries\sffamily\color{GKBlue}}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{\z@}%
+  {-1.8ex plus -.6ex minus -.2ex}{0.7ex plus .2ex}%
+  {\normalfont\normalsize\bfseries\sffamily\color{GKBlue}}}
+\makeatother
 
 \title{Geonkick User Guide}
 \author{Iurie Nistor}
 \date{}
 
 \begin{document}
-\maketitle
+\hypersetup{pageanchor=false}
+\makeatletter
+\begin{titlepage}
+\thispagestyle{empty}
+\color{GKInk}
+\vspace*{1.2cm}
+\noindent\textcolor{GKAccent}{\rule{3.2cm}{3pt}}
 
+\vspace{1.4cm}
+\begin{flushleft}
+{\sffamily\bfseries\fontsize{32}{38}\selectfont\color{GKBlue}\@title\par}
+\vspace{0.5cm}
+{\sffamily\Large\color{GKMuted}Author: Iurie Nistor\par}
+\end{flushleft}
+
+\vspace{1.3cm}
+\noindent\colorbox{GKLight}{%
+  \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \vspace{0.35cm}
+    \textbf{License:} This work (including all images it uses) is released
+    under
+    \href{https://creativecommons.org/publicdomain/zero/1.0/deed.en}{CC0 1.0
+    Universal (CC0 1.0) Public Domain Dedication}.\par
+    \vspace{0.25cm}
+    \textbf{Version:} 3.9.0\par
+    \vspace{0.25cm}
+    \textbf{Website:} \url{https://quamplex.com/geonkick}
+    \vspace{0.35cm}
+  }}
+\vfill
+\noindent\textcolor{GKAccent}{\rule{\textwidth}{1pt}}
+\end{titlepage}
+\makeatother
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+\small
 \tableofcontents
-\newpage
-
-\textbf{Author:} Iurie Nistor
-
-\textbf{License:} This work (including all images it uses) is released
-under
-\href{https://creativecommons.org/publicdomain/zero/1.0/deed.en}{CC0 1.0
-Universal (CC0 1.0) Public Domain Dedication}.
-
-\textbf{Version:} 3.9.0
-
-\textbf{Website:} \url{https://quamplex.com/geonkick}
+\normalsize
+\clearpage
+\pagenumbering{arabic}
 
 \section{Introduction}\label{introduction}
 
@@ -130,11 +193,12 @@ can be directed to the audio output of any of the 16 stereo audio output
 channels. Given that the instrument is monophonic, the left and right
 channels of a stereo channel are identical.
 
+\clearpage
 \section{Block diagram}\label{block-diagram}
 
-\begin{figure}
+\begin{figure}[H]
 \centering
-\includegraphics{diagram.png}
+\includegraphics[width=0.8\linewidth]{diagram.png}
 \caption{Diagram}
 \end{figure}
 

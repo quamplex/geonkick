@@ -11,9 +11,9 @@ configure_file(${GKICK_DOC_DIR}/diagram.png ${CMAKE_CURRENT_BINARY_DIR}/diagram.
 
 add_custom_command(
     OUTPUT ${PDF_OUTPUT_FILE}
-    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=nonstopmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
-    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=nonstopmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
-    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=nonstopmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
+    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=batchmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
+    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=batchmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
+    COMMAND ${PDFLATEX_EXECUTABLE} -interaction=batchmode -halt-on-error -output-directory=${CMAKE_CURRENT_BINARY_DIR} ${TEX_FILE}
     DEPENDS ${TEX_FILE} ${CMAKE_CURRENT_BINARY_DIR}/diagram.png
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating PDF documentation"
