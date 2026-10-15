@@ -132,4 +132,6 @@ the same steps as mentioned above.
 
 ## Documentation
 
- [doc/Geonkick_User_Guide.md](doc/Geonkick_User_Guide.md)
+The user guide source is [doc/Geonkick_User_Guide.tex](doc/Geonkick_User_Guide.tex).
+To generate its PDF, configure with `-DGKICK_DOCUMENTATION=ON` and build the
+`GenerateDocumentation` target. A LaTeX installation with `pdflatex` is required.
