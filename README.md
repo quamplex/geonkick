@@ -133,5 +133,13 @@ the same steps as mentioned above.
 ## Documentation
 
 The user guide source is [doc/Geonkick_User_Guide.tex](doc/Geonkick_User_Guide.tex).
-To generate its PDF, configure with `-DGKICK_DOCUMENTATION=ON` and build the
-`GenerateDocumentation` target. A LaTeX installation with `pdflatex` is required.
+To generate the PDF and Markdown versions, install `pdflatex` (from a LaTeX
+distribution) and [Pandoc](https://pandoc.org/), then run these commands from
+the repository root:
+
+    cmake -S . -B build -DGKICK_DOCUMENTATION=ON
+    cmake --build build --target GenerateDocumentation
+
+The generated files are placed in `build/doc/`. The PDF filename includes the
+project version, for example `Geonkick_User_Guide-3.9.0.pdf`; the Markdown file
+is `Geonkick_User_Guide.md`.
