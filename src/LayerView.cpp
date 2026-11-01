@@ -87,16 +87,16 @@ LayerView::LayerView(GeonkickWidget *parent,
 
 void LayerView::createView()
 {
-        int xPos = 2;
+        int xPos = 10;
         nameLabel = new LayerNameLabel(this, layerNameLabel);
         nameLabel->setBackgroundColor(background());
         nameLabel->setPosition(xPos, 1 + (height() - nameLabel->height()) / 2);
         nameLabel->show();
 
-        xPos += nameLabel->width() + 3;
+        xPos += nameLabel->width() + 10;
         limiter = new GeonkickLimiter(this);
         constexpr int limiterHeight = 10;
-        limiter->setSize(130, limiterHeight);
+        limiter->setSize(110, limiterHeight);
         limiter->setPosition(xPos, 1 + (height() - limiterHeight) / 2);
 
         enableButton = new GeonkickButton(this);
