@@ -106,7 +106,7 @@ void InstrumentWaveform::drawInstrumentWaveform()
                 const auto timeOrigin = currentEnvelope->getTimeOrigin();
                 auto waveformImage = std::make_shared<RkImage>(waveformSize.width(), waveformSize.height());
                 RkPainter painter(waveformImage.get());
-                RkPen pen(RkColor(59, 130, 4, 255));
+                RkPen pen(RkColor(76, 170, 92, 210));
                 painter.setPen(pen);
                 std::vector<RkRealPoint> waveformPoints;
                 const auto instrumentBuffer = kickBuffer;
@@ -147,7 +147,7 @@ void InstrumentWaveform::drawInstrumentWaveform()
                                         break;
                                 y = instrumentWaveformSize.height() - value;
                                 ymin = std::min(ymin, y);
-                                ymax = std::min(ymax, y);
+                                ymax = std::max(ymax, y);
                         }
 
                         if (i - i0 > 4) {

@@ -73,7 +73,6 @@ void BufferView::drawGraph()
         if (bufferData.empty())
                 return;
 
-        std::vector<RkRealPoint> graphPoints;
         int x = 0;
         double kY = height() / 2;
         float yScale = 1.0f;
@@ -82,13 +81,15 @@ void BufferView::drawGraph()
         if (max > 1e-5)
                 yScale = 1.0f / max;
         int graphWidth = width();
+        std::vector<RkRealPoint> graphPoints;
+        graphPoints.reserve(bufferData.size());
         for (const auto &val: bufferData) {
                 double y =  kY * (1.0f - yScale * val);
                 graphPoints.emplace_back(RkRealPoint(x / graphWidth, y));
                 x++;
         }
 
-        RkPen pen = painter.pen();
+        auto pen = painter.pen();
         pen.setColor(graphColor);
         pen.setWidth(1);
         painter.setPen(pen);
