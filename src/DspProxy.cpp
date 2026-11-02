@@ -2119,3 +2119,20 @@ void DspProxy::waitPlayingReady()
 {
         return geonkick_wait_playing_ready();
 }
+
+void DspProxy::takeSnapshot()
+{
+        kitSnapshot = getKitState();
+}
+
+void DspProxy::restoreSnapshot()
+{
+        if (kitSnapshot) {
+                snapshotCurrentId = currentPercussion();
+                setKitState(kitSnapshot);
+                if (isPercussionEnabled(snapshotCurrentId))
+                        setCurrentPercussion(snapshotCurrentId);
+                 notifyKitUpdated();
+                 notifyUpdateGui();
+        }
+}

@@ -1,3 +1,13 @@
+## [3.10.0] (not released)
+
+### Features
+
+- Implement state store / restore snapshot
+
+### Improvements
+
+- Move reset button at the end of the topabar to avoid accidental pressing.
+
 ## [3.9.0]
 
 ### Features

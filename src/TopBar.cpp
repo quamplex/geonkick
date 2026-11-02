@@ -373,9 +373,11 @@ void TopBar::createMainMenu(RkContainer *layout)
                     kitButton, setPressed(view == ViewState::View::Kit));
         layout->addWidget(kitButton);
 
-        createSnapshotControls(layout);
-
 #endif // GEONKICK_SINGLE
+
+#ifndef GEONKICK_BASIC_VERSION
+        createSnapshotControls(layout);
+#endif // GEONKICK_BASIC_VERSION
 }
 
 RkWidget* TopBar::createInstrumentNameLabel()

@@ -382,6 +382,8 @@ class DspProxy : public RkObject {
                               size_t channels,
                               const std::string &filePath);
   DspProxyHumanizer* getHumanizer() const;
+  void takeSnapshot();
+  void restoreSnapshot();
 
 protected:
   void setupPaths();
@@ -434,6 +436,8 @@ private:
   std::unique_ptr<UiSettings> uiSettings;
   int sampleRate;
   double scaleFactor;
+  std::unique_ptr<KitState> kitSnapshot;
+  int snapshotCurrentId{0};
 };
 
 #endif // DSP_PROXY_H

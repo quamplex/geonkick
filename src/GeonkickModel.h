@@ -33,7 +33,6 @@ class KitModel;
 class PresetBrowserModel;
 class OscillatorModel;
 class LayersModel;
-class KitState;
 
 class GeonkickModel : public RkObject {
  public:
@@ -62,8 +61,6 @@ class GeonkickModel : public RkObject {
         KitModel *kitModel;
         PresetBrowserModel* presetModel;
         LayersModel *layersModel;
-        std::unique_ptr<KitState> kitSnapshot;
-        size_t curInstrumentId{0};
 };
 
 #endif // GEONKICK_MODEL_H
