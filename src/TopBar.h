@@ -66,6 +66,7 @@ class TopBar : public GeonkickWidget
         void onInstrumentChannelUpdated(PercussionModel *model, int index);
         void onInstrumentMidiChannelUpdated(PercussionModel *model, int index);
         void bindInstrumentChannelUpdates(PercussionModel *model);
+        void createSnapshotControls(RkContainer* container);
 
         GeonkickModel *geonkickModel;
         KitModel *kitModel;

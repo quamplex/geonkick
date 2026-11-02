@@ -40,7 +40,6 @@
 #include "RkLineEdit.h"
 
 RK_DECLARE_IMAGE_RC(separator);
-RK_DECLARE_IMAGE_RC(logo);
 RK_DECLARE_IMAGE_RC(play);
 RK_DECLARE_IMAGE_RC(play_pressed);
 RK_DECLARE_IMAGE_RC(play_hover);
@@ -70,6 +69,12 @@ RK_DECLARE_IMAGE_RC(control_arrow_up_pressed);
 RK_DECLARE_IMAGE_RC(control_arrow_down);
 RK_DECLARE_IMAGE_RC(control_arrow_down_hover);
 RK_DECLARE_IMAGE_RC(control_arrow_down_pressed);
+RK_DECLARE_IMAGE_RC(snapshot);
+RK_DECLARE_IMAGE_RC(snapshot_hover);
+RK_DECLARE_IMAGE_RC(snapshot_active);
+RK_DECLARE_IMAGE_RC(restore_snapshot);
+RK_DECLARE_IMAGE_RC(restore_snapshot_hover);
+RK_DECLARE_IMAGE_RC(restore_snapshot_active);
 
 TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
@@ -94,17 +99,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
         auto mainLayout = new RkContainer(this);
         mainLayout->setSize(size());
 
-        auto logo = new RkLabel(this);
-        logo->setBackgroundColor(background());
-        RkImage image(22, 22, RK_IMAGE_RC(logo));
-        image.grayscaleImage();
-        logo->setSize(image.width(), image.height());
-        logo->setImage(image);
-        logo->show();
-        mainLayout->addWidget(logo);
-
         // Setting button
-        addSeparator(mainLayout);
         settingsButton = new GeonkickButton(this);
         settingsButton->setType(RkButton::ButtonType::ButtonUncheckable);
         settingsButton->setFixedSize(16, 16);
@@ -264,6 +259,20 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickModel *model)
 		    tuneAudioOutput(geonkickModel->getDspProxy()->currentPercussion(), b));
         mainLayout->addWidget(tuneCheckbox);
 
+        addSeparator(mainLayout);
+        auto resetButton = new GeonkickButton(this);
+        resetButton->setType(RkButton::ButtonType::ButtonPush);
+        resetButton->setFixedSize(33, 18);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset)),
+                              RkButton::State::Unpressed);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_hover)),
+                              RkButton::State::UnpressedHover);
+        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_active)),
+                              RkButton::State::Pressed);
+        resetButton->show();
+        RK_ACT_BIND(resetButton, pressed, RK_ACT_ARGS(), this, resetToDefault());
+        mainLayout->addWidget(resetButton);
+
         RK_ACT_BIND(kitModel,
                     modelUpdated,
                     RK_ACT_ARGS(),
@@ -363,21 +372,10 @@ void TopBar::createMainMenu(RkContainer *layout)
         RK_ACT_BIND(viewState(), mainViewChanged, RK_ACT_ARGS(ViewState::View view),
                     kitButton, setPressed(view == ViewState::View::Kit));
         layout->addWidget(kitButton);
-#endif // GEONKICK_SINGLE
 
-        addSeparator(layout);
-        auto resetButton = new GeonkickButton(this);
-        resetButton->setType(RkButton::ButtonType::ButtonPush);
-        resetButton->setFixedSize(33, 18);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset)),
-                              RkButton::State::Unpressed);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_hover)),
-                              RkButton::State::UnpressedHover);
-        resetButton->setImage(RkImage(resetButton->size(), RK_IMAGE_RC(reset_active)),
-                              RkButton::State::Pressed);
-        resetButton->show();
-        RK_ACT_BIND(resetButton, pressed, RK_ACT_ARGS(), this, resetToDefault());
-        layout->addWidget(resetButton);
+        createSnapshotControls(layout);
+
+#endif // GEONKICK_SINGLE
 }
 
 RkWidget* TopBar::createInstrumentNameLabel()
@@ -386,7 +384,7 @@ RkWidget* TopBar::createInstrumentNameLabel()
         instrumentName->setBackgroundColor({44, 44, 44});
         instrumentName->setTextColor({180, 180, 180});
         instrumentName->setCursorColor({180, 180, 180});
-        instrumentName->setSize(100, 20);
+        instrumentName->setSize(80, 20);
         instrumentName->show();
         RK_ACT_BIND(instrumentName,
                     editingFinished,
@@ -400,6 +398,46 @@ RkWidget* TopBar::createInstrumentNameLabel()
                     onInstrumentNameEscapePressed());
 
         return instrumentName;
+}
+
+void TopBar::createSnapshotControls(RkContainer* container)
+{
+        addSeparator(container);
+        auto snapshotButton = new GeonkickButton(this);
+        snapshotButton->setType(RkButton::ButtonType::ButtonPush);
+        snapshotButton->setFixedSize(33, 18);
+        snapshotButton->setImage(RK_RC_IMAGE(snapshot),
+                                 RkButton::State::Unpressed);
+        snapshotButton->setImage(RK_RC_IMAGE(snapshot_hover),
+                                 RkButton::State::UnpressedHover);
+        snapshotButton->setImage(RK_RC_IMAGE(snapshot_active),
+                                 RkButton::State::Pressed);
+        snapshotButton->show();
+        container->addWidget(snapshotButton);
+
+        container->addSpace(3);
+        auto restoreSnapshotButton = new GeonkickButton(this);
+        restoreSnapshotButton->setType(RkButton::ButtonType::ButtonPush);
+        restoreSnapshotButton->setFixedSize(33, 18);
+        restoreSnapshotButton->setImage(RK_RC_IMAGE(restore_snapshot),
+                                 RkButton::State::Unpressed);
+        restoreSnapshotButton->setImage(RK_RC_IMAGE(restore_snapshot_hover),
+                                 RkButton::State::UnpressedHover);
+        restoreSnapshotButton->setImage(RK_RC_IMAGE(restore_snapshot_active),
+                                 RkButton::State::Pressed);
+        restoreSnapshotButton->show();
+        container->addWidget(restoreSnapshotButton);
+
+        /*RK_ACT_BIND(snapshotButton,
+                    pressed,
+                    RK_ACT_ARGS(),
+                    kitModel,
+                    takeSnapshot());
+        RK_ACT_BIND(restoreSnapshotButton,
+                    pressed,
+                    RK_ACT_ARGS(),
+                    kitModel,
+                    restoreSnapshot());*/
 }
 
 void TopBar::setPresetName(const std::string &name)

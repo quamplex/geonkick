@@ -16,9 +16,8 @@ lock16x16.png
 lock16x16_hover.png
 lock16x16_on.png
 
-# === Top Menu ===
+# === TopBar Menu ===
 
-logo.png
 separator.png
 topbar_synth_tab.png
 topbar_synth_tab_hover.png
@@ -47,6 +46,12 @@ topmenu_samples_off.png
 topmenu_settings_active.png
 topmenu_settings_hover.png
 topmenu_settings_off.png
+snapshot.png
+snapshot_hover.png
+snapshot_active.png
+restore_snapshot.png
+restore_snapshot_hover.png
+restore_snapshot_active.png
 
 # === Preset Navigator ==
 presetnav_bk.png

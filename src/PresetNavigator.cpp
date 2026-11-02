@@ -63,7 +63,7 @@ PresetNavigator::PresetNavigator(GeonkickWidget *parent,
         , presetFolderName{new PresetNameLabel(this)}
         , presetName{new PresetNameLabel(this)}
 {
-        setFixedSize(232, 23);
+        setFixedSize(225, 23);
         setBackgroundColor({30, 30, 30});
         auto mainLayout = new RkContainer(this);
         mainLayout->setSize(size());
