@@ -31,7 +31,7 @@ class PercussionState;
 
 class KitState {
  public:
-        KitState();
+        KitState(bool defaultInstrument = true);
         bool open(const std::string &fileName);
         bool save(const std::string &fileName);
         bool fromJson(const std::string &jsonData);
@@ -46,6 +46,7 @@ class KitState {
         void addPercussion(std::unique_ptr<PercussionState> instrument);
         const PercussionState* getPercussion(size_t id) const;
         const std::vector<std::unique_ptr<PercussionState>>& instruments() const;
+        ~KitState();
 
  protected:
         bool parseInstruments(const rapidjson::Value &instrumentsArray);

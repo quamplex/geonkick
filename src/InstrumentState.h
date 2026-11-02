@@ -105,6 +105,7 @@ class PercussionState
  public:
         using DistortionType = DistortionInfo::DistortionType;
         PercussionState();
+        ~PercussionState();
         bool loadFile(const std::string &file);
         bool loadData(const std::string &data);
         bool loadObject(const rapidjson::Value &obj);

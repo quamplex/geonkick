@@ -428,16 +428,16 @@ void TopBar::createSnapshotControls(RkContainer* container)
         restoreSnapshotButton->show();
         container->addWidget(restoreSnapshotButton);
 
-        /*RK_ACT_BIND(snapshotButton,
+        RK_ACT_BIND(snapshotButton,
                     pressed,
                     RK_ACT_ARGS(),
-                    kitModel,
+                    geonkickModel,
                     takeSnapshot());
         RK_ACT_BIND(restoreSnapshotButton,
                     pressed,
                     RK_ACT_ARGS(),
-                    kitModel,
-                    restoreSnapshot());*/
+                    geonkickModel,
+                    restoreSnapshot());
 }
 
 void TopBar::setPresetName(const std::string &name)

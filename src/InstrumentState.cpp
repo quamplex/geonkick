@@ -148,6 +148,8 @@ PercussionState::PercussionState()
         initOscillators();
 }
 
+PercussionState::~PercussionState() = default;
+
 bool PercussionState::loadFile(const std::string &file)
 {
         std::filesystem::path filePath(file);

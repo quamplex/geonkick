@@ -499,7 +499,7 @@ void DspProxy::setOscillatorState(DspProxy::Layer layer,
 
 std::unique_ptr<KitState> DspProxy::getKitState() const
 {
-        auto kit = std::make_unique<KitState>();
+        auto kit = std::make_unique<KitState>(false);
         kit->setName(getKitName());
         kit->setAuthor(getKitAuthor());
         kit->setUrl(getKitUrl());

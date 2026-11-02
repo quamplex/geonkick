@@ -25,13 +25,16 @@
 #include "kit_state.h"
 
 
-KitState::KitState()
+KitState::KitState(bool defaultInstrument)
         : kitAppVersion{GEONKICK_VERSION}
         , kitName{"Default"}
         , kitAuthor{"Unknown"}
 {
-        addPercussion(DspProxy::getDefaultPercussionState());
+        if (defaultInstrument)
+                addPercussion(DspProxy::getDefaultPercussionState());
 }
+
+KitState::~KitState() = default;
 
 bool KitState::open(const std::string &fileName)
 {

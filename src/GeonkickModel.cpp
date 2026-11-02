@@ -27,6 +27,7 @@
 #include "preset_browser_model.h"
 #include "OscillatorModel.h"
 #include "LayersModel.h"
+#include "kit_state.h"
 
 GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
         : RkObject(parent)
@@ -111,4 +112,21 @@ bool GeonkickModel::isBasic() const
 #else
         return false;
 #endif // GEONKICK_BASIC_VERSION
+}
+
+void GeonkickModel::takeSnapshot()
+{
+        kitSnapshot = dspProxy->getKitState();
+}
+
+void GeonkickModel::restoreSnapshot()
+{
+        if (kitSnapshot) {
+                curInstrumentId = dspProxy->currentPercussion();
+                dspProxy->setKitState(kitSnapshot);
+                if (curInstrumentId < kitSnapshot->instruments().size())
+                        dspProxy->setCurrentPercussion(curInstrumentId);
+                dspProxy->notifyKitUpdated();
+                dspProxy->notifyUpdateGui();
+        }
 }
