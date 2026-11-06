@@ -2,7 +2,7 @@
  * File name: RkPlatformX.cpp
  * Project: Redkite (A small GUI toolkit)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Redkite.
  *
@@ -24,12 +24,17 @@
 #include "RkPlatform.h"
 
 RkNativeWindowInfo
-rk_from_native_x11(Display* display, int screenNumber, Window window)
+rk_from_native_x11(Display* display, int screenNumber,
+                   Window window,
+                   std::string_view name,
+                   std::string_view className)
 {
         RkNativeWindowInfo info;
         info.display = display;
         info.screenNumber = screenNumber;
         info.window = window;
+	info.name = name;
+        info.className = className;
         return info;
 }
 
@@ -39,4 +44,3 @@ RkWindowId rk_id_from_x11(Window window)
         id.id = window;
         return id;
 }
-

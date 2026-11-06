@@ -133,6 +133,11 @@ bool RkWindowX::init()
                 return false;
         }
 
+	XClassHint hint;
+	hint.res_name = parentWindowInfo.name.data();
+	hint.res_class = parentWindowInfo.className.data();
+	XSetClassHint(xDisplay, xWindow, &hint);
+
         deleteWindowAtom = XInternAtom(display(), "WM_DELETE_WINDOW", True);
         XSetWMProtocols(xDisplay, xWindow, &deleteWindowAtom, 1);
         createCanvasInfo();
@@ -169,10 +174,27 @@ const RkNativeWindowInfo* RkWindowX::nativeWindowInfo() const
         return windowInfo ? windowInfo.get() : nullptr;
 }
 
-void RkWindowX::setTitle(const std::string &title)
+void RkWindowX::setTitle(const std::string& title)
 {
-        if (isWindowCreated() && !title.empty())
-                XStoreName(xDisplay, xWindow, title.c_str());
+    if (isWindowCreated())
+            XStoreName(xDisplay, xWindow, title.c_str());
+}
+
+std::string RkWindowX::getTitle() const
+{
+        if (!isWindowCreated())
+                return {};
+
+        char* windowName = nullptr;
+        if (!XFetchName(xDisplay, xWindow, &windowName)
+            || !windowName) {
+                return {};
+        }
+
+        std::string title(windowName);
+        XFree(windowName);
+
+        return title;
 }
 
 bool RkWindowX::isWindowCreated() const

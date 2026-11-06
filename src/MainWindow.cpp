@@ -42,27 +42,13 @@ constexpr int MAIN_WINDOW_HEIGHT = 690;
 constexpr int MAIN_WINDOW_HEIGHT = 715;
 #endif // GEONKICK_SINGLE
 
-MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const std::string &preset)
-        : GeonkickWidget(app)
-        , dspProxy{dsp}
-        , topBar{nullptr}
-        , presetName{preset}
-        , geonkickModel{new GeonkickModel(this, dspProxy)}
-{
-        setTitle(Geonkick::applicationName);
-        setScaleFactor(dspProxy->getScaleFactor());
-        createViewState();
-        setFixedSize(MAIN_WINDOW_WIDTH + (GeonkickConfig().isShowSidebar() ? 313 : 0),
-                     MAIN_WINDOW_HEIGHT);
-        createShortcuts();
-        createUi();
-}
-
-MainWindow::MainWindow(RkMain& app, DspProxy *dsp, const RkNativeWindowInfo &info)
+MainWindow::MainWindow(RkMain& app,
+                       DspProxy *dsp,
+                       const RkNativeWindowInfo &info,
+                       const std::string &preset)
         : GeonkickWidget(app, info)
         , dspProxy{dsp}
-        , topBar{nullptr}
-        , presetName{std::string()}
+        , presetName{preset}
         , geonkickModel{new GeonkickModel(this, dspProxy)}
 {
         setTitle(Geonkick::applicationName);

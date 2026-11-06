@@ -65,7 +65,7 @@ public:
         virtual ~RkSystemWindow();
         void show(bool b = true);
         void setTitle(const std::string &title);
-        const std::string& title() const;
+        std::string title() const;
         const RkNativeWindowInfo* nativeWindowInfo() const;
         RkCanvasInfo* getCanvasInfo() const override;
         RkImage& getImage();
@@ -112,7 +112,6 @@ private:
 #else // GNU/Linux
         std::unique_ptr<RkWindowX> platformWindow;
 #endif // GNU/Linux
-        std::string windowTitle;
         RkSize windowSize;
         RkColor windowBackground;
         RkImage systemWindowImage;
