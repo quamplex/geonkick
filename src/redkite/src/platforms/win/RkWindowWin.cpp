@@ -70,6 +70,7 @@ bool RkWindowWin::hasParent() const
 bool RkWindowWin::init()
 {
         RK_LOG_DEBUG("hasParent(): " << hasParent());
+        auto name = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
         auto className = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
         RK_LOG_DEBUG("className: " << className);
         auto winStyle = hasParent() ? (WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE) : (WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
@@ -122,10 +123,11 @@ void RkWindowWin::show(bool b)
 const RkNativeWindowInfo* RkWindowWin::nativeWindowInfo()
 {
         if (isWindowCreated()) {
-                windowInfo            = std::make_unique<RkNativeWindowInfo>();
-                windowInfo->className = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
-                windowInfo->window    = windowHandle.id;
-                windowInfo->instance  = hasParent() ? parentWindowInfo.instance : rk_win_api_instance();
+                windowInfo              = std::make_unique<RkNativeWindowInfo>();
+                windowInfo->name        = hasParent() ? parentWindowInfo.name : rk_win_api_name();
+                windowInfo->className   = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
+                windowInfo->window      = windowHandle.id;
+                windowInfo->instance    = hasParent() ? parentWindowInfo.instance : rk_win_api_instance();
                 windowInfo->scaleFactor = scaleFactor;
                 return windowInfo.get();
         }

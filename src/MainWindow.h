@@ -35,10 +35,8 @@ class MainWindow : public GeonkickWidget
 public:
         explicit MainWindow(RkMain& app,
                             DspProxy *dsp,
-                            const std::string &preset = std::string());
-        explicit MainWindow(RkMain& app,
-                            DspProxy *dsp,
-                            const RkNativeWindowInfo &info);
+                            const RkNativeWindowInfo &info,
+                            const std::string &preset = {});
         ~MainWindow() = default;
         static RkSize getWindowSize();
         RK_DECL_ACT(onScaleFactor,
@@ -61,7 +59,7 @@ private:
         void createUi();
 
         DspProxy *dspProxy;
-        TopBar *topBar;
+        TopBar *topBar{nullptr};
         std::string presetName;
         std::string currentWorkingPath;
         GeonkickModel *geonkickModel;

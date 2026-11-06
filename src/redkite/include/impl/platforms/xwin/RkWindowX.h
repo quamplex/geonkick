@@ -43,6 +43,7 @@ class RkWindowX {
         void show(bool b);
         const RkNativeWindowInfo* nativeWindowInfo() const;
         void setTitle(const std::string &title);
+        std::string getTitle() const;
         Display* display() const;
         RkSize size() const;
         void setSize(const RkSize &size);

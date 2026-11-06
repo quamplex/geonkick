@@ -25,6 +25,7 @@
 #include "DspProxy.h"
 
 #include "RkMain.h"
+#include "RkPlatform.h"
 
 #ifdef GEONKICK_OS_GNU
 #include <sys/mman.h>
@@ -73,8 +74,15 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
         }
 
-        // The main app takes the ownership of the main window.
-        auto mainWindow = new MainWindow(mainApp, dspProxy.get(), preset);
+	RkNativeWindowInfo info;
+	info.name = Geonkick::name;
+        info.className = Geonkick::applicationName;
+
+	// The main app takes the ownership of the main window.
+        auto mainWindow = new MainWindow(mainApp,
+                                         dspProxy.get(),
+                                         info,
+                                         preset);
         mainWindow->show();
 
         auto res = mainApp.exec();

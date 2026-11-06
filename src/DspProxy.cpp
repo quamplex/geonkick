@@ -1953,7 +1953,7 @@ bool DspProxy::moveOrdrepedPercussionId(int index, int n)
 void DspProxy::loadPresets()
 {
         std::unordered_set<std::string> prestsPaths;
-        auto presetsPathSufix = std::filesystem::path(GEONKICK_APP_NAME) / "presets";
+        auto presetsPathSufix = std::filesystem::path(GEONKICK_NAME) / "presets";
         std::filesystem::path presetsPath = getSettings("GEONKICK_CONFIG/USER_PRESETS_PATH");
         prestsPaths.insert(presetsPath.string());
         prestsPaths.insert(DesktopPaths().getFactoryPresetsPath().string());

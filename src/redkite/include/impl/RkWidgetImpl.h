@@ -54,7 +54,7 @@ class RkWidget::RkWidgetImpl : public RkObject::RkObjectImpl {
         void setVisible(bool b);
 	bool isVisible() const;
         void setTitle(const std::string &title);
-        const std::string& title() const;
+        std::string title() const;
         bool isClose() const;
         void event(RkEvent *event) override;
         void setSize(const RkSize &size);
@@ -108,7 +108,6 @@ protected:
         RK_DECALRE_INTERFACE_PTR(RkWidget);
         bool topWidget;
         RkSystemWindow* systemWindow;
-        std::string widgetTitle;
         bool widgetClosed;
         RkSize widgetMinimumSize;
         RkSize widgetMaximumSize;

@@ -62,7 +62,7 @@ class RkWidget: public RkObject, public RkCanvas {
         void show(bool b = true);
         void hide();
         void setTitle(const std::string &title);
-        const std::string& title() const;
+        std::string title() const;
         bool isClose() const;
         RkWidget* parentWidget() const;
         void setSize(int w, int h);

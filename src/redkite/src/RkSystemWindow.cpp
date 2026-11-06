@@ -69,14 +69,13 @@ RkSystemWindow::~RkSystemWindow()
 
 void RkSystemWindow::setTitle(const std::string &title)
 {
-        platformWindow->setTitle(windowTitle);
+        platformWindow->setTitle(title);
 }
 
-const std::string& RkSystemWindow::title() const
+std::string RkSystemWindow::title() const
 {
-        return windowTitle;
+        return platformWindow->getTitle();
 }
-
 
 void RkSystemWindow::show(bool b)
 {

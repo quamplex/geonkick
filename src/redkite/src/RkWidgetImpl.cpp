@@ -134,14 +134,12 @@ bool RkWidget::RkWidgetImpl::isVisible() const
 
 void RkWidget::RkWidgetImpl::setTitle(const std::string &title)
 {
-        widgetTitle = title;
-        if (isTopWidget())
-                systemWindow->setTitle(widgetTitle);
+        systemWindow->setTitle(title);
 }
 
-const std::string& RkWidget::RkWidgetImpl::title() const
+std::string RkWidget::RkWidgetImpl::title() const
 {
-        return widgetTitle;
+        return systemWindow->title();
 }
 
 bool RkWidget::RkWidgetImpl::isClose() const

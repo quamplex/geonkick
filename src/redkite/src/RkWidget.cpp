@@ -119,7 +119,7 @@ void RkWidget::setTitle(const std::string &title)
         impl_ptr->setTitle(title);
 }
 
-const std::string& RkWidget::title() const
+std::string RkWidget::title() const
 {
         return impl_ptr->title();
 }

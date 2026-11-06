@@ -2,7 +2,7 @@
  * File name: RkPlatform.h
  * Project: Redkite (A small GUI toolkit)
  *
- * Copyright (C) 2019 Iurie Nistor 
+ * Copyright (C) 2019 Iurie Nistor
  *
  * This file is part of Redkite.
  *
@@ -42,17 +42,22 @@ class RkNativeWindowInfo {
          : window(arg)
         , instance{}
         , scaleFactor{1.0}
-        {}
+        , name{"redkite"}
+        , className{"Redkite"}{}
         ~RkNativeWindowInfo() = default;
         HWND window;
         HINSTANCE instance;
 	double scaleFactor;
+        std::string name;
         std::string className;
 };
 
 HINSTANCE rk_win_api_instance();
 LPCSTR rk_win_api_class_name();
-RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance, LPCSTR className);
+RkNativeWindowInfo rk_from_native_win(HWND window,
+                                      HINSTANCE instance,
+                                      LPCSTR name,
+                                      LPCSTR className);
 RkWindowId rk_id_from_win(HWND window);
 Rk::Key rk_convertKey(unsigned int winKey);
 void rk_updateKeyModifiers(Rk::Key key, RkEvent::Type type);
@@ -66,6 +71,7 @@ void rk_processSystemEvent(RkEventQueue *eventQueue, std::unique_ptr<RkEvent> ev
 #elif RK_OS_MAC
 #else // X11 as default
 #include <X11/Xlib.h>
+#include <string_view>
 
 struct RkWindowId {
         Window id;
@@ -81,17 +87,23 @@ class RkNativeWindowInfo
         display{nullptr}
         , screenNumber{0}
         , window{0}
-        , scaleFactor{1.0}{}
+        , scaleFactor{1.0}
+       	, name{"redkite"}
+	, className{"Redkite"}{}
         ~RkNativeWindowInfo() = default;
         Display* display;
         int screenNumber;
         Window window;
         double scaleFactor;
+        std::string name;
+	std::string className;
 };
 
 RkNativeWindowInfo rk_from_native_x11(Display* display,
                                       int screenNumber,
-                                      Window window);
+                                      Window window,
+                                      std::string_view name,
+                                      std::string_view className);
 RkWindowId rk_id_from_x11(Window window);
 
 #endif // X11

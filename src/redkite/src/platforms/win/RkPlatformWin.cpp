@@ -34,7 +34,8 @@
 
 #include <windowsx.h>
 
-static std::string rk_winApiClassName;
+static std::string rk_winApiName{"redkite"};
+static std::string rk_winApiClassName{"Redkite"};
 static HINSTANCE rk_winApiInstance = nullptr;
 
 HINSTANCE rk_win_api_instance()
@@ -43,16 +44,25 @@ HINSTANCE rk_win_api_instance()
         return rk_winApiInstance;
 }
 
+LPCSTR rk_win_api_name()
+{
+        RK_LOG_DEBUG("rk_winApiName: " << rk_winApiName);
+        return rk_winApiName;
+}
+
 LPCSTR rk_win_api_class_name()
 {
         RK_LOG_DEBUG("rk_winApiClassName: " << rk_winApiClassName);
         return rk_winApiClassName.c_str();
 }
 
-RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance, LPCSTR className)
+RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance,
+                                      LPCSTR name,
+                                      LPCSTR className)
 {
         RkNativeWindowInfo info;
         info.instance = instance ? instance : rk_winApiInstance;
+        info.name = name ? className : rk_winApiName;
         info.className = className ? className : rk_winApiClassName;
         info.window = window;
         return info;
