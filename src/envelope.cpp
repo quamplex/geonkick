@@ -929,3 +929,12 @@ double Envelope::getValueOrigin() const
         return res->second.valueOrigin;
 }
 
+void Envelope::setGridMode(GridMode mode)
+{
+        gridMode = mode;
+}
+
+Envelope::GridMode Envelope::getGridMode() const
+{
+        return gridMode;
+}

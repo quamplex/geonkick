@@ -33,6 +33,7 @@ class KitModel;
 class PresetBrowserModel;
 class OscillatorModel;
 class LayersModel;
+class RkTimer;
 
 class GeonkickModel : public RkObject {
  public:
@@ -54,13 +55,23 @@ class GeonkickModel : public RkObject {
         bool isBasic() const;
         void takeSnapshot();
         void restoreSnapshot();
+        void startReadTempo(bool b = true);
+
+        RK_DECL_ACT(tempoChanged,
+                    tempoChanged(double tempo),
+                    RK_ARG_TYPE(double),
+                    RK_ARG_VAL(tempo));
 
  private:
+        void onTempoReadTimeout();
+
         DspProxy *dspProxy;
         std::vector<OscillatorModel*> oscillatorModels;
         KitModel *kitModel;
         PresetBrowserModel* presetModel;
         LayersModel *layersModel;
+        RkTimer *tempoReadTimer;
+        double bpmTempo{0.0};
 };
 
 #endif // GEONKICK_MODEL_H

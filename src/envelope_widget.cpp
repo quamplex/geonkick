@@ -38,11 +38,17 @@ RK_DECLARE_IMAGE_RC(separator);
 RK_DECLARE_IMAGE_RC(bezier_mode_button);
 RK_DECLARE_IMAGE_RC(bezier_mode_button_on);
 RK_DECLARE_IMAGE_RC(bezier_mode_button_hover);
+RK_DECLARE_IMAGE_RC(grid_mode_time);
+RK_DECLARE_IMAGE_RC(grid_mode_time_hover);
+RK_DECLARE_IMAGE_RC(grid_mode_tempo);
+RK_DECLARE_IMAGE_RC(grid_mode_tempo_hover);
 
 EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , drawArea{nullptr}
         , bezierModeButton {nullptr}
+        , gridModeButton{nullptr}
+        , envelopePathLabel{nullptr}
         , geonkickModel{model}
         , dspProxy{geonkickModel->getDspProxy()}
         , oscillators{geonkickModel->getOscillatorModels()}
@@ -52,6 +58,13 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         // Create drawing area.
         drawArea = new EnvelopeWidgetDrawingArea(this, dspProxy);
         auto rect = drawArea->getDrawingArea();
+
+        // Refresh the drawing area when the host tempo changes.
+        RK_ACT_BIND(geonkickModel,
+                    tempoChanged,
+                    RK_ACT_ARGS(double tempo),
+                    this,
+                    onTempoChanged(tempo));
 
         // Oscillator1 envelope
         auto oscillator = oscillators[static_cast<int>(OscillatorModel::Type::Oscillator1)];
@@ -90,16 +103,31 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         drawArea->show();
 }
 
+EnvelopeWidget::~EnvelopeWidget()
+{
+        geonkickModel->startReadTempo(false);
+}
+
 void EnvelopeWidget::createButtomMenu()
 {
         auto buttomAreaWidget = new GeonkickWidget(drawArea);
         buttomAreaWidget->setBackgroundColor(40, 40, 40);
-        buttomAreaWidget->setFixedSize(25, 20);
+        buttomAreaWidget->setFixedSize(212, 20);
         buttomAreaWidget->setPosition(55 + drawArea->x(),
                                       drawArea->y() + drawArea->height() - buttomAreaWidget->height() - 6);
 
-        auto menuContainer = new RkContainer(buttomAreaWidget);
+        auto menuContainer = new RkContainer(buttomAreaWidget, Rk::Orientation::Horizontal);
+        menuContainer->setSpacing(4);
         createBezierModeControls(buttomAreaWidget, menuContainer);
+        createGridModeControls(buttomAreaWidget, menuContainer);
+
+        envelopePathLabel = new RkLabel(buttomAreaWidget);
+        envelopePathLabel->setBackgroundColor(buttomAreaWidget->background());
+        envelopePathLabel->setTextColor({180, 180, 180});
+        envelopePathLabel->setFixedSize(150, 16);
+        menuContainer->addWidget(envelopePathLabel);
+        envelopePathLabel->show();
+
         buttomAreaWidget->show();
 }
 
@@ -127,6 +155,28 @@ void EnvelopeWidget::createBezierModeControls(GeonkickWidget* widget, RkContaine
                     enableBezierMode(pressed));
 
         container->addWidget(bezierModeButton);
+}
+
+void EnvelopeWidget::createGridModeControls(GeonkickWidget* widget, RkContainer *container)
+{
+        gridModeButton = new GeonkickButton(widget);
+        gridModeButton->setSize(30, 18);
+        gridModeButton->setCheckable(true);
+        gridModeButton->setImage(RK_RC_IMAGE(grid_mode_time),
+                                  RkButton::State::Unpressed);
+        gridModeButton->setImage(RK_RC_IMAGE(grid_mode_tempo),
+                                  RkButton::State::Pressed);
+        gridModeButton->setImage(RK_RC_IMAGE(grid_mode_time_hover),
+                                  RkButton::State::UnpressedHover);
+        gridModeButton->setImage(RK_RC_IMAGE(grid_mode_tempo_hover),
+                                  RkButton::State::PressedHover);
+        RK_ACT_BIND(gridModeButton,
+                    toggled,
+                    RK_ACT_ARGS(bool pressed),
+                    this,
+                    onGridModeChanged(pressed));
+        container->addWidget(gridModeButton);
+        updateGridModeControls();
 }
 
 void EnvelopeWidget::createPointInfoLabel()
@@ -173,6 +223,9 @@ void EnvelopeWidget::showEnvelope(Envelope::Category category, Envelope::Type ty
         if (auto envelope = getEnvelope(category); envelope) {
                 envelope->setType(type);
                 drawArea->setEnvelope(envelope);
+                if (envelopePathLabel)
+                        envelopePathLabel->setText(drawArea->getEnvStateText());
+                updateGridModeControls();
         }
 }
 
@@ -185,6 +238,8 @@ void EnvelopeWidget::updateGui()
 {
         for (const auto &envelope: envelopes)
                 envelope.second->updateEnvelope();
+        if (envelopePathLabel && drawArea->getEnvelope())
+                envelopePathLabel->setText(drawArea->getEnvStateText());
         drawArea->update();
 }
 
@@ -204,4 +259,26 @@ void EnvelopeWidget::enableBezierMode(bool b)
 {
         GeonkickConfig().setBezierMode(b);
         drawArea->setBezierMode(b);
+}
+
+void EnvelopeWidget::onGridModeChanged(bool tempoMode)
+{
+        if (auto envelope = drawArea->getEnvelope(); envelope)
+                envelope->setGridMode(tempoMode ? Envelope::GridMode::Tempo : Envelope::GridMode::Time);
+        updateGridModeControls();
+}
+
+void EnvelopeWidget::updateGridModeControls()
+{
+        const auto envelope = drawArea->getEnvelope();
+        const bool tempoMode = envelope && envelope->getGridMode() == Envelope::GridMode::Tempo;
+        if (gridModeButton)
+                gridModeButton->setPressed(tempoMode);
+        geonkickModel->startReadTempo(tempoMode);
+}
+
+void EnvelopeWidget::onTempoChanged(double tempo)
+{
+        RK_UNUSED(tempo);
+        drawArea->update();
 }

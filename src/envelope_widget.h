@@ -33,11 +33,13 @@ class EnvelopeWidgetDrawingArea;
 class GeonkickButton;
 class GeonkickModel;
 class OscillatorModel;
+class RkLabel;
 
 class EnvelopeWidget : public GeonkickWidget
 {
 public:
         explicit EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model);
+        ~EnvelopeWidget();
         void hideEnvelope(bool b);
         void showEnvelope(Envelope::Category category = Envelope::Category::InstrumentGlobal,
                           Envelope::Type type = Envelope::Type::Amplitude);
@@ -54,14 +56,21 @@ protected:
         void updateInstrumentWaveform(std::shared_ptr<RkImage> waveformImage);
         void createButtomMenu();
         void createBezierModeControls(GeonkickWidget* widget, RkContainer *container);
+        void createGridModeControls(GeonkickWidget* widget, RkContainer *container);
         void createZoomInfoLabel();
         void createPointInfoLabel();
         void enableBezierMode(bool b = true);
 
 private:
+        void onGridModeChanged(bool tempoMode);
+        void onTempoChanged(double tempo);
+        void updateGridModeControls();
+
         std::unordered_map<int, std::unique_ptr<Envelope>> envelopes;
         EnvelopeWidgetDrawingArea *drawArea;
         GeonkickButton *bezierModeButton;
+        GeonkickButton *gridModeButton;
+        RkLabel *envelopePathLabel;
         GeonkickModel *geonkickModel;
         DspProxy *dspProxy;
         const std::vector<OscillatorModel*>& oscillators;

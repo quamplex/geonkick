@@ -38,6 +38,11 @@ class Envelope : public RkObject
  public:
 	using ApplyType = DspProxy::EnvelopeApplyType;
 
+        enum class GridMode : uint8_t {
+                Time   = 0x1,
+                Tempo  = 0x2
+        };
+
         enum class DrawLayer {
                 Axies,
                 Envelope
@@ -109,6 +114,8 @@ class Envelope : public RkObject
         double getTimeOrigin() const;
         void setValueOrigin(double valueOrg);
         double getValueOrigin() const;
+        void setGridMode(GridMode mode);
+        GridMode getGridMode() const;
 
  protected:
         virtual void pointAddedEvent(const EnvelopePoint &point) = 0;
@@ -158,6 +165,7 @@ class Envelope : public RkObject
                 double valueOrigin;
         };
         std::unordered_map<Type, ZoomInfo> zoomInfoMap;
+        GridMode gridMode{GridMode::Time};
 };
 
 #endif // GEONKICK_ENVELOPE_H

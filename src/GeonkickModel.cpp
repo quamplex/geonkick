@@ -27,6 +27,7 @@
 #include "preset_browser_model.h"
 #include "OscillatorModel.h"
 #include "LayersModel.h"
+#include "RkTimer.h"
 
 GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
         : RkObject(parent)
@@ -55,6 +56,13 @@ GeonkickModel::GeonkickModel(RkObject* parent, DspProxy *dsp)
                     RK_ACT_ARGS(PercussionModel*),
                     layersModel,
                     modelUpdated());
+
+        tempoReadTimer = new RkTimer(this, 200);
+        RK_ACT_BIND(tempoReadTimer,
+                    timeout,
+                    RK_ACT_ARGS(),
+                    this,
+                    onTempoReadTimeout());
 }
 
 GeonkickModel::~GeonkickModel()
@@ -121,4 +129,25 @@ void GeonkickModel::takeSnapshot()
 void GeonkickModel::restoreSnapshot()
 {
         dspProxy->restoreSnapshot();
+}
+
+void GeonkickModel::startReadTempo(bool b)
+{
+        GEONKICK_LOG_INFO("START: " << (b ? "true" : "false"));
+        if (b) {
+                tempoReadTimer->start();
+        } else {
+                tempoReadTimer->stop();
+                // Just make sure it will update the last value.
+                onTempoReadTimeout();
+        }
+}
+
+void GeonkickModel::onTempoReadTimeout()
+{
+        auto tempo = dspProxy->getTempo();
+        if (tempo != bpmTempo) {
+                bpmTempo = tempo;
+                action tempoChanged(bpmTempo);
+        }
 }

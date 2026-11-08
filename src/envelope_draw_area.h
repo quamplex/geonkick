@@ -45,6 +45,7 @@ class EnvelopeWidgetDrawingArea : public GeonkickWidget
    const RkRect getDrawingArea();
    void updateInstrumentWaveform(const std::shared_ptr<RkImage> &waveformImage);
    bool isHideEnvelope() const;
+   std::string getEnvStateText() const;
    void setEnvelope(Envelope* envelope);
    void envelopeUpdated();
    void setHideEnvelope(bool b);
@@ -70,7 +71,6 @@ class EnvelopeWidgetDrawingArea : public GeonkickWidget
    void mouseDoubleClickEvent(RkMouseEvent *event) override;
    void wheelEvent(RkWheelEvent *event) override;
    void shortcutEvent(RkKeyEvent *event) override;
-   std::string getEnvStateText() const;
 
  private:
    DspProxy* dspProxy;

@@ -22,6 +22,8 @@
  */
 
 #include "GKickVstProcessor.h"
+
+#include <cmath>
 #include "GKickVstEditor.h"
 #include "VstIds.h"
 
@@ -29,6 +31,7 @@
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstevents.h"
+#include "pluginterfaces/vst/ivstprocesscontext.h"
 
 #include "DspProxy.h"
 #include "kit_state.h"
@@ -126,6 +129,13 @@ GKickVstProcessor::setupProcessing(Vst::ProcessSetup& setup)
         return kResultTrue;
 }
 
+uint32 PLUGIN_API
+GKickVstProcessor::getProcessContextRequirements()
+{
+        processContextRequirements.needTempo();
+        return Vst::SingleComponentEffect::getProcessContextRequirements();
+}
+
 tresult PLUGIN_API
 GKickVstProcessor::setActive(TBool state)
 {
@@ -160,6 +170,14 @@ GKickVstProcessor::process(Vst::ProcessData& data)
                 channelsBuffers.data()[2 * ch + 1] = data.outputs[ch].channelBuffers32[1];
                 memset(channelsBuffers.data()[2 * ch], 0, data.numSamples * sizeof(float));
                 memset(channelsBuffers.data()[2 * ch + 1], 0, data.numSamples * sizeof(float));
+        }
+
+        // Get the host BPM
+        if (data.processContext &&
+            (data.processContext->state & Vst::ProcessContext::kTempoValid)
+            && std::isfinite(data.processContext->tempo)
+            && (data.processContext->tempo > 0.0)) {
+                dspProxy->setTempo(data.processContext->tempo);
         }
 
         auto events = data.inputEvents;

@@ -42,6 +42,7 @@ geonkick_create(struct geonkick **kick, int sample_rate)
 	if (*kick == NULL)
 		return GEONKICK_ERROR_MEM_ALLOC;
 
+        atomic_init(&(*kick)->tempo, 125.0);
 	strcpy((*kick)->name, "Geonkick");
 	(*kick)->sample_rate = sample_rate;
         (*kick)->synthesis_on = false;
@@ -1149,6 +1150,15 @@ geonkick_enable_synthesis(struct geonkick *kick,
 }
 
 enum geonkick_error
+geonkick_set_tempo(struct geonkick *dsp, double tempo)
+{
+        atomic_store_explicit(&dsp->tempo,
+                              tempo,
+                              memory_order_relaxed);
+        return GEONKICK_OK;
+}
+
+enum geonkick_error
 geonkick_audio_process(struct geonkick *kick,
                        float **out,
                        size_t channel,
@@ -2175,4 +2185,10 @@ float geonkick_humanizer_get_timing(const struct geonkick *dsp)
 void geonkick_wait_playing_ready()
 {
         geonkick_worker_sync();
+}
+
+double geonkick_get_tempo(const struct geonkick *dsp)
+{
+        return atomic_load_explicit(&dsp->tempo,
+                                    memory_order_relaxed);
 }

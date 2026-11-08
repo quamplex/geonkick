@@ -549,6 +549,9 @@ geonkick_enable_synthesis(struct geonkick *kick,
                           bool enable);
 
 enum geonkick_error
+geonkick_set_tempo(struct geonkick *dsp, double tempo);
+
+enum geonkick_error
 geonkick_audio_process(struct geonkick *kick,
                        float **out,
                        size_t channel,
@@ -857,6 +860,8 @@ geonkick_humanizer_set_timing(struct geonkick *dsp, float value);
 float geonkick_humanizer_get_timing(const struct geonkick *dsp);
 
 void geonkick_wait_playing_ready();
+
+double geonkick_get_tempo(const struct geonkick *dsp);
 
 bool
 geonkick_is_plugin();

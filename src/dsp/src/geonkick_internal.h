@@ -48,6 +48,8 @@ struct geonkick {
         size_t id;
         char name[30];
 	int sample_rate;
+        _Atomic(double) tempo;
+
         /* The list of synths of available synths. */
         struct gkick_synth *synths[GEONKICK_MAX_INSTRUMENTS];
         struct gkick_audio *audio;

@@ -1175,16 +1175,22 @@ void DspProxy::limiterCallback(void *arg, size_t index, gkick_real val)
 
 void DspProxy::setLimiterLevelerValue(size_t index, double val)
 {
-        if (index < limiterLevelers.size())
-                limiterLevelers[index] = val;
+        if (index < limiterLevelers.size()) {
+                std::atomic_store_explicit(&limiterLevelers[index],
+                                           val,
+                                           std::memory_order_relaxed);
+        }
 }
 
 double DspProxy::getLimiterLevelerValue(size_t index) const
 {
         if (index == static_cast<size_t>(-1))
                 index = currentPercussion();
+
         if (index < limiterLevelers.size())
-                return limiterLevelers[index];
+                return std::atomic_load_explicit(&limiterLevelers[index],
+                                                 std::memory_order_relaxed);
+
         return 0;
 }
 
@@ -1243,12 +1249,6 @@ int DspProxy::getSampleRate() const
         return sample_rate;
 }
 
-// This function is called only from the audio thread.
-void DspProxy::setKeyPressed(bool b, int note, int velocity)
-{
-        geonkick_key_pressed(geonkickDsp, b, note, velocity);
-}
-
 void DspProxy::playKick(int id)
 {
         if (id < 0)
@@ -1261,9 +1261,31 @@ void DspProxy::playSamplePreview()
         geonkick_play_sample_preview(geonkickDsp);
 }
 
+
+/**
+* This methods are called only from the audio thread.
+* ------------------------------------------------------ */
+
+void DspProxy::setTempo(double tempo)
+{
+        geonkick_set_tempo(geonkickDsp, tempo);
+}
+
+void DspProxy::setKeyPressed(bool b, int note, int velocity)
+{
+        geonkick_key_pressed(geonkickDsp, b, note, velocity);
+}
+
 void DspProxy::process(float** out, size_t offset, size_t size)
 {
         geonkick_audio_process(geonkickDsp, out, offset, size);
+}
+
+/* ------------------------------------------------------ */
+
+double DspProxy::getTempo() const
+{
+        return geonkick_get_tempo(geonkickDsp);
 }
 
 bool DspProxy::enableDistortion(bool enable)

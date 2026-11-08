@@ -25,6 +25,7 @@
 #include <lv2/atom/atom.h>
 #include <lv2/atom/util.h>
 #include <lv2/midi/midi.h>
+#include <lv2/time/time.h>
 #include <lv2/urid/urid.h>
 #include <lv2/ui/ui.h>
 #include <lv2/instance-access/instance-access.h>
@@ -41,6 +42,7 @@
 #include <vector>
 #include <memory>
 #include <atomic>
+#include <cmath>
 
 #ifdef GEONKICK_SINGLE
 #define GEONKICK_URI "http://geonkick.org/geonkick/single"
@@ -144,6 +146,13 @@ class GeonkickLv2Plugin : public RkObject
                 return atomInfo.atomObject;
         }
 
+        void setTempoURIDs(LV2_URID position, LV2_URID beatsPerMinute, LV2_URID atomFloat)
+        {
+                atomInfo.timePosition = position;
+                atomInfo.beatsPerMinute = beatsPerMinute;
+                atomInfo.atomFloat = atomFloat;
+        }
+
         void setStateData(const std::string &data, int flags = 0)
         {
                 RK_UNUSED(flags);
@@ -193,17 +202,35 @@ class GeonkickLv2Plugin : public RkObject
                                 offset += size;
                         }
 
-                        const uint8_t* const msg = (const uint8_t*)(it + 1);
-                        switch (lv2_midi_message_type(msg))
-                        {
-                                case LV2_MIDI_MSG_NOTE_ON:
-                                        dspProxy->setKeyPressed(true, msg[1], msg[2]);
-                                        break;
-                                case LV2_MIDI_MSG_NOTE_OFF:
-                                        dspProxy->setKeyPressed(false, msg[1], msg[2]);
-                                        break;
-                                default:
-                                        break;
+                        if (it->body.type == atomInfo.atomObject) {
+                                const auto* object = reinterpret_cast<const LV2_Atom_Object*>(&it->body);
+                                if (object->body.otype == atomInfo.timePosition) {
+                                        const LV2_Atom* tempoAtom = nullptr;
+                                        lv2_atom_object_get(object,
+                                                            atomInfo.beatsPerMinute,
+                                                            &tempoAtom,
+                                                            0);
+                                        if (tempoAtom
+                                            && tempoAtom->type == atomInfo.atomFloat
+                                            && tempoAtom->size >= sizeof(float)) {
+                                                const auto* tempo = reinterpret_cast<const LV2_Atom_Float*>(tempoAtom);
+                                                if (std::isfinite(tempo->body) && tempo->body > 0.0f)
+                                                        dspProxy->setTempo(tempo->body);
+                                        }
+                                }
+                        } else {
+                                const uint8_t* const msg = (const uint8_t*)(it + 1);
+                                switch (lv2_midi_message_type(msg))
+                                {
+                                        case LV2_MIDI_MSG_NOTE_ON:
+                                                dspProxy->setKeyPressed(true, msg[1], msg[2]);
+                                                break;
+                                        case LV2_MIDI_MSG_NOTE_OFF:
+                                                dspProxy->setKeyPressed(false, msg[1], msg[2]);
+                                                break;
+                                        default:
+                                                break;
+                                }
                         }
                         currentFrame = eventFrame;
                         it = lv2_atom_sequence_next(it);
@@ -269,6 +296,9 @@ private:
                 LV2_URID atomSequence;
                 LV2_URID atomStateChanged;
                 LV2_URID atomObject;
+                LV2_URID timePosition;
+                LV2_URID beatsPerMinute;
+                LV2_URID atomFloat;
         };
 
         AtomInfo atomInfo;
@@ -412,6 +442,9 @@ static LV2_Handle gkick_instantiate(const LV2_Descriptor*     descriptor,
                                 geonkickLv2PLugin->setAtomSequence(uridMap->map(uridMap->handle, LV2_ATOM__Sequence));
                                 geonkickLv2PLugin->setAtomStateChanged(uridMap->map(uridMap->handle, GEONKICK_URI_STATE_CHANGED));
                                 geonkickLv2PLugin->setAtomObject(uridMap->map(uridMap->handle, LV2_ATOM__Object));
+                                geonkickLv2PLugin->setTempoURIDs(uridMap->map(uridMap->handle, LV2_TIME__Position),
+                                                                 uridMap->map(uridMap->handle, LV2_TIME__beatsPerMinute),
+                                                                 uridMap->map(uridMap->handle, LV2_ATOM__Float));
                         }
                         break;
                 }

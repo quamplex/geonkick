@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="18" viewBox="0 0 30 18">
+  <rect x="0.5" y="0.5" width="29" height="17" rx="2" fill="#292929" stroke="#777" />
+  <path d="M4.5 15 7.5 3.5h5L15.5 15Z"
+        fill="none" stroke="#e8e8e8" stroke-linejoin="round" stroke-width="1.2" />
+  <path d="M3.5 15.5h13M9.5 13.5 12 5"
+        fill="none" stroke="#e8e8e8" stroke-linecap="round" stroke-width="1.2" />
+  <circle cx="12" cy="5" r="1" fill="#fff" />
+  <text x="17" y="12.5" fill="#f0f0f0"
+        font-family="sans-serif" font-size="7" font-weight="bold">BPM</text>
+</svg>

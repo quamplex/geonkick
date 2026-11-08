@@ -52,6 +52,7 @@ protected:
         void openPreset();
         void resetToDefault();
         void setSample(const std::string &file);
+        void onTempoChanged();
 
 private:
         void createViewState();
