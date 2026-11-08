@@ -116,6 +116,9 @@ class Envelope : public RkObject
         double getValueOrigin() const;
         void setGridMode(GridMode mode);
         GridMode getGridMode() const;
+        void setTempo(double tempo);
+        void setSnapEnabled(bool enabled);
+        bool isSnapEnabled() const;
 
  protected:
         virtual void pointAddedEvent(const EnvelopePoint &point) = 0;
@@ -124,6 +127,9 @@ class Envelope : public RkObject
         void drawAxies(RkPainter &painter);
         void drawScale(RkPainter &painter);
         void drawTimeScale(RkPainter &painter);
+        void drawTempoScale(RkPainter &painter);
+        double tempoGridDivision(int *denominator = nullptr) const;
+        double snapToGrid(double normalizedTime) const;
         void drawValueScale(RkPainter &painter);
         void drawPoints(RkPainter &painter);
         void drawPoint(RkPainter &painter, const RkPoint &point);
@@ -166,6 +172,8 @@ class Envelope : public RkObject
         };
         std::unordered_map<Type, ZoomInfo> zoomInfoMap;
         GridMode gridMode{GridMode::Time};
+        double tempo{125.0};
+        bool snapEnabled{false};
 };
 
 #endif // GEONKICK_ENVELOPE_H

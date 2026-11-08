@@ -24,7 +24,9 @@
 #include "envelope.h"
 #include "globals.h"
 
+#include <cmath>
 #include <iomanip>
+#include <limits>
 
 Envelope::Envelope(const RkRect &area)
         : drawingArea{area}
@@ -156,31 +158,130 @@ void Envelope::drawScale(RkPainter &painter)
 
 void Envelope::drawTimeScale(RkPainter &painter)
 {
-        RkFont font = painter.font();
-        font.setSize(10);
-        painter.setFont(font);
+        if (gridMode == GridMode::Tempo) {
+                drawTempoScale(painter);
+        } else {
+                RkFont font = painter.font();
+                font.setSize(10);
+                painter.setFont(font);
 
-        auto val = (envelopeLength() / getZoom()) / 10;
-        int dx = W() / 10;
-        RkPoint point = getOrigin();
-        int x  = point.x() + dx;
-        for (auto i = 1; i <= 10; i++) {
-                RkPen pen(RkColor(80, 80, 80));
-                pen.setStyle(RkPen::PenStyle::DotLine);
-                painter.setPen(pen);
-                painter.drawLine(x, point.y() - font.size() - 4, x, point.y() - H());
+                const auto val = (envelopeLength() / getZoom()) / 10;
+                const int dx = W() / 10;
+                const RkPoint point = getOrigin();
+                int x = point.x() + dx;
+                for (auto i = 1; i <= 10; i++) {
+                        RkPen pen(RkColor(80, 80, 80));
+                        pen.setStyle(RkPen::PenStyle::DotLine);
+                        painter.setPen(pen);
+                        painter.drawLine(x, point.y() - font.size() - 4, x, point.y() - H());
 
-                RkRect rect(x - 12, point.y() - 12, 25, font.size());
-                painter.setPen(RkColor(110, 110, 110));
-                painter.drawText(rect, Geonkick::doubleToStr(getTimeOrigin() + i * val, 3));
-                x += dx;
+                        RkRect rect(x - 12, point.y() - 12, 25, font.size());
+                        painter.setPen(RkColor(110, 110, 110));
+                        painter.drawText(rect, Geonkick::doubleToStr(getTimeOrigin() + i * val, 3));
+                        x += dx;
+                }
         }
 
+        RkPoint point = getOrigin();
+        RkFont font = painter.font();
         font.setSize(12);
         painter.setFont(font);
         painter.setPen(RkPen(RkColor(180, 180, 180, 200)));
         painter.drawText(point.x() + W() / 2 - 35, point.y() +  font.size() + 10,
                          "Length, " + std::to_string(std::llround(envelopeLength())) + " ms");
+}
+
+void Envelope::drawTempoScale(RkPainter &painter)
+{
+        int denominator = 4;
+        const double divisionDuration = tempoGridDivision(&denominator);
+        const double viewDuration = envelopeLength() / getZoom();
+        if (divisionDuration <= 0.0)
+                return;
+
+        const double viewStart = getTimeOrigin();
+        const double firstTickValue = std::ceil(viewStart / divisionDuration);
+        if (!std::isfinite(firstTickValue)
+            || firstTickValue >= static_cast<double>(std::numeric_limits<long long>::max()))
+                return;
+
+        const auto firstTick = static_cast<long long>(firstTickValue);
+        RkFont font = painter.font();
+        font.setSize(10);
+        painter.setFont(font);
+        const RkPoint point = getOrigin();
+        const int gridTop = point.y() - font.size() - 4;
+        const int gridBottom = point.y() - H();
+        const auto ticksPerBeat = denominator / 4;
+
+        for (auto tick = firstTick; ; ) {
+                const double gridTime = tick * divisionDuration;
+                const double xPosition = point.x() + (gridTime - viewStart) / viewDuration * W();
+                if (!std::isfinite(xPosition) || xPosition > point.x() + W())
+                        break;
+                const int x = static_cast<int>(std::lround(xPosition));
+                const bool isBeat = tick % ticksPerBeat == 0;
+                const bool isBar = tick % denominator == 0;
+
+                RkPen pen(RkColor(isBar ? 110 : isBeat ? 90 : 65,
+                                  isBar ? 110 : isBeat ? 90 : 65,
+                                  isBar ? 110 : isBeat ? 90 : 65));
+                pen.setStyle(RkPen::PenStyle::DotLine);
+                pen.setWidth(isBar ? 3 : isBeat ? 2 : 1);
+                painter.setPen(pen);
+                painter.drawLine(x, gridTop, x, gridBottom);
+
+                RkRect rect(x - 16, point.y() - 12, 33, font.size());
+                painter.setPen(RkColor(110, 110, 110));
+                painter.drawText(rect, "1/" + std::to_string(denominator));
+                if (tick == std::numeric_limits<long long>::max())
+                        break;
+                ++tick;
+        }
+}
+
+double Envelope::tempoGridDivision(int *denominator) const
+{
+        const double viewDuration = envelopeLength() / getZoom();
+        if (W() <= 0 || viewDuration <= 0.0 || !std::isfinite(viewDuration)
+            || !std::isfinite(tempo) || tempo <= 0.0)
+                return 0.0;
+
+        const double wholeNoteDuration = 240000.0 / tempo;
+        if (!std::isfinite(wholeNoteDuration) || wholeNoteDuration <= 0.0)
+                return 0.0;
+
+        const int denominators[] = {64, 32, 16, 8, 4};
+        for (const int candidate : denominators) {
+                const double divisionDuration = wholeNoteDuration / candidate;
+                const double spacing = divisionDuration / viewDuration * W();
+                if (spacing >= 32.0) {
+                        if (denominator)
+                                *denominator = candidate;
+                        return divisionDuration;
+                }
+        }
+        if (denominator)
+                *denominator = 4;
+        return wholeNoteDuration / 4.0;
+}
+
+double Envelope::snapToGrid(double normalizedTime) const
+{
+        if (!snapEnabled || !std::isfinite(normalizedTime))
+                return normalizedTime;
+
+        const double length = envelopeLength();
+        const double divisionDuration = gridMode == GridMode::Tempo
+                ? tempoGridDivision()
+                : length / getZoom() / 10.0;
+        if (length <= 0.0 || divisionDuration <= 0.0)
+                return normalizedTime;
+
+        const double time = normalizedTime * length;
+        const double gridOrigin = gridMode == GridMode::Tempo ? 0.0 : getTimeOrigin();
+        return (gridOrigin + std::round((time - gridOrigin) / divisionDuration)
+                * divisionDuration) / length;
 }
 
 void Envelope::drawValueScale(RkPainter &painter)
@@ -531,6 +632,7 @@ void Envelope::moveSelectedPoint(int x, int y)
 		return;
 	y = std::clamp(y, 0, H());
         auto scaledPoint = scaleDown(RkPoint(x, y));
+	scaledPoint.setX(snapToGrid(scaledPoint.x()));
         auto &selectedPoint = envelopePoints[selectedPointIndex];
 	if (scaledPoint.x() < getLeftPointLimit())
                 selectedPoint.setX(getLeftPointLimit());
@@ -552,6 +654,7 @@ void Envelope::setPoints(const std::vector<EnvelopePoint> &points)
 void Envelope::addPoint(const RkPoint &point, bool isControlPoint)
 {
         EnvelopePoint scaledPoint = scaleDown(point);
+        scaledPoint.setX(snapToGrid(scaledPoint.x()));
         scaledPoint.setAsControlPoint(isControlPoint);
 
         scaledPoint.setY(std::clamp(scaledPoint.y(), 0.0, 1.0));
@@ -937,4 +1040,20 @@ void Envelope::setGridMode(GridMode mode)
 Envelope::GridMode Envelope::getGridMode() const
 {
         return gridMode;
+}
+
+void Envelope::setTempo(double value)
+{
+        if (std::isfinite(value) && value > 0.0)
+                tempo = value;
+}
+
+void Envelope::setSnapEnabled(bool enabled)
+{
+        snapEnabled = enabled;
+}
+
+bool Envelope::isSnapEnabled() const
+{
+        return snapEnabled;
 }

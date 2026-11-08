@@ -47,6 +47,7 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent, GeonkickModel *model)
         : GeonkickWidget(parent)
         , drawArea{nullptr}
         , bezierModeButton {nullptr}
+        , snapModeButton{nullptr}
         , gridModeButton{nullptr}
         , envelopePathLabel{nullptr}
         , geonkickModel{model}
@@ -112,13 +113,14 @@ void EnvelopeWidget::createButtomMenu()
 {
         auto buttomAreaWidget = new GeonkickWidget(drawArea);
         buttomAreaWidget->setBackgroundColor(40, 40, 40);
-        buttomAreaWidget->setFixedSize(212, 20);
+        buttomAreaWidget->setFixedSize(264, 20);
         buttomAreaWidget->setPosition(55 + drawArea->x(),
                                       drawArea->y() + drawArea->height() - buttomAreaWidget->height() - 6);
 
         auto menuContainer = new RkContainer(buttomAreaWidget, Rk::Orientation::Horizontal);
         menuContainer->setSpacing(4);
         createBezierModeControls(buttomAreaWidget, menuContainer);
+        createSnapModeControls(buttomAreaWidget, menuContainer);
         createGridModeControls(buttomAreaWidget, menuContainer);
 
         envelopePathLabel = new RkLabel(buttomAreaWidget);
@@ -155,6 +157,20 @@ void EnvelopeWidget::createBezierModeControls(GeonkickWidget* widget, RkContaine
                     enableBezierMode(pressed));
 
         container->addWidget(bezierModeButton);
+}
+
+void EnvelopeWidget::createSnapModeControls(GeonkickWidget* widget, RkContainer *container)
+{
+        snapModeButton = new GeonkickButton(widget);
+        snapModeButton->setSize(36, 18);
+        snapModeButton->setText("Snap");
+        snapModeButton->setCheckable(true);
+        RK_ACT_BIND(snapModeButton,
+                    toggled,
+                    RK_ACT_ARGS(bool enabled),
+                    this,
+                    onSnapModeChanged(enabled));
+        container->addWidget(snapModeButton);
 }
 
 void EnvelopeWidget::createGridModeControls(GeonkickWidget* widget, RkContainer *container)
@@ -266,19 +282,31 @@ void EnvelopeWidget::onGridModeChanged(bool tempoMode)
         if (auto envelope = drawArea->getEnvelope(); envelope)
                 envelope->setGridMode(tempoMode ? Envelope::GridMode::Tempo : Envelope::GridMode::Time);
         updateGridModeControls();
+        drawArea->update();
+}
+
+void EnvelopeWidget::onSnapModeChanged(bool enabled)
+{
+        if (auto envelope = drawArea->getEnvelope(); envelope)
+                envelope->setSnapEnabled(enabled);
 }
 
 void EnvelopeWidget::updateGridModeControls()
 {
         const auto envelope = drawArea->getEnvelope();
         const bool tempoMode = envelope && envelope->getGridMode() == Envelope::GridMode::Tempo;
+        if (envelope)
+                envelope->setTempo(dspProxy->getTempo());
         if (gridModeButton)
                 gridModeButton->setPressed(tempoMode);
+        if (snapModeButton)
+                snapModeButton->setPressed(envelope && envelope->isSnapEnabled());
         geonkickModel->startReadTempo(tempoMode);
 }
 
 void EnvelopeWidget::onTempoChanged(double tempo)
 {
-        RK_UNUSED(tempo);
+        if (auto envelope = drawArea->getEnvelope(); envelope)
+                envelope->setTempo(tempo);
         drawArea->update();
 }

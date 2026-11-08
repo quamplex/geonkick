@@ -56,6 +56,7 @@ protected:
         void updateInstrumentWaveform(std::shared_ptr<RkImage> waveformImage);
         void createButtomMenu();
         void createBezierModeControls(GeonkickWidget* widget, RkContainer *container);
+        void createSnapModeControls(GeonkickWidget* widget, RkContainer *container);
         void createGridModeControls(GeonkickWidget* widget, RkContainer *container);
         void createZoomInfoLabel();
         void createPointInfoLabel();
@@ -63,12 +64,14 @@ protected:
 
 private:
         void onGridModeChanged(bool tempoMode);
+        void onSnapModeChanged(bool enabled);
         void onTempoChanged(double tempo);
         void updateGridModeControls();
 
         std::unordered_map<int, std::unique_ptr<Envelope>> envelopes;
         EnvelopeWidgetDrawingArea *drawArea;
         GeonkickButton *bezierModeButton;
+        GeonkickButton *snapModeButton;
         GeonkickButton *gridModeButton;
         RkLabel *envelopePathLabel;
         GeonkickModel *geonkickModel;
