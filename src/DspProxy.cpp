@@ -294,10 +294,17 @@ void DspProxy::setPercussionState(const std::unique_ptr<PercussionState> &state)
                               state->getKickEnvelopePoints(DspProxy::EnvelopeType::DistortionVolume));
 
         for (size_t i = 0; i < nLayers; i++) {
-                setOscillatorState(static_cast<Layer>(i), OscillatorType::Oscillator1, state);
-                setOscillatorState(static_cast<Layer>(i), OscillatorType::Oscillator2, state);
-                setOscillatorState(static_cast<Layer>(i), OscillatorType::Oscillator3, state);
+                const auto layer = static_cast<Layer>(i);
+                state->setCurrentLayer(layer);
+                for (auto oscillator : {OscillatorType::Oscillator1,
+                                        OscillatorType::Oscillator2,
+                                        OscillatorType::Oscillator3}) {
+                        const auto *info = state->getConstOscillator(static_cast<int>(oscillator));
+                        if (info)
+                                setOscillatorState(layer, oscillator, *info);
+                }
         }
+
         enableDistortion(state->isDistortionEnabled());
         setDistortionType(state->getDistortionType());
         setDistortionInLimiter(state->getDistortionInLimiter());
@@ -443,57 +450,50 @@ void DspProxy::getOscillatorState(DspProxy::Layer layer,
 }
 
 void DspProxy::setOscillatorState(DspProxy::Layer layer,
-                                     OscillatorType oscillator,
-                                     const std::unique_ptr<PercussionState> &state)
+                                  OscillatorType oscillator,
+                                  const OscillatorInfo &state)
 {
         auto temp = currentLayer;
         currentLayer = layer;
         auto osc = static_cast<int>(oscillator);
-        state->setCurrentLayer(layer);
-        enableOscillator(osc, state->isOscillatorEnabled(osc));
-        setOscillatorFunction(osc, state->oscillatorFunction(osc));
-        setOscillatorSample(state->getOscillatorSample(osc), osc);
-        setOscillatorPhase(osc, state->oscillatorPhase(osc));
-        setOscillatorSeed(osc, state->oscillatorSeed(osc));
-        setOscillatorAmplitude(osc, state->oscillatorAmplitue(osc));
-        setOscillatorFrequency(osc, state->oscillatorFrequency(osc));
-        setOscillatorPitchShift(osc, state->oscillatorPitchShift(osc));
-        setOscillatorNoiseDensity(osc, state->oscillatorNoiseDensity(osc));
-        enableOscillatorFilter(osc, state->isOscillatorFilterEnabled(osc));
-        setOscillatorFilterType(osc, state->oscillatorFilterType(osc));
-        setOscillatorFilterCutOffFreq(osc, state->oscillatorFilterCutOffFreq(osc));
-        setOscillatorFilterFactor(osc, state->oscillatorFilterFactor(osc));
+        enableOscillator(osc, state.isEnabled);
+        setOscillatorFunction(osc, state.function);
+        setOscillatorSample(state.sample, osc);
+        setOscillatorPhase(osc, state.phase);
+        setOscillatorSeed(osc, state.seed);
+        setOscillatorAmplitude(osc, state.amplitude);
+        setOscillatorFrequency(osc, state.frequency);
+        setOscillatorPitchShift(osc, state.pitchShift);
+        setOscillatorNoiseDensity(osc, state.noiseDensity);
+        enableOscillatorFilter(osc, state.isFilterEnabled);
+        setOscillatorFilterType(osc, state.filterType);
+        setOscillatorFilterCutOffFreq(osc, state.filterFrequency);
+        setOscillatorFilterFactor(osc, state.filterFactor);
         setOscillatorEvelopePoints(osc, EnvelopeType::Amplitude,
-                                   state->oscillatorEnvelopePoints(osc, EnvelopeType::Amplitude));
+                                   state.amplitudeEnvelope);
         setOscillatorEnvelopeApplyType(osc, EnvelopeType::Frequency,
-                                       state->getOscillatorEnvelopeApplyType(osc,
-                                                                             EnvelopeType::Frequency));
+                                       state.frequencyEnvelopeApplyType);
         setOscillatorEvelopePoints(osc, EnvelopeType::Frequency,
-                                   state->oscillatorEnvelopePoints(osc,
-                                                                   EnvelopeType::Frequency));
+                                   state.frequencyEnvelope);
         setOscillatorEvelopePoints(osc, EnvelopeType::PitchShift,
-                                   state->oscillatorEnvelopePoints(osc,
-                                                                   EnvelopeType::PitchShift));
+                                   state.pitchShiftEnvelope);
         setOscillatorEvelopePoints(osc, EnvelopeType::NoiseDensity,
-                                   state->oscillatorEnvelopePoints(osc,
-                                                                   EnvelopeType::NoiseDensity));
-	setOscillatorEnvelopeApplyType(osc, EnvelopeType::FilterCutOff,
-				       state->getOscillatorEnvelopeApplyType(osc,
-									     EnvelopeType::FilterCutOff));
+                                   state.noiseDensityEnvelope);
+        setOscillatorEnvelopeApplyType(osc, EnvelopeType::FilterCutOff,
+                                       state.cutOffEnvelopeApplyType);
         setOscillatorEvelopePoints(osc, EnvelopeType::FilterCutOff,
-                                   state->oscillatorEnvelopePoints(osc, EnvelopeType::FilterCutOff));
-	setOscillatorEvelopePoints(osc, EnvelopeType::FilterQFactor,
-                                   state->oscillatorEnvelopePoints(osc, EnvelopeType::FilterQFactor));
+                                   state.filterCutOffEnvelope);
+        setOscillatorEvelopePoints(osc, EnvelopeType::FilterQFactor,
+                                   state.filterQFactorEnvelope);
         setOscillatorEvelopePoints(osc, EnvelopeType::DistortionDrive,
-                                   state->oscillatorEnvelopePoints(osc, EnvelopeType::DistortionDrive));
-        oscEnableDistortion(osc, state->isOscDistortionEnabled(osc));
-        setOscDistortionType(osc, state->getOscDistortionType(osc));
-        setOscDistortionInLimiter(osc, state->getOscDistortionInLimiter(osc));
-        setOscDistortionOutLimiter(osc, state->getOscDistortionOutLimiter(osc));
-        setOscDistortionDrive(osc, state->getOscDistortionDrive(osc));
-        setOscillatorAsFm(osc, state->isOscillatorAsFm(osc));
-        setOscillatorAsFm(osc, state->isOscillatorAsFm(osc));
-        setOscillatorFmK(osc, state->getOscillatorFmK(osc));
+                                   state.distortion.driveEnvelope);
+        oscEnableDistortion(osc, state.distortion.enabled);
+        setOscDistortionType(osc, state.distortion.type);
+        setOscDistortionInLimiter(osc, state.distortion.in_limiter);
+        setOscDistortionOutLimiter(osc, state.distortion.out_limiter);
+        setOscDistortionDrive(osc, state.distortion.drive);
+        setOscillatorAsFm(osc, state.isFm);
+        setOscillatorFmK(osc, state.fmK);
         currentLayer = temp;
 }
 
@@ -2134,5 +2134,27 @@ void DspProxy::restoreSnapshot()
                         setCurrentPercussion(snapshotCurrentId);
                  notifyKitUpdated();
                  notifyUpdateGui();
+        }
+}
+
+void DspProxy::copyOscillator(int oscillatorIndex)
+{
+        auto instrState = getPercussionState();
+        if (instrState) {
+                instrState->setCurrentLayer(layer());
+                const auto *osc = instrState->getConstOscillator(oscillatorIndex);
+                if (osc)
+                        oscillatorSnapshot = std::make_unique<OscillatorInfo>(*osc);
+        }
+}
+
+void DspProxy::pasteOscillator(int oscillatorIndex)
+{
+        if (oscillatorSnapshot) {
+                setOscillatorState(layer(),
+                                   static_cast<OscillatorType>(oscillatorIndex),
+                                   *oscillatorSnapshot);
+                notifyKitUpdated();
+                notifyUpdateGui();
         }
 }

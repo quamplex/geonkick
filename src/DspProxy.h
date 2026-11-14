@@ -35,6 +35,7 @@ class KitState;
 class RkEventQueue;
 class PresetFolder;
 class UiSettings;
+struct OscillatorInfo;
 
 
 class DspProxy : public RkObject {
@@ -148,6 +149,8 @@ class DspProxy : public RkObject {
                            int oscillatorIndex);
   void setOscillatorSample(const std::vector<float> &sample,
                            int oscillatorIndex);
+  void copyOscillator(int oscillatorIndex);
+  void pasteOscillator(int oscillatorIndex);
   std::vector<float> getOscillatorSample(int oscillatorIndex) const;
   double kickMaxLength(void) const;
   double kickLength(void) const;
@@ -397,7 +400,7 @@ protected:
   void updateKickBuffer(std::vector<gkick_real> &&buffer, size_t id);
   void setOscillatorState(Layer layer,
                           OscillatorType oscillator,
-                          const std::unique_ptr<PercussionState> &state);
+                          const OscillatorInfo &state);
   void getOscillatorState(Layer layer,
                           OscillatorType osc,
                           const std::unique_ptr<PercussionState> &state) const;
@@ -408,6 +411,7 @@ protected:
                                             int channels = 1);
 
 private:
+
   mutable struct geonkick *geonkickDsp;
   std::unique_ptr<DspProxyHumanizer> dspProxyHumanizer;
   InstanceType instanceType;
@@ -438,6 +442,7 @@ private:
   double scaleFactor;
   std::unique_ptr<KitState> kitSnapshot;
   int snapshotCurrentId{0};
+  std::unique_ptr<OscillatorInfo> oscillatorSnapshot;
 };
 
 #endif // DSP_PROXY_H

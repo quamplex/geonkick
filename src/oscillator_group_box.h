@@ -61,7 +61,7 @@ class OscillatorGroupBox: public GeonkickGroupBox
  private:
         void onOscillatorFunctionUpdated(OscillatorModel::FunctionType function);
 
-        OscillatorModel *oscillator;
+        OscillatorModel *oscillatorModel;
         GeonkickButton *oscillatorCheckbox;
         GeonkickButton *fmCheckbox;
         GeonkickButton *sineButton;

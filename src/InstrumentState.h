@@ -189,6 +189,7 @@ class PercussionState
         void setOscillatorSample(int oscillatorIndex,
                                  const std::vector<float> &sample);
         std::vector<float> getOscillatorSample(int oscillatorIndex) const;
+        const OscillatorInfo* getConstOscillator(int index) const;
         void setOscDistortionEnabled(int index, bool b = true);
         void setOscDistortionType(int index, DistortionType type);
         void setOscDistortionInLimiter(int index, double val);
@@ -244,7 +245,6 @@ class PercussionState
 private:
         void initOscillators();
         OscillatorInfo* getOscillator(int index);
-        const OscillatorInfo* getConstOscillator(int index) const;
 
         int appVersion;
         size_t kickId;

@@ -229,3 +229,13 @@ DspProxy* OscillatorModel::getDspProxy() const
 {
         return dspProxy;
 }
+
+void OscillatorModel::copy()
+{
+        dspProxy->copyOscillator(index());
+}
+
+void OscillatorModel::paste()
+{
+        dspProxy->pasteOscillator(index());
+}
