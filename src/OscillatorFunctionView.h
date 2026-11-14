@@ -35,7 +35,7 @@ class RkLabel;
 class OscillatorFunctionView: public GeonkickWidget {
  public:
         OscillatorFunctionView(GeonkickWidget *parent, OscillatorModel* model);
-        void setModel(OscillatorModel *model);
+        void updateView();
 
 protected:
         void clearView();
@@ -44,7 +44,6 @@ protected:
         void createNoiseControls();
         void createSampleControls();
         void setNoiseView(OscillatorModel::FunctionType noiseType);
-        void updateView();
         void browseSample();
 
  private:
