@@ -36,11 +36,11 @@ RkSpinBox::RkSpinBox(RkWidget *parent)
         RK_ACT_BIND(upControl(),
                     pressed,
                     RK_ACT_ARGS(),
-                    this, setCurrentIndex(currentIndex() + 1));
+                    this, onSetCurrentIndex(currentIndex() + 1));
         RK_ACT_BIND(downControl(),
                     pressed,
                     RK_ACT_ARGS(),
-                    this, setCurrentIndex(currentIndex() - 1));
+                    this, onSetCurrentIndex(currentIndex() - 1));
 }
 
 void RkSpinBox::setRange(int from, int to)
@@ -56,7 +56,6 @@ void RkSpinBox::setCurrentIndex(int index)
                 return;
 
         impl_ptr->setCurrentIndex(index);
-        action currentIndexChanged(impl_ptr->currentIndex());
 }
 
 int RkSpinBox::currentIndex() const
@@ -127,7 +126,13 @@ void RkSpinBox::resizeEvent([[maybe_unused]]RkResizeEvent *event)
 void RkSpinBox::wheelEvent(RkWheelEvent *event)
 {
         if (event->direction() == RkWheelEvent::WheelDirection::DirectionUp)
-                setCurrentIndex(currentIndex() + 1);
+                onSetCurrentIndex(currentIndex() + 1);
         else
-                setCurrentIndex(currentIndex() - 1);
+                onSetCurrentIndex(currentIndex() - 1);
+}
+
+void RkSpinBox::onSetCurrentIndex(int index)
+{
+        setCurrentIndex(index);
+        action currentIndexChanged(index);
 }

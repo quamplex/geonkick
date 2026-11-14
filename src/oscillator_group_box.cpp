@@ -502,7 +502,7 @@ void OscillatorGroupBox::setWaveFunction(OscillatorModel::FunctionType type)
         noiseButton->setPressed(type == OscillatorModel::FunctionType::NoiseWhite);
         sampleButton->setPressed(type == OscillatorModel::FunctionType::Sample);
         oscillatorModel->setFunction(type);
-        functionView->setModel(oscillatorModel);
+        functionView->updateView();
         updateAmpltudeEnvelopeBox();
 }
 
@@ -542,7 +542,7 @@ void OscillatorGroupBox::updateGui()
                 fmCheckbox->setPressed(oscillatorModel->isFm());
 
         oscillatorEffects->setModel(oscillatorModel);
-        functionView->setModel(oscillatorModel);
+        functionView->updateView();
 }
 
 void OscillatorGroupBox::updateAmpltudeEnvelopeBox()

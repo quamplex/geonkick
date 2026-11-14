@@ -68,6 +68,7 @@ protected:
         void wheelEvent(RkWheelEvent *event) override;
 
 private:
+        void onSetCurrentIndex(int index);
         RK_DISABLE_COPY(RkSpinBox);
         RK_DISABLE_MOVE(RkSpinBox);
 };

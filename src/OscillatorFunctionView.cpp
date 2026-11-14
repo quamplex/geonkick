@@ -61,15 +61,6 @@ OscillatorFunctionView::OscillatorFunctionView(GeonkickWidget *parent, Oscillato
         createView();
 }
 
-void OscillatorFunctionView::setModel(OscillatorModel *model)
-{
-        if (oscillatorModel)
-                unbindObject(oscillatorModel);
-        oscillatorModel = model;
-        createView();
-        updateView();
-}
-
 void OscillatorFunctionView::clearView()
 {
         delete phaseControl;
@@ -89,6 +80,7 @@ void OscillatorFunctionView::clearView()
 void OscillatorFunctionView::createView()
 {
         clearView();
+
         switch (oscillatorModel->function()) {
         case OscillatorModel::FunctionType::Sine:
         case OscillatorModel::FunctionType::Square:
@@ -199,7 +191,6 @@ void OscillatorFunctionView::createSampleControls()
 void OscillatorFunctionView::setNoiseView(OscillatorModel::FunctionType noiseType)
 {
         oscillatorModel->setFunction(noiseType);
-        updateView();
 }
 
 void OscillatorFunctionView::updateView()
@@ -210,11 +201,17 @@ void OscillatorFunctionView::updateView()
         case OscillatorModel::FunctionType::Triangle:
         case OscillatorModel::FunctionType::Sawtooth:
         case OscillatorModel::FunctionType::Sample:
+                if (!phaseControl)
+                        createView();
+
                 phaseControl->setCurrentValue(oscillatorModel->getPhase());
                 break;
         case OscillatorModel::FunctionType::NoiseWhite:
         case OscillatorModel::FunctionType::NoisePink:
         case OscillatorModel::FunctionType::NoiseBrownian:
+                if (!whiteNoiseButton || !brownianNoiseButton || !seedSpinBox)
+                        createView();
+
                 whiteNoiseButton->setPressed(OscillatorModel::FunctionType::NoiseWhite
                                              == oscillatorModel->function());
                 brownianNoiseButton->setPressed(OscillatorModel::FunctionType::NoiseBrownian
@@ -225,6 +222,5 @@ void OscillatorFunctionView::updateView()
                 break;
         }
 }
-
 
 
