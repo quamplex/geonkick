@@ -62,7 +62,7 @@ RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance,
 {
         RkNativeWindowInfo info;
         info.instance = instance ? instance : rk_winApiInstance;
-        info.name = name ? className : rk_winApiName;
+        info.name = name ? name : rk_winApiName;
         info.className = className ? className : rk_winApiClassName;
         info.window = window;
         return info;

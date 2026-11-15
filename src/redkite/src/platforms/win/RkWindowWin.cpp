@@ -70,7 +70,6 @@ bool RkWindowWin::hasParent() const
 bool RkWindowWin::init()
 {
         RK_LOG_DEBUG("hasParent(): " << hasParent());
-        auto name = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
         auto className = hasParent() ? parentWindowInfo.className : rk_win_api_class_name();
         RK_LOG_DEBUG("className: " << className);
         auto winStyle = hasParent() ? (WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE) : (WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
