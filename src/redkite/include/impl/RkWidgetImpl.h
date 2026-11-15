@@ -127,6 +127,7 @@ protected:
         bool isWidgetVisible;
         bool widgetHasFocus;
         bool isWidgetEnabled;
+        std::string widgetTitle;
 };
 
 #endif // RK_WIDGET_IMPL_H

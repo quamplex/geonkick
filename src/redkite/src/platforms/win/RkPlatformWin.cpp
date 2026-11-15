@@ -47,7 +47,7 @@ HINSTANCE rk_win_api_instance()
 LPCSTR rk_win_api_name()
 {
         RK_LOG_DEBUG("rk_winApiName: " << rk_winApiName);
-        return rk_winApiName;
+        return rk_winApiName.c_str();
 }
 
 LPCSTR rk_win_api_class_name()

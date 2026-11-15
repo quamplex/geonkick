@@ -53,6 +53,7 @@ class RkNativeWindowInfo {
 };
 
 HINSTANCE rk_win_api_instance();
+LPCSTR rk_win_api_name();
 LPCSTR rk_win_api_class_name();
 RkNativeWindowInfo rk_from_native_win(HWND window,
                                       HINSTANCE instance,

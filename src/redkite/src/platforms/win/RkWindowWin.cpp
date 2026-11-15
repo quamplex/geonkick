@@ -141,6 +141,20 @@ void RkWindowWin::setTitle(const std::string &title)
                 SetWindowTextA(windowHandle.id, title.c_str());
 }
 
+std::string RkWindowWin::getTitle() const
+{
+        if (!isWindowCreated())
+                return std::string();
+
+        int len = GetWindowTextLengthA(windowHandle.id);
+        std::string title(len + 1, '\0');
+        GetWindowTextA(windowHandle.id, title.data(), len + 1);
+
+	title.resize(len);
+
+        return title;
+}
+
 bool RkWindowWin::isWindowCreated() const
 {
         return windowHandle.id != nullptr;
