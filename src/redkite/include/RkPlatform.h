@@ -56,9 +56,7 @@ HINSTANCE rk_win_api_instance();
 LPCSTR rk_win_api_name();
 LPCSTR rk_win_api_class_name();
 RkNativeWindowInfo rk_from_native_win(HWND window,
-                                      HINSTANCE instance,
-                                      LPCSTR name,
-                                      LPCSTR className);
+                                      HINSTANCE instance);
 RkWindowId rk_id_from_win(HWND window);
 Rk::Key rk_convertKey(unsigned int winKey);
 void rk_updateKeyModifiers(Rk::Key key, RkEvent::Type type);
@@ -102,9 +100,7 @@ class RkNativeWindowInfo
 
 RkNativeWindowInfo rk_from_native_x11(Display* display,
                                       int screenNumber,
-                                      Window window,
-                                      std::string_view name,
-                                      std::string_view className);
+                                      Window window);
 RkWindowId rk_id_from_x11(Window window);
 
 #endif // X11

@@ -34,8 +34,16 @@
 
 #include <windowsx.h>
 
+#ifdef REDKITE_NAME
+static std::string rk_winApiName{REDKITE_NAME};
+#else
 static std::string rk_winApiName{"redkite"};
+#endif // REDKITE_NAME
+#ifdef REDKITE_CLASS_NAME
+static std::string rk_winApiClassName{REDKITE_CLASS_NAME};
+#else
 static std::string rk_winApiClassName{"Redkite"};
+#endif // REDKITE_CLASS_NAME
 static HINSTANCE rk_winApiInstance = nullptr;
 
 HINSTANCE rk_win_api_instance()
@@ -56,14 +64,12 @@ LPCSTR rk_win_api_class_name()
         return rk_winApiClassName.c_str();
 }
 
-RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance,
-                                      LPCSTR name,
-                                      LPCSTR className)
+RkNativeWindowInfo rk_from_native_win(HWND window, HINSTANCE instance)
 {
         RkNativeWindowInfo info;
         info.instance = instance ? instance : rk_winApiInstance;
-        info.name = name ? name : rk_winApiName;
-        info.className = className ? className : rk_winApiClassName;
+        info.name = rk_winApiName;
+        info.className = rk_winApiClassName;
         info.window = window;
         return info;
 }
@@ -498,7 +504,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         std::default_random_engine e1(r());
         std::uniform_int_distribution<int> uniform_dist(1, 1000000);
         int mean = uniform_dist(e1);
-        rk_winApiClassName = "Redkite_" + std::to_string(mean);
         wc.lpszClassName = rk_winApiClassName.c_str();
         wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
         RK_LOG_DEBUG("rk_winApiClassName : " << rk_winApiClassName);

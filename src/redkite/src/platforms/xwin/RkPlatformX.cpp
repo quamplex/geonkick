@@ -24,17 +24,25 @@
 #include "RkPlatform.h"
 
 RkNativeWindowInfo
-rk_from_native_x11(Display* display, int screenNumber,
-                   Window window,
-                   std::string_view name,
-                   std::string_view className)
+rk_from_native_x11(Display* display,
+		   int screenNumber,
+                   Window window)
 {
         RkNativeWindowInfo info;
         info.display = display;
         info.screenNumber = screenNumber;
         info.window = window;
-	info.name = name;
-        info.className = className;
+#ifdef REDKITE_NAME
+	info.name = REDKITE_NAME;
+#else
+	info.name = "redkite";
+#endif // REDKITE_NAME
+#ifdef REDKITE_CLASS_NAME
+	info.className = REDKITE_CLASS_NAME;
+#else
+        info.className = "Redkite";
+#endif // REDKITE_CLASS_NAME
+
         return info;
 }
 

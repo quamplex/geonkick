@@ -86,6 +86,9 @@ namespace fs = std::filesystem;
 #define GEONKICK_LOG_DEBUG(msg)   // disabled
 #endif // GKICK_LOG_DEBUG_LEVEL
 
+#define REDKITE_NAME GEONKICK_NAME
+#define REDKITE_CLASS_NAME GEONKICK_APP_NAME
+
 namespace GeonkickTypes
 {
 using MidiKey = unsigned char;

@@ -309,9 +309,7 @@ static LV2UI_Handle gkick_instantiate_ui(const LV2UI_Descriptor*   descriptor,
         }
 #ifdef GEONKICK_OS_WINDOWS
 	auto info = rk_from_native_win(reinterpret_cast<HWND>(parent),
-                                       rk_win_api_instance(),
-                                       Geonkick::name,
-                                       Geonkick::applicationName);
+                                       rk_win_api_instance());
 #else // GEONKICK_OS_GNU
         // Get the info about X Window parent window.
         const uintptr_t parentWinId = (uintptr_t)parent;
@@ -319,9 +317,7 @@ static LV2UI_Handle gkick_instantiate_ui(const LV2UI_Descriptor*   descriptor,
         int screenNumber = DefaultScreen(xDisplay);
         auto info = rk_from_native_x11(xDisplay,
                                        screenNumber,
-                                       parentWinId,
-                                       Geonkick::name,
-                                       Geonkick::applicationName);
+                                       parentWinId);
 #endif // GEONKICK_OS_GNU
         auto guiApp = new RkMain();
         geonkickLv2PLugin->getProxy()->setEventQueue(guiApp->eventQueue());
