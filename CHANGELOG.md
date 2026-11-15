@@ -4,6 +4,7 @@
 
 - Fix feedback loop between UI and DSP for some cases
 - Fix oscillator phase knob
+- Main window title and X11 class name
 
 ## [3.9.0]
 
