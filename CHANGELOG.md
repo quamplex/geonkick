@@ -1,3 +1,10 @@
+## [3.9.1]
+
+### Fixes
+
+- Fix feedback loop between UI and DSP for some cases
+- Fix oscillator phase knob
+
 ## [3.9.0]
 
 ### Features
